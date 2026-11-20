@@ -1,0 +1,1584 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>敵キャラ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9edf3; --panel:#ffffff; --panel-2:#f4f6fa; --ink:#131a26; --muted:#5b6b82;
+    --line:#d3dae6; --accent:#0e7490; --accent-ink:#ffffff;
+    --red:#dc2626; --magenta:#b4238f; --teal:#0f766e; --gold:#b45309;
+    --game-frame:#070b16;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0a0e18; --panel:#121826; --panel-2:#0f1524; --ink:#e8edf6; --muted:#9aa9c0;
+      --line:#26324a; --accent:#22b8dd; --accent-ink:#06202b;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,sans-serif;line-height:1.65}
+  button,[role="button"]{min-height:2.25rem}
+  button{font-family:inherit;cursor:pointer}
+  .dot{font-family:"DotGothic16",monospace;letter-spacing:.02em}
+  main{max-width:1060px;margin:0 auto;padding:18px 16px 56px}
+  /* ---------- intro ---------- */
+  .intro{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin:4px 0 14px}
+  .intro h1{font-family:"DotGothic16",monospace;font-size:clamp(24px,4.6vw,38px);line-height:1.2;margin:0;font-weight:400}
+  .intro h1 .hl{color:var(--accent)}
+  .intro p{margin:0;color:var(--muted);font-size:14px;max-width:640px}
+  .tag{display:inline-block;font-family:"DotGothic16",monospace;font-size:12px;padding:3px 9px;border:2px solid var(--ink);border-radius:3px;background:var(--panel)}
+  /* ---------- game panel ---------- */
+  .game-panel{background:var(--game-frame);border-radius:10px;padding:12px;box-shadow:0 10px 30px rgba(2,6,18,.35)}
+  .hud{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;color:#dbe7f5;font-family:"DotGothic16",monospace;font-size:15px;padding:2px 4px 10px}
+  .hud .item{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .hud .lbl{color:#7f93ad;font-size:12px}
+  .hud .score-item{background:#facc15;border:2px solid #fde047;border-radius:4px;padding:3px 12px 4px;margin:-3px 0;color:#221a02;box-shadow:0 0 0 2px rgba(250,204,21,.18)}
+  .hud .score-item .lbl{color:#713f12;font-size:12px;font-weight:700;letter-spacing:.08em}
+  .hud .score-item #score{font-size:24px;line-height:1;font-variant-numeric:tabular-nums;min-width:7ch;text-align:right;color:#221a02}
+  .hud .hiscore-item{color:#fde68a}
+  .hud .hiscore-item #hiscore{font-variant-numeric:tabular-nums;color:#fde68a}
+  .ingame-score{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:3;pointer-events:none;text-align:center;background:rgba(3,6,14,.78);border:2px solid #facc15;border-radius:4px;padding:4px 18px 6px;color:#fff;min-width:210px}
+  .ingame-score .cap{font-size:11px;letter-spacing:.22em;color:#fde68a;line-height:1.1}
+  .ingame-score .val{font-size:clamp(24px,4.5vw,34px);line-height:1.05;color:#facc15;font-variant-numeric:tabular-nums}
+  .overlay .ov-score{font-size:clamp(26px,5vw,40px);color:#facc15;line-height:1.2;margin-top:8px;font-variant-numeric:tabular-nums}
+  .overlay .ov-score small{display:block;font-size:12px;letter-spacing:.22em;color:#fde68a}
+  .hpbar{width:130px;height:12px;background:#1c2942;border:2px solid #3b5175;position:relative}
+  .hpbar i{position:absolute;inset:0;background:#37d67a;transform-origin:left;transition:transform .15s}
+  .hpbar.low i{background:#ef4444}
+  .bossbar{flex:1 1 220px;display:none;align-items:center;gap:8px}
+  .bossbar.on{display:flex}
+  .bossbar .track{flex:1;height:12px;background:#1c2942;border:2px solid #7f2d3a;position:relative}
+  .bossbar .track i{position:absolute;inset:0;background:#ef4444;transform-origin:left}
+  .bossbar .bnum{color:#fecaca;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:9ch}
+  .stage-msg{margin-left:auto;color:#facc15}
+  .screen-wrap{position:relative;border:2px solid #26365a;border-radius:4px;overflow:hidden;background:#05070f}
+  canvas#game{display:block;width:100%;aspect-ratio:16/9;height:auto;image-rendering:pixelated}
+  .overlay{position:absolute;inset:0;z-index:5;display:none;place-items:center;background:rgba(3,6,14,.72);text-align:center;padding:20px}
+  .overlay.on{display:grid}
+  .overlay .big{font-family:"DotGothic16",monospace;font-size:clamp(30px,6vw,52px);color:#fff;line-height:1.15}
+  .overlay .sub{color:#b9c9de;font-size:14px;margin:10px 0 18px}
+  .overlay button{background:#facc15;color:#221a02;border:0;border-radius:4px;font-family:"DotGothic16",monospace;font-size:18px;padding:10px 26px;min-height:44px}
+  .warn{position:absolute;top:78px;left:50%;transform:translateX(-50%);z-index:4;display:none;background:#7f1d1d;color:#fecaca;border:2px solid #ef4444;font-family:"DotGothic16",monospace;padding:4px 14px;font-size:15px}
+  .warn.on{display:block;animation:blink .5s steps(2) infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .stage-dots{display:inline-flex;gap:5px;align-items:center}
+  .stage-dots i{width:10px;height:10px;border-radius:50%;border:2px solid #3b5175;background:transparent;display:block}
+  .stage-dots i.done{background:#37d67a;border-color:#37d67a}
+  .stage-dots i.now{background:#facc15;border-color:#facc15;box-shadow:0 0 0 3px rgba(250,204,21,.25)}
+  .stage-banner{position:absolute;inset:0;z-index:4;display:none;place-items:center;pointer-events:none;text-align:center}
+  .stage-banner.on{display:grid}
+  .stage-banner .sb-big{font-family:"DotGothic16",monospace;font-size:clamp(34px,7vw,58px);color:#fff;line-height:1.1;text-shadow:0 3px 0 rgba(0,0,0,.55)}
+  .stage-banner .sb-big span{color:#facc15}
+  .stage-banner .sb-sub{color:#b9c9de;font-family:"DotGothic16",monospace;font-size:15px;margin-top:6px;letter-spacing:.14em}
+  .stage-banner .sb-boss{color:#fca5a5;font-size:13px;margin-top:4px}
+  .hud .level-item{background:#082f3a;border:2px solid #22d3ee;border-radius:4px;padding:3px 10px 4px;color:#cffafe}
+  .hud .level-item .lbl{color:#67e8f9}
+  .hud .level-item #playerLevel{color:#facc15;font-size:17px;line-height:1}
+  .hud .level-item #levelProg{color:#fde68a;font-size:13px}
+  .hud .level-item #levelDesc{font-size:12px;color:#a5f3fc;white-space:normal}
+  .lvlbar{width:74px;height:10px;background:#1c2942;border:2px solid #3b5175;position:relative;display:inline-block;flex:0 0 auto}
+  .lvlbar i{position:absolute;inset:0;background:#22d3ee;transform-origin:left;transform:scaleX(0)}
+  .levelup{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(3,8,18,.9);padding:16px;text-align:center;overflow-y:auto}
+  .levelup.on{display:flex}
+  .levelup .lu-big{font-size:clamp(26px,5vw,42px);color:#facc15;line-height:1.1}
+  .levelup .lu-sub{color:#cffafe;font-size:13.5px;max-width:580px;margin-top:4px}
+  .lu-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:min(780px,100%)}
+  .lu-card{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;background:#0b2a3a;border:2px solid #22d3ee;border-radius:8px;color:#e0f7ff;padding:14px;min-height:136px;cursor:pointer;font-family:inherit}
+  .lu-card:hover,.lu-card:focus-visible{border-color:#facc15;background:#14344a;outline:none}
+  .lu-card .lu-key{background:#facc15;color:#221a02;border-radius:3px;padding:0 8px;font-size:12px;line-height:1.7}
+  .lu-card .lu-name{font-weight:900;font-size:16.5px;color:#fff;line-height:1.3}
+  .lu-card .lu-desc{font-size:12.5px;line-height:1.55;color:#bfe9f5;flex:1}
+  .lu-card .lu-stack{font-size:11px;color:#7dd3fc}
+  .lu-hint{color:#8fa5c0;font-size:12px;font-family:"DotGothic16",monospace}
+  @media (max-width:560px){.lu-cards{gap:8px}.lu-card{padding:10px;min-height:122px}.lu-card .lu-name{font-size:13.5px}.lu-card .lu-desc{font-size:11px}.levelup{gap:8px;padding:10px}.levelup .lu-sub{font-size:12px}}
+  .power-banner{position:absolute;left:50%;top:118px;transform:translateX(-50%);z-index:4;display:none;text-align:center;pointer-events:none;background:rgba(4,32,42,.92);border:2px solid #22d3ee;border-radius:6px;padding:10px 22px 12px;min-width:min(480px,88%)}
+  .power-banner.on{display:block;animation:powerpop .35s ease-out}
+  .power-banner .pb-big{font-family:"DotGothic16",monospace;font-size:clamp(22px,4.5vw,34px);color:#facc15;line-height:1.15}
+  .power-banner .pb-sub{color:#cffafe;font-size:13.5px;margin-top:4px;line-height:1.5}
+  .power-banner .pb-next{color:#7dd3fc;font-size:12px;margin-top:2px;font-family:"DotGothic16",monospace}
+  @keyframes powerpop{from{transform:translateX(-50%) scale(.86);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+  @media (prefers-reduced-motion: reduce){.power-banner.on{animation:none}}
+  .cbtn.stage-sel[aria-pressed="true"]{background:#facc15;border-color:#facc15;color:#221a02}
+  .stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:720px){.stage-grid{grid-template-columns:1fr}}
+  .stage-card{padding:16px}
+  .stage-card .s-no{font-family:"DotGothic16",monospace;font-size:12px;letter-spacing:.16em}
+  .stage-card h3{font-size:18px;margin:4px 0 2px}
+  .stage-card .s-theme{color:var(--muted);font-size:12.5px;margin:0 0 8px}
+  .stage-card p{font-size:13.5px;margin:6px 0;color:var(--ink)}
+  .stage-card .s-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .stage-card.s1 .s-no{color:var(--accent)}.stage-card.s2 .s-no{color:var(--red)}.stage-card.s3 .s-no{color:var(--magenta)}.stage-card.s4 .s-no{color:var(--teal)}.stage-card.s5 .s-no{color:var(--gold)}
+  .stage-card .s-play{margin-top:12px;background:var(--panel);border:2px solid var(--ink);border-radius:4px;font-family:"DotGothic16",monospace;font-size:13px;padding:7px 14px;color:var(--ink)}
+  .stage-card .s-play:hover{background:var(--ink);color:var(--bg)}
+  @media (prefers-reduced-motion: reduce){.warn.on{animation:none}}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px}
+  .controls .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .controls .grp + .grp{margin-left:auto}
+  .cbtn{background:#16223a;color:#dbe7f5;border:2px solid #33497a;border-radius:4px;font-family:"DotGothic16",monospace;font-size:14px;padding:7px 13px}
+  .cbtn:hover{background:#1e2f4f}
+  .cbtn.primary{background:#facc15;border-color:#facc15;color:#221a02}
+  .cbtn.spawn-a{border-color:#7f2d2d}.cbtn.spawn-b{border-color:#6d2160}.cbtn.spawn-c{border-color:#14532d}.cbtn.spawn-x{border-color:#92600a;color:#fde68a}
+  .cbtn[aria-pressed="true"]{background:#0e7490;border-color:#0e7490;color:#fff}
+  .keys{display:flex;flex-wrap:wrap;gap:6px 18px;color:#8fa5c0;font-size:12.5px;padding:10px 4px 2px;font-family:"DotGothic16",monospace}
+  kbd{background:#1c2942;border:1px solid #3b5175;border-bottom-width:3px;border-radius:4px;padding:0 6px;color:#e2ecfa;font-family:"DotGothic16",monospace;font-size:12px}
+  /* touch controls */
+  .touch{display:none;gap:10px;justify-content:space-between;padding-top:12px}
+  .touch .pad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:4px}
+  .touch button{background:#16223a;color:#dbe7f5;border:2px solid #33497a;border-radius:8px;font-size:18px;min-height:52px;touch-action:none;user-select:none;-webkit-user-select:none}
+  .touch .shot{align-self:center;width:84px;height:84px;border-radius:50%;background:#7f1d1d;border-color:#ef4444;font-family:"DotGothic16",monospace}
+  .touch .u{grid-area:1/2}.touch .l{grid-area:2/1}.touch .r{grid-area:2/3}.touch .d{grid-area:3/2}
+  @media (pointer:coarse){.touch{display:flex}}
+  /* ---------- sections ---------- */
+  section{margin-top:38px}
+  h2{font-family:"DotGothic16",monospace;font-weight:400;font-size:clamp(21px,3.4vw,28px);margin:0 0 6px}
+  .sec-lead{color:var(--muted);font-size:14px;margin:0 0 18px;max-width:720px}
+  .codex{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:720px){.codex{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .card.wide{grid-column:1/-1}
+  .card-head{display:flex;gap:16px;padding:16px 16px 8px;align-items:flex-start}
+  .sprite-box{background:#05070f;border-radius:6px;padding:10px;flex:0 0 auto;line-height:0}
+  .sprite-box canvas{image-rendering:pixelated;width:112px;height:112px}
+  .card.wide .sprite-box canvas{width:168px;height:124px}
+  .card h3{margin:0;font-size:19px;font-weight:900}
+  .card h3 .code{font-family:"DotGothic16",monospace;font-weight:400;font-size:13px;padding:2px 8px;border-radius:3px;color:#fff;margin-right:8px;vertical-align:2px}
+  .code.a{background:var(--red)}.code.b{background:var(--magenta)}.code.c{background:var(--teal)}.code.x{background:var(--gold)}.code.boss{background:#475569}
+  .role{color:var(--muted);font-size:13px;margin:2px 0 0}
+  .card-body{padding:0 16px 16px;font-size:14px}
+  .card-body p{margin:8px 0}
+  .stats{display:grid;gap:6px;margin:12px 0}
+  .stat{display:grid;grid-template-columns:76px 1fr 44px;gap:10px;align-items:center;font-size:12.5px}
+  .stat .bar{height:9px;background:var(--panel-2);border:1px solid var(--line)}
+  .stat .bar i{display:block;height:100%}
+  .stat .val{font-family:"DotGothic16",monospace;text-align:right}
+  .traj{background:var(--panel-2);border:1px dashed var(--line);border-radius:6px;padding:8px 10px;margin:10px 0}
+  .traj .cap{font-size:11.5px;color:var(--muted);font-family:"DotGothic16",monospace}
+  .drops{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{font-size:12px;border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:3px 10px}
+  .chip b{font-family:"DotGothic16",monospace;font-weight:400}
+  .dl{margin-top:12px;background:var(--panel);border:2px solid var(--ink);border-radius:4px;font-family:"DotGothic16",monospace;font-size:13px;padding:7px 14px;color:var(--ink)}
+  .dl:hover{background:var(--ink);color:var(--bg)}
+  /* params table */
+  .params{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel-2);font-family:"DotGothic16",monospace;font-weight:400;font-size:13px;white-space:nowrap}
+  td.num{font-family:"DotGothic16",monospace;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  @media (max-width:720px){
+    table,thead,tbody,tr,td{display:block}
+    thead{display:none}
+    tr{border-bottom:2px solid var(--line);padding:8px 0}
+    td{border-bottom:0;padding:4px 12px}
+    td::before{content:attr(data-h);display:inline-block;min-width:92px;color:var(--muted);font-size:12px;font-family:"DotGothic16",monospace}
+  }
+  .actions-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .actions-row .dl{margin-top:0}
+  footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+  footer a{color:var(--accent)}
+  .howto{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:720px){.howto{grid-template-columns:1fr}}
+  .howto .card{padding:16px}
+  .howto h3{font-family:"DotGothic16",monospace;font-weight:400;font-size:16px;margin:0 0 6px}
+  .howto p{margin:0;font-size:13.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <div class="intro">
+    <h1>敵キャラ <span class="hl">実装デモ</span></h1>
+    <span class="tag">2D横スクロールシューティング / 全5ステージ</span>
+    <p>企画書の敵仕様（5章・7章）に合わせて、ドット絵スプライトと敵AIをそのまま遊べる形で実装しました。全5ステージ構成で、ステージごとに敵の編成・背景・ボスの攻撃の組み合わせが変わります。下の画面で実際に戦いながら、各敵の動きを確認できます。</p>
+  </div>
+
+  <!-- ================= GAME ================= -->
+  <div class="game-panel" id="gamePanel">
+    <div class="hud" aria-live="off">
+      <span class="item"><span class="lbl">HP</span><span class="hpbar" id="hpbar"><i id="hpfill"></i></span><span id="hpnum">10</span></span>
+      <span class="item score-item"><span class="lbl">SCORE スコア</span><span id="score">000000</span></span>
+      <span class="item hiscore-item"><span class="lbl">HI-SCORE</span><span id="hiscore">000000</span></span>
+      <span class="item"><span class="lbl">◆ クリスタル</span><span id="crystals">0</span></span>
+      <span class="item"><span class="lbl">撃破</span><span id="kills">0</span></span>
+      <span class="item level-item" id="levelItem"><span class="lbl">LEVEL</span><span id="playerLevel">Lv.1</span><span class="lvlbar"><i id="lvfill"></i></span><span id="levelProg">◆ 0 / 15</span><span id="levelDesc">ショット×2</span></span>
+      <span class="bossbar" id="bossbar"><span class="lbl" style="color:#fca5a5">BOSS HP</span><span class="track"><i id="bossfill"></i></span><span class="bnum" id="bossnum"></span></span>
+      <span class="item"><span class="stage-dots" id="stageDots" aria-label="ステージ進行"><i class="now"></i><i></i><i></i><i></i><i></i></span></span>
+      <span class="stage-msg dot" id="stageMsg">STAGE 1 / 5</span>
+    </div>
+    <div class="screen-wrap">
+      <canvas id="game" width="960" height="540" aria-label="シューティングゲーム画面"></canvas>
+      <div class="ingame-score dot" id="ingameScore" aria-label="現在のスコア"><div class="cap">SCORE スコア</div><div class="val" id="ingameScoreVal">000000</div></div>
+      <div class="warn dot" id="warn">⚠ WARNING ⚠</div>
+      <div class="stage-banner" id="stageBanner" aria-hidden="true"><div><div class="sb-big dot" id="sbBig">STAGE <span>1</span></div><div class="sb-sub" id="sbSub">オービタル・フロンティア</div><div class="sb-boss dot" id="sbBoss">BOSS：ガーディアン・レヴィア</div></div></div>
+      <div class="power-banner" id="powerBanner" aria-live="polite"><div class="pb-big dot" id="pbBig">POWER UP!</div><div class="pb-sub" id="pbSub"></div><div class="pb-next" id="pbNext"></div></div>
+      <div class="levelup" id="levelup" role="dialog" aria-label="レベルアップ強化選択">
+        <div><div class="lu-big dot">LEVEL UP!</div><div class="lu-sub" id="luSub">強化を1つ選んでください</div></div>
+        <div class="lu-cards" id="luCards"></div>
+        <div class="lu-hint">クリック／タップ、またはキー 1・2・3 で選択（選ぶまでゲームは停止します）</div>
+      </div>
+      <div class="overlay" id="overlay">
+        <div>
+          <div class="big dot" id="ovTitle">GAME OVER</div>
+          <div class="ov-score dot" id="ovScore"><small>SCORE スコア</small><span id="ovScoreVal">000000</span></div>
+          <div class="sub" id="ovSub"></div>
+          <button id="ovBtn" type="button">もう一度プレイ</button>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="grp">
+        <button class="cbtn primary" id="btnPause" type="button">⏸ 一時停止</button>
+        <button class="cbtn" id="btnReset" type="button">↺ リスタート</button>
+        <button class="cbtn" id="btnAuto" type="button" aria-pressed="true">自動出現 ON</button>
+        <button class="cbtn" id="btnSound" type="button" aria-pressed="false">サウンド OFF</button>
+      </div>
+      <div class="grp" role="group" aria-label="ステージ選択">
+        <button class="cbtn stage-sel" data-stage="1" type="button" aria-pressed="true">STAGE 1</button>
+        <button class="cbtn stage-sel" data-stage="2" type="button" aria-pressed="false">STAGE 2</button>
+        <button class="cbtn stage-sel" data-stage="3" type="button" aria-pressed="false">STAGE 3</button>
+        <button class="cbtn stage-sel" data-stage="4" type="button" aria-pressed="false">STAGE 4</button>
+        <button class="cbtn stage-sel" data-stage="5" type="button" aria-pressed="false">STAGE 5</button>
+      </div>
+      <div class="grp" role="group" aria-label="敵を出現させる">
+        <button class="cbtn spawn-a" data-spawn="A" type="button">＋ A 直進型</button>
+        <button class="cbtn spawn-b" data-spawn="B" type="button">＋ B 射撃型</button>
+        <button class="cbtn spawn-c" data-spawn="C" type="button">＋ C 蛇行型</button>
+        <button class="cbtn spawn-x" data-spawn="X" type="button">＋ ボーナス敵</button>
+        <button class="cbtn" data-spawn="BOSS" type="button" style="border-color:#7f2d3a;color:#fca5a5">＋ ボス</button>
+      </div>
+    </div>
+    <div class="touch" aria-hidden="false">
+      <div class="pad">
+        <button class="u" data-k="up" type="button" aria-label="上">▲</button>
+        <button class="l" data-k="left" type="button" aria-label="左">◀</button>
+        <button class="r" data-k="right" type="button" aria-label="右">▶</button>
+        <button class="d" data-k="down" type="button" aria-label="下">▼</button>
+      </div>
+      <button class="shot" data-k="shot" type="button">SHOT</button>
+    </div>
+    <div class="keys">
+      <span><kbd>WASD</kbd>/<kbd>←↑↓→</kbd> 移動</span>
+      <span><kbd>Space</kbd> ショット（押しっぱなし連射）</span>
+      <span>レベルアップ時 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 強化を選択</span>
+      <span><kbd>P</kbd> 一時停止</span>
+      <span>スマホ: 画面のボタンでも操作できます</span>
+    </div>
+  </div>
+
+  <section aria-label="遊び方">
+    <div class="howto">
+      <div class="card">
+        <h3>1. 敵を見分ける</h3>
+        <p>赤はまっすぐ突っ込んでくる直進型、緑は上下に揺れる蛇行型、紫は止まって狙ってくる射撃型。色と形で優先順位を判断するのが企画書の攻略ポイントです。</p>
+      </div>
+      <div class="card">
+        <h3>2. クリスタルでレベルアップ</h3>
+        <p>敵を倒して落とすクリスタルを集めるとレベルアップします（最初は15個、以降は必要数が+10ずつ増加）。レベルアップ時はゲームが止まり、ランダムで提示される3つの強化から1つを選べます。ショットは1発ずつ増え、巨大ビーム砲やクリスタル効率アップなど全12種の候補があります。金色のボーナス敵はクリスタル×10を落とす近道です。強化は次のステージにも引き継がれます（リトライでリセット）。</p>
+      </div>
+      <div class="card">
+        <h3>3. ボスを倒して次ステージへ</h3>
+        <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します。全5ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="自機強化システム">
+    <h2>自機強化 — クリスタルを集めてレベルアップ（ランダム3択）</h2>
+    <p class="sec-lead">敵を倒すと落とすクリスタルを集めるとレベルアップします。必要数は Lv.1→2 が15個、以降はレベルが上がるごとに+10個（25個、35個、45個…）です。レベルアップするとゲームが一時停止し、下の12種からランダムに提示される3つの強化候補のうち1つを選べます。余ったクリスタルは次のレベルに繰り越されます。金色のボーナス敵はクリスタル×10を落とすのでレベルアップの近道です。HUDの「LEVEL」バーで進み具合がいつでも確認できます。</p>
+    <div class="params">
+      <table>
+        <thead><tr><th>強化候補</th><th>効果</th><th>取得上限</th></tr></thead>
+        <tbody>
+          <tr><td data-h="強化候補"><b>ショット +1</b></td><td data-h="効果">平行ショットの数が1発だけ増えます（2発→3発→4発…）。いきなり跳ね上がらず、少しずつ火力が伸びます</td><td data-h="取得上限" class="num">5回（最大7発）</td></tr>
+          <tr><td data-h="強化候補"><b>攻撃力アップ</b></td><td data-h="効果">全ショットのダメージが+1。硬い敵やボスに効きます</td><td data-h="取得上限" class="num">4回</td></tr>
+          <tr><td data-h="強化候補"><b>連射速度アップ</b></td><td data-h="効果">ショットの間隔が約15%短くなり、手数が増えます</td><td data-h="取得上限" class="num">4回</td></tr>
+          <tr><td data-h="強化候補"><b>拡散ショット追加</b></td><td data-h="効果">上下斜めの拡散弾が1組増えます。蛇行型や上下の敵をカバーできます</td><td data-h="取得上限" class="num">2回</td></tr>
+          <tr><td data-h="強化候補"><b>太ビーム・コア</b></td><td data-h="効果">中央に太いビーム砲を搭載（幅広・ダメージ大）。2回目でさらに巨大化して貫通します</td><td data-h="取得上限" class="num">2回</td></tr>
+          <tr><td data-h="強化候補"><b>巨大ビーム砲</b></td><td data-h="効果">一定時間ごとに画面を貫く巨大ビーム（ダメージ12）を自動発射。初回は約12秒ごと、重ねると間隔短縮＋威力アップ。自機の上にチャージゲージが出ます</td><td data-h="取得上限" class="num">4回</td></tr>
+          <tr><td data-h="強化候補"><b>貫通弾</b></td><td data-h="効果">通常ショットが敵を貫通し、編隊をまとめて倒せるようになります</td><td data-h="取得上限" class="num">1回</td></tr>
+          <tr><td data-h="強化候補"><b>クリスタル磁石</b></td><td data-h="効果">クリスタルを引き寄せる範囲が+90px広がり、取り逃しが減ります</td><td data-h="取得上限" class="num">3回</td></tr>
+          <tr><td data-h="強化候補"><b>クリスタル効率アップ</b></td><td data-h="効果">クリスタル1個の価値が+50%（100%→150%→200%→250%）。レベルアップが速くなります</td><td data-h="取得上限" class="num">3回</td></tr>
+          <tr><td data-h="強化候補"><b>移動速度アップ</b></td><td data-h="効果">自機の移動速度が約10%上がり、回避がしやすくなります</td><td data-h="取得上限" class="num">3回</td></tr>
+          <tr><td data-h="強化候補"><b>最大HPアップ</b></td><td data-h="効果">最大HP +2 ＆ その場で2回復。HPバーの上限自体が伸びます</td><td data-h="取得上限" class="num">無制限</td></tr>
+          <tr><td data-h="強化候補"><b>緊急修理</b></td><td data-h="効果">その場でHPを5回復。ピンチの立て直しに</td><td data-h="取得上限" class="num">無制限</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-label="ステージ一覧">
+    <h2>全5ステージ</h2>
+    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12、ステージ5で×18になります。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型が1回の射撃で撃つ弾の数はステージ数に比例し、ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発になります。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。</p>
+    <div class="stage-grid">
+      <div class="card stage-card s1">
+        <div class="s-no">STAGE 1</div>
+        <h3>オービタル・フロンティア</h3>
+        <p class="s-theme">地球軌道上 ― 基本を学ぶ宙域</p>
+        <p>A直進型とC蛇行型が中心。中盤からB射撃型が混ざります。ボスは通常弾・ミサイル3連・突進の基本セットです。敵HPは従来の2倍（×2：A 6／B 10／C 6／ボーナス敵 60）で、B射撃型の弾は1回の射撃で1発です。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>450</b></span><span class="chip">敵HP <b>×2</b></span><span class="chip">Bの弾 <b>1発</b></span><span class="chip">難易度 <b>★☆☆</b></span></div>
+        <button class="s-play" type="button" data-goto-stage="1">▶ このステージから遊ぶ</button>
+      </div>
+      <div class="card stage-card s2">
+        <div class="s-no">STAGE 2</div>
+        <h3>レッド・ネビュラ</h3>
+        <p class="s-theme">赤い星雲地帯 ― 射撃型が増える宙域</p>
+        <p>出現ペースが上がり、B射撃型の比率と敵の速度がアップ。通常敵・ボーナス敵のHPは従来のステージ2分の2倍（合計×4：A 12／B 20／C 12／ボーナス敵 120）になります。B射撃型の弾は1回の射撃で2発に増えます。ボスは扇状弾が7方向に広がり、ミサイル4連＋2連続突進に変わります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>630</b></span><span class="chip">敵HP <b>×4</b></span><span class="chip">Bの弾 <b>2発</b></span><span class="chip">難易度 <b>★★☆</b></span></div>
+        <button class="s-play" type="button" data-goto-stage="2">▶ このステージから遊ぶ</button>
+      </div>
+      <div class="card stage-card s3">
+        <div class="s-no">STAGE 3</div>
+        <h3>アビス・ディープ</h3>
+        <p class="s-theme">深淵宙域 ― 最終決戦</p>
+        <p>出現が速く、編隊も厚いステージ。通常敵・ボーナス敵のHPは従来のステージ3分の2倍（合計×6：A 18／B 36／C 18／ボーナス敵 240）。B射撃型の弾は1回の射撃で3発に増えます。ボスは扇状弾9方向とミサイル5連を同時に放ち、突進の追尾も強くなります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>840</b></span><span class="chip">敵HP <b>×6</b></span><span class="chip">Bの弾 <b>3発</b></span><span class="chip">難易度 <b>★★★</b></span></div>
+        <button class="s-play" type="button" data-goto-stage="3">▶ このステージから遊ぶ</button>
+      </div>
+      <div class="card stage-card s4">
+        <div class="s-no">STAGE 4</div>
+        <h3>イベント・ホライズン</h3>
+        <p class="s-theme">ブラックホール近傍 ― 重力が歪む宙域</p>
+        <p>出現ペースと敵の速度がさらに上がります。通常敵・ボーナス敵のHPは従来のステージ4分の2倍（合計×12：A 36／B 72／C 36／ボーナス敵 480）。B射撃型の弾は1回の射撃で4発に増えます。ボスは扇状弾11方向・ミサイル6連を放ち、突進も速くなります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1120</b></span><span class="chip">敵HP <b>×12</b></span><span class="chip">Bの弾 <b>4発</b></span><span class="chip">難易度 <b>★★★★☆</b></span></div>
+        <button class="s-play" type="button" data-goto-stage="4">▶ このステージから遊ぶ</button>
+      </div>
+      <div class="card stage-card s5">
+        <div class="s-no">STAGE 5</div>
+        <h3>ギャラクティック・コア</h3>
+        <p class="s-theme">銀河中心核 ― 真の最終決戦</p>
+        <p>最も出現が速く、編隊も厚い最終ステージ。通常敵・ボーナス敵のHPは従来のステージ5分の2倍（合計×18：A 54／B 108／C 54／ボーナス敵 720）。B射撃型の弾は1回の射撃で5発に増えます。ボスは扇状弾13方向＋ミサイル7連の複合攻撃に加え、3連続突進で襲いかかります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1680</b></span><span class="chip">敵HP <b>×18</b></span><span class="chip">Bの弾 <b>5発</b></span><span class="chip">難易度 <b>★★★★★</b></span></div>
+        <button class="s-play" type="button" data-goto-stage="5">▶ このステージから遊ぶ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CODEX ================= -->
+  <section aria-label="敵キャラ図鑑">
+    <h2>敵キャラ図鑑 — ドット絵 &amp; 実装仕様</h2>
+    <p class="sec-lead">スプライトはすべてコード上のピクセルマップから描画したドット絵です。各カードのボタンから、ゲーム素材として使える拡大PNGをダウンロードできます。</p>
+    <div class="codex" id="codex"></div>
+  </section>
+
+  <!-- ================= PARAMS ================= -->
+  <section aria-label="実装パラメータ">
+    <h2>実装パラメータ（全5ステージ・仮調整値）</h2>
+    <p class="sec-lead">このデモで実際に使っている数値です。下表のHPは基準値で、通常敵・ボーナス敵のHPには従来の2倍となる倍率がかかります（ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18）。実際のHPは、ステージ1：A 6／B 10／C 6／ボーナス敵 60、ステージ2：A 12／B 20／C 12／ボーナス敵 120、ステージ3：A 18／B 36／C 18／ボーナス敵 240、ステージ4：A 36／B 72／C 36／ボーナス敵 480、ステージ5：A 54／B 108／C 54／ボーナス敵 720 です。ボスHPも従来の2倍でステージ別設定（450／630／840／1120／1680）です。B射撃型の弾数はステージ数に比例します（ステージ1で1発、2で2発、3で3発、4で4発、5で5発）。そのほか速度・出現間隔とボス攻撃の組み合わせにもステージ倍率がかかります。JSONで書き出してチームの実装に渡せます。</p>
+    <div class="params">
+      <table id="paramTable">
+        <thead><tr><th>敵ID</th><th>HP</th><th>移動速度</th><th>射撃</th><th>接触ダメ</th><th>スコア</th><th>ドロップ</th><th>出現</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="actions-row">
+      <button class="dl" id="dlJson" type="button">⤓ 敵パラメータJSONをダウンロード</button>
+    </div>
+  </section>
+
+  <footer>
+    仕様の出典：<a href="https://docs.google.com/document/d/1QqdWHOfD0pzHZnsm4wUrhZGHcr3FWuLtSf267gKR_xc/edit?tab=t.0#heading=h.i7l5ybeyghcv" target="_blank" rel="noopener">2D横スクロールシューティングゲーム｜企画書（チーム制作・初稿）</a> 5章「敵キャラクター」・7章「ボス戦の仕様」。数値はすべて仮調整値で、プレイテスト後に見直す前提です。
+  </footer>
+</main>
+
+<script>
+"use strict";
+/* ============================================================
+   スプライト定義（ドット絵ピクセルマップ）
+   1文字 = 1ドット。" . " は透明。敵は左向き（進行方向）、自機は右向き。
+   ============================================================ */
+var PAL = {
+  K:"#101623", W:"#f4f8ff", w:"#c9d6ea",
+  B:"#2563eb", C:"#38bdf8", Y:"#fde047", O:"#fb923c", F:"#ef4444",
+  R:"#dc2626", D:"#7f1d1d", r:"#fca5a5",
+  P:"#c026d3", p:"#701a75", M:"#f0abfc",
+  G:"#16a34a", T:"#2dd4bf", g:"#bbf7d0",
+  A:"#eab308", a:"#92600a", E:"#22d3ee",
+  S:"#94a3b8", s:"#475569", d:"#26314a"
+};
+var SPRITES = {
+  player: { scale: 3, map: [
+    "..................",
+    "....B.............",
+    "....BB............",
+    "....BCB...........",
+    "....BCCB..........",
+    "....BCCCB.........",
+    "F...BCCCCB..Y.....",
+    "FFBBBBCCCCBWWWWW..",
+    "FFBBBBCCCCBWWWWW..",
+    "F...BCCCCB..Y.....",
+    "....BCCCB.........",
+    "....BCCB..........",
+    "....BCB...........",
+    "....BB............",
+    "....B............."
+  ]},
+  A: { scale: 3, map: [
+    "..................",
+    ".........RR.......",
+    "........RRRR......",
+    ".......RWRRR......",
+    "K.....RRWRRRR.....",
+    "KK...RRRRRRRRR....",
+    "KWWKRRDDDDRRRRRO..",
+    "KWWKRRDDDDRRRRRFF.",
+    "KWWKRRDDDDRRRRRO..",
+    "KK...RRRRRRRRR....",
+    "K.....RRWRRRR.....",
+    ".......RWRRR......",
+    "........RRRR......",
+    ".........RR......."
+  ]},
+  B: { scale: 3, map: [
+    "......WWWW........",
+    ".....WYYYYW.......",
+    ".....PPPPPP.......",
+    "....PPPPPPPP......",
+    "...PPMPPPPMPP.....",
+    "..PPPPPPPPPPPP....",
+    ".KPPPPPPPPPPPP....",
+    "KKKPPWPPPPPPPPP...",
+    "KKKPPPPPPPPPPPP...",
+    ".KPPPPPPPPPPPP....",
+    "..PPPPPPPPPPPP....",
+    "...PPpPPPPpPP.....",
+    "....PP....PP......",
+    ".....P......P....."
+  ]},
+  C: { scale: 3, map: [
+    "....TT............",
+    "...TGGT...........",
+    "..TGGGGT..........",
+    ".TGGGGGGT.........",
+    "KTGGGGGGGT........",
+    "KK.TGGGGGGGGG.....",
+    "KWWKGGGGGGGGGT.O..",
+    "KWWKGGGGGGGGGTTFF.",
+    "KWWKGGGGGGGGGT.O..",
+    "KK.TGGGGGGGGG.....",
+    "KTGGGGGGGT........",
+    ".TGGGGGGT.........",
+    "..TGGGGT..........",
+    "...TGGT...........",
+    "....TT............"
+  ]},
+  X: { scale: 3, map: [
+    ".........WWWW.........",
+    "........WEEEEW........",
+    ".......AAAAAAAA.......",
+    "......AAAAAAAAAA......",
+    ".....AAAWAAAAWAAA.....",
+    "....AAAAAAAAAAAAAA....",
+    "...AAAAAAAAAAAAAAAA...",
+    "..KAAAAAAAAAAAAAAAA...",
+    ".KKAAAAWWAAAAWWAAAA...",
+    "KWWKAAAAAAAAAAAAAAAOO.",
+    "KWWKAAAAAEEEEAAAAAAFF.",
+    "KWWKAAAAAAAAAAAAAAAOO.",
+    ".KKAAAAWWAAAAWWAAAA...",
+    "..KAAAAAAAAAAAAAAAA...",
+    "...AAAAAAAAAAAAAAAA...",
+    "....AA.AAAAAA.AA......",
+    ".....A...AA...A......."
+  ]},
+  BOSS: { scale: 3, map: [
+    "..........SSSS............",
+    ".........SSSSSS...........",
+    "........SSWWWWSS..........",
+    ".......SSSSSSSSSS.........",
+    "......SSRRRRRRRRSS........",
+    ".....SSSSSSSSSSSSSS.......",
+    "....SSSSSSSSSSSSSSSS......",
+    "...SSddSSSSSSSSddSSS......",
+    "..KSSSSSSSSSSSSSSSSSS.....",
+    ".KKSSSSRRSSSSRRSSSSSS.....",
+    "KKKSSSSSSSSSSSSSSSSSS.OO..",
+    "KKKSSYYSSSSSSSSYYSSSS.FF..",
+    "KKKSSSSSSSSSSSSSSSSSS.OO..",
+    ".KKSSSSRRSSSSRRSSSSSS.....",
+    "..KSSSSSSSSSSSSSSSSSS.....",
+    "...SSddSSSSSSSSddSSS......",
+    "....SSSSSSSSSSSSSSSS......",
+    ".....SS..SSSS..SS........."
+  ]},
+  crystal: { scale: 2, map: [
+    "...EE...",
+    "..EWWE..",
+    ".EWWWWE.",
+    "EWWWWWW E".replace(" ",""),
+    ".EWWWWE.",
+    "..EWWE..",
+    "...EE..."
+  ]},
+  repair: { scale: 2, map: [
+    "..KKKK..",
+    ".KWWWWK.",
+    "KWKGGKWK",
+    "KWGGGGWK",
+    "KWKGGKWK",
+    ".KWWWWK.",
+    "..KKKK.."
+  ]}
+};
+function spriteCanvas(key, scale){
+  var sp = SPRITES[key], c = document.createElement("canvas");
+  var w = 0; sp.map.forEach(function(r){ w = Math.max(w, r.length); });
+  c.width = w * scale; c.height = sp.map.length * scale;
+  var x = c.getContext("2d");
+  sp.map.forEach(function(row, j){
+    for (var i = 0; i < row.length; i++){
+      var col = PAL[row[i]]; if (!col) continue;
+      x.fillStyle = col; x.fillRect(i * scale, j * scale, scale, scale);
+    }
+  });
+  return c;
+}
+var IMG = {};
+Object.keys(SPRITES).forEach(function(k){ IMG[k] = spriteCanvas(k, SPRITES[k].scale); });
+function drawSprite(ctx, key, cx, cy, flip){
+  var img = IMG[key];
+  ctx.save();
+  if (flip){ ctx.translate(cx, cy); ctx.scale(-1, 1); ctx.drawImage(img, -img.width/2, -img.height/2); }
+  else ctx.drawImage(img, cx - img.width/2, cy - img.height/2);
+  ctx.restore();
+}
+
+/* ============================================================
+   敵パラメータ（企画書5章・7章準拠／仮調整値）
+   ============================================================ */
+var ENEMIES = {
+  A: { name:"ダート・ファイター", role:"直進型 ― 基本を学ぶ敵", hp:3, speed:175, fire:"なし", contact:1, score:100, drop:"クリスタル×1", spawn:"序盤から常時",
+       desc:"画面右から現れて、そのまま左へまっすぐ突っ込んでくる最も基本の敵。回避と通常ショットの当て方を学ぶための存在で、体当たりだけが脅威です。編隊で出すと弾幕の壁になります。",
+       stats:{ "HP":30, "速度":80, "火力":15, "耐久":25 } },
+  B: { name:"ガンナー・オクト", role:"射撃型 ― 位置取りを考えさせる敵", hp:5, speed:95, fire:"狙撃弾×ステージ数（S1:1発／S2:2発／S3:3発／S4:4発／S5:5発）/ 2.0秒", contact:1, score:200, drop:"クリスタル×2、修理アイテム（HP+2、35%でドロップ）", spawn:"中盤から",
+       desc:"画面の右寄りまで進むと、その場でホバリングしながら一定間隔でプレイヤーを狙って弾を撃ちます。1回の射撃で撃つ弾の数はステージ数に比例します（ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発を扇状に同時発射）。放っておくと弾が溜まるので、優先して倒す判断をさせる敵です。撃つ直前に砲口が光って予兆が分かります。",
+       stats:{ "HP":45, "速度":40, "火力":70, "耐久":45 } },
+  C: { name:"ウェーブ・サーペント", role:"蛇行型 ― 動く標的を狙う練習", hp:3, speed:135, fire:"なし", contact:1, score:150, drop:"クリスタル×1", spawn:"序盤から",
+       desc:"上下にサインカーブを描きながら進む敵。直進型と同じHPでも、軌道が読めない分だけ当てにくく、避けにくい。波の位相をずらして複数出すと、画面に「縫うような」動きの壁ができます。",
+       stats:{ "HP":30, "速度":60, "火力":15, "耐久":25 } },
+  X: { name:"ゴールド・キャリアー", role:"高耐久のボーナス敵 ― クリスタル大量ドロップ", hp:30, speed:46, fire:"なし", contact:1, score:1000, drop:"クリスタル×10", spawn:"約35秒ごと",
+       desc:"一般の敵よりはるかに硬い大型輸送機。ゆっくり左へ進み、一定時間で画面外へ去ってしまいます。倒すとクリスタル×10を落とすので、クリスタルを一定数集めるとレベルアップして強化をランダム3択から選べる仕組みの大きな近道になります。倒さなくてもステージは進むので、「余裕があれば狙う」追加報酬として配置するのが企画書の方針です。",
+       stats:{ "HP":95, "速度":20, "火力":10, "耐久":95 } },
+  BOSS: { name:"ガーディアン・レヴィア", role:"全ステージ ボス ― 3種の攻撃（ステージで組み合わせ変化）", hp:450, speed:0, fire:"通常弾／ミサイル／突進", contact:2, score:5000, drop:"―（ステージクリア）", spawn:"60秒後 or 手動出現",
+       desc:"画面右に陣取り、①扇状の通常弾 ②予告つき連続ミサイル ③後退して光ってから突進、の3攻撃を繰り返します。ステージが進むと弾の数も増えます（ステージ1：扇状5方向・ミサイル3連／ステージ2：扇状7方向・ミサイル4連・2連続突進／ステージ3：扇状9方向＋ミサイル5連の同時攻撃／ステージ4：扇状11方向・ミサイル6連／ステージ5：扇状13方向＋ミサイル7連の同時攻撃・3連続突進）。HPが減ると攻撃間隔が短くなりますが、すべての攻撃に予兆があり、通常移動だけで回避できる調整です。②のミサイルはボスから十分に離れると黄色く点滅し、その後はボス自身にも当たるようになります（1発7ダメージ＋300点）。ミサイルを引きつけてボスへ近づき、直前でかわせば誘導してぶつけられます。追尾は約3秒で切れ、その後はまっすぐ飛びます。",
+       stats:{ "HP":100, "速度":30, "火力":90, "耐久":100 } }
+};
+
+/* ============================================================
+   ステージ定義（全5ステージ）
+   ============================================================ */
+var STAGES = [
+  { id:1, theme:"オービタル・フロンティア", duration:60, spawnMin:0.95, spawnVar:0.7, doubleChance:0.30, speedMul:1.0, hpMul:2.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:1, bossName:"ガーディアン・レヴィア", bossHp:450, bossScore:5000, fanCount:5, fanSpeed:250, missileCount:3, chargeRepeat:1, planet:"#101c33", planet2:"#16283f", nebula:null },
+  { id:2, theme:"レッド・ネビュラ", duration:60, spawnMin:0.78, spawnVar:0.55, doubleChance:0.42, speedMul:1.12, hpMul:4.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:2, bossName:"ブレイズ・ガーディアン", bossHp:630, bossScore:7000, fanCount:7, fanSpeed:272, missileCount:4, chargeRepeat:2, planet:"#33161a", planet2:"#47202a", nebula:"rgba(185,28,28,.10)" },
+  { id:3, theme:"アビス・ディープ", duration:60, spawnMin:0.62, spawnVar:0.45, doubleChance:0.55, speedMul:1.24, hpMul:6.0, hpBonus:{A:0,B:6,C:0,X:60}, bBullets:3, bossName:"アビス・レヴィア", bossHp:840, bossScore:10000, fanCount:9, fanSpeed:295, missileCount:5, chargeRepeat:2, planet:"#241233", planet2:"#331a4a", nebula:"rgba(147,51,234,.10)" },
+  { id:4, theme:"イベント・ホライズン", duration:60, spawnMin:0.55, spawnVar:0.40, doubleChance:0.62, speedMul:1.32, hpMul:12.0, hpBonus:{A:0,B:12,C:0,X:120}, bBullets:4, bossName:"ヴォイド・レヴィア", bossHp:1120, bossScore:14000, fanCount:11, fanSpeed:310, missileCount:6, chargeRepeat:2, planet:"#0f2a2e", planet2:"#17403f", nebula:"rgba(45,212,191,.08)" },
+  { id:5, theme:"ギャラクティック・コア", duration:60, spawnMin:0.48, spawnVar:0.35, doubleChance:0.70, speedMul:1.40, hpMul:18.0, hpBonus:{A:0,B:18,C:0,X:180}, bBullets:5, bossName:"カオス・レヴィア", bossHp:1680, bossScore:20000, fanCount:13, fanSpeed:325, missileCount:7, chargeRepeat:3, planet:"#33101f", planet2:"#4a1730", nebula:"rgba(234,179,8,.10)" }
+];
+function stageCfg(){ return STAGES[(G && G.stage ? G.stage : 1) - 1]; }
+
+/* ============================================================
+   ゲーム本体
+   ============================================================ */
+var W = 960, H = 540;
+var cv = document.getElementById("game"), ctx = cv.getContext("2d");
+ctx.imageSmoothingEnabled = false;
+
+var keys = {};
+var soundOn = false, AC = null;
+function beep(freq, dur, type, vol){
+  if (!soundOn) return;
+  try{
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === "suspended") AC.resume();
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = type || "square"; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol || 0.05, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
+  }catch(e){}
+}
+
+var stars = [];
+for (var si = 0; si < 110; si++) stars.push({ x: Math.random()*W, y: Math.random()*H, s: Math.random()<0.7?2:3, v: 12 + Math.random()*55 });
+
+var G;
+var hiScore = 0;
+function fmtScore(n){ return String(Math.max(0, Math.floor(n))).padStart(6, "0"); }
+function addScore(points, x, y){
+  G.score += points;
+  if (G.score > hiScore) hiScore = G.score;
+  if (x !== undefined && y !== undefined && points > 0)
+    G.popups.push({ x: x, y: y, vy: -46, life: 0.9, max: 0.9, text: "+" + points });
+  updateHUD();
+}
+function updateStageUI(){
+  var n = G.stage || 1;
+  document.getElementById("stageMsg").textContent = G.bossRef ? ("BOSS — " + stageCfg().bossName) : ("STAGE " + n + " / " + STAGES.length);
+  var dots = document.getElementById("stageDots");
+  if (dots){
+    var kids = dots.children;
+    for (var i = 0; i < kids.length; i++){
+      kids[i].className = i < n - 1 ? "done" : (i === n - 1 ? "now" : "");
+    }
+  }
+  document.querySelectorAll("[data-stage]").forEach(function(b){
+    b.setAttribute("aria-pressed", String(parseInt(b.getAttribute("data-stage"), 10) === n));
+  });
+}
+/* レベル式：クリスタルを一定数集めるとレベルアップ。必要数は15個から+10ずつ増える */
+function levelCost(lv){ return 15 + (lv - 1) * 10; }
+/* 強化候補プール（全12種）。レベルアップ時にここからランダムで3つ提示する */
+var UPGRADES = [
+  { id:"shot", name:"ショット +1", max:5,
+    desc:function(p){ return "平行ショットの数が1発だけ増えます（" + p.shotCount + "発 → " + (p.shotCount + 1) + "発）。"; },
+    apply:function(p){ p.shotCount += 1; } },
+  { id:"damage", name:"攻撃力アップ", max:4,
+    desc:function(p){ return "全ショットのダメージが+1（" + p.shotDamage + " → " + (p.shotDamage + 1) + "）。硬い敵やボスに効きます。"; },
+    apply:function(p){ p.shotDamage += 1; } },
+  { id:"rapid", name:"連射速度アップ", max:4,
+    desc:function(p){ return "ショットの間隔が約15%短くなり、手数が増えます。"; },
+    apply:function(p){ p.fireMul *= 0.85; } },
+  { id:"spread", name:"拡散ショット追加", max:2,
+    desc:function(p){ return "上下斜めの拡散弾が1組増えます。蛇行型や上下の敵をカバーできます。"; },
+    apply:function(p){ p.spreadPairs += 1; } },
+  { id:"beam", name:"太ビーム・コア", max:2,
+    desc:function(p){ return p.beamCore >= 1 ? "中央ビームがさらに巨大化し、貫通するようになります。" : "中央に太いビーム砲を搭載。幅広でダメージの高いビームを撃ちます。"; },
+    apply:function(p){ p.beamCore += 1; } },
+  { id:"giga", name:"巨大ビーム砲", max:4,
+    desc:function(p){ return p.gigaInterval > 0 ? "巨大ビームの間隔が短くなり威力も上がります（現在 " + p.gigaInterval + "秒ごと／ダメージ" + p.gigaDamage + "）。" : "一定時間ごとに画面を貫く巨大ビーム（ダメージ12）を自動で放ちます。初回は約12秒ごと。"; },
+    apply:function(p){ if (p.gigaInterval > 0){ p.gigaInterval = Math.max(5, Math.round((p.gigaInterval - 2.5) * 10) / 10); p.gigaDamage += 8; } else { p.gigaInterval = 12; p.gigaDamage = 12; p.gigaTimer = 4; } } },
+  { id:"pierce", name:"貫通弾", max:1,
+    desc:function(p){ return "通常ショットが敵を貫通するようになります。編隊をまとめて倒せます。"; },
+    apply:function(p){ p.pierce = true; } },
+  { id:"magnet", name:"クリスタル磁石", max:3,
+    desc:function(p){ return "クリスタルを引き寄せる範囲が広がります（現在 半径" + Math.round(p.magnet) + "px）。取り逃しが減ります。"; },
+    apply:function(p){ p.magnet += 90; } },
+  { id:"eff", name:"クリスタル効率アップ", max:3,
+    desc:function(p){ return "クリスタル1個の価値が+50%（現在 " + Math.round(p.crystalMul * 100) + "% → " + Math.round((p.crystalMul + 0.5) * 100) + "%）。レベルアップが速くなります。"; },
+    apply:function(p){ p.crystalMul += 0.5; } },
+  { id:"speed", name:"移動速度アップ", max:3,
+    desc:function(p){ return "自機の移動速度が約10%上がります。回避がしやすくなります。"; },
+    apply:function(p){ p.moveMul *= 1.1; } },
+  { id:"hp", name:"最大HPアップ", max:99,
+    desc:function(p){ return "最大HPが+2され、その場で2回復します（現在 最大" + p.maxHp + "）。"; },
+    apply:function(p){ p.maxHp += 2; p.hp = Math.min(p.maxHp, p.hp + 2); } },
+  { id:"repair", name:"緊急修理", max:99,
+    desc:function(p){ return "その場でHPを5回復します。ピンチの立て直しに。"; },
+    apply:function(p){ p.hp = Math.min(p.maxHp, p.hp + 5); } }
+];
+function pickUpgrades(){
+  var p = G.player;
+  var pool = UPGRADES.filter(function(u){ return (p.stacks[u.id] || 0) < u.max; });
+  for (var i = pool.length - 1; i > 0; i--){ var j = (Math.random() * (i + 1)) | 0; var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
+  return pool.slice(0, 3);
+}
+var powerBannerTimer = null;
+function showPowerBanner(big, sub, next){
+  document.getElementById("pbBig").textContent = big;
+  document.getElementById("pbSub").textContent = sub;
+  document.getElementById("pbNext").textContent = next || "";
+  var el = document.getElementById("powerBanner");
+  el.classList.add("on");
+  if (powerBannerTimer) clearTimeout(powerBannerTimer);
+  powerBannerTimer = setTimeout(function(){ el.classList.remove("on"); }, 2800);
+}
+function maybeLevelUp(){
+  if (!G || G.state !== "playing") return;
+  var p = G.player, cost = levelCost(p.level || 1);
+  if ((G.crystalProgress || 0) >= cost){
+    G.crystalProgress -= cost;
+    p.level = (p.level || 1) + 1;
+    openLevelUp();
+  }
+}
+function openLevelUp(){
+  var p = G.player;
+  G.state = "levelup";
+  G.luOptions = pickUpgrades();
+  document.getElementById("luSub").textContent = "Lv." + p.level + " になりました！ 強化を1つ選んでください（余ったクリスタルは次のレベルに繰り越されます）";
+  var wrap = document.getElementById("luCards");
+  wrap.innerHTML = "";
+  G.luOptions.forEach(function(u, idx){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "lu-card";
+    var st = p.stacks[u.id] || 0;
+    b.innerHTML = '<span class="lu-key dot">' + (idx + 1) + '</span><span class="lu-name">' + u.name + '</span><span class="lu-desc">' + u.desc(p) + '</span><span class="lu-stack dot">' + (st > 0 ? "所持 " + st + " / " + (u.max >= 99 ? "∞" : u.max) : "NEW") + '</span>';
+    b.addEventListener("click", function(){ chooseUpgrade(idx); });
+    wrap.appendChild(b);
+  });
+  document.getElementById("levelup").classList.add("on");
+  beep(523, 0.12, "square", 0.06); setTimeout(function(){ beep(784, 0.16, "square", 0.06); }, 110);
+  updateHUD();
+}
+function chooseUpgrade(idx){
+  var u = G.luOptions && G.luOptions[idx];
+  if (!u || G.state !== "levelup") return;
+  var p = G.player;
+  u.apply(p);
+  p.stacks[u.id] = (p.stacks[u.id] || 0) + 1;
+  p.upgradeCount = (p.upgradeCount || 0) + 1;
+  document.getElementById("levelup").classList.remove("on");
+  G.state = "playing";
+  var remain = Math.max(0, Math.ceil(levelCost(p.level || 1) - (G.crystalProgress || 0)));
+  showPowerBanner("LEVEL UP! Lv." + p.level, u.name + " を取得しました", "次のレベルまで クリスタル あと約 " + remain + " 個");
+  explode(p.x + 20, p.y, 22, ["#22d3ee","#facc15","#ffffff","#67e8f9"]);
+  updateHUD();
+  maybeLevelUp();
+}
+function showStageBanner(){
+  var cfg = stageCfg();
+  document.getElementById("sbBig").innerHTML = "STAGE <span>" + cfg.id + "</span>";
+  document.getElementById("sbSub").textContent = cfg.theme;
+  document.getElementById("sbBoss").textContent = "BOSS：" + cfg.bossName + "（" + cfg.duration + "秒で出現）" + (cfg.hpMul && cfg.hpMul > 1 ? " ／ 敵HP ×" + cfg.hpMul : "");
+  var el = document.getElementById("stageBanner");
+  el.classList.add("on");
+  setTimeout(function(){ el.classList.remove("on"); }, 2100);
+}
+function freshUpgrades(){
+  return { level: 1, upgradeCount: 0, shotCount: 2, shotDamage: 1, fireMul: 1, moveMul: 1, spreadPairs: 0, beamCore: 0, pierce: false, magnet: 120, crystalMul: 1, gigaInterval: 0, gigaDamage: 0, gigaTimer: 0, stacks: {} };
+}
+function startStage(n, keep){
+  var prev = null;
+  if (keep && G && G.player){
+    var pp = G.player, up = freshUpgrades();
+    ["level","upgradeCount","shotCount","shotDamage","fireMul","moveMul","spreadPairs","beamCore","pierce","magnet","crystalMul","gigaInterval","gigaDamage"].forEach(function(k){ if (pp[k] !== undefined) up[k] = pp[k]; });
+    up.stacks = {}; if (pp.stacks) Object.keys(pp.stacks).forEach(function(k){ up.stacks[k] = pp.stacks[k]; });
+    up.gigaTimer = up.gigaInterval > 0 ? Math.min(pp.gigaTimer || 0, up.gigaInterval) : 0;
+    prev = { score: G.score, crystals: G.crystals, kills: G.kills, hp: pp.hp, maxHp: pp.maxHp, up: up, crystalProgress: G.crystalProgress || 0, auto: G.auto };
+  }
+  var prevMaxHp = prev ? prev.maxHp : 10;
+  var player = { x: 120, y: H/2, hp: prev ? Math.min(prevMaxHp, Math.max(1, prev.hp) + 3) : 10, maxHp: prevMaxHp, cool: 0, inv: 0, flame: 0 };
+  var upg = prev ? prev.up : freshUpgrades();
+  Object.keys(upg).forEach(function(k){ player[k] = upg[k]; });
+  G = {
+    t: 0, state: "playing", auto: G ? G.auto : true,
+    stage: n,
+    player: player,
+    bullets: [], ebullets: [], missiles: [], foes: [], parts: [], items: [], popups: [],
+    crystals: prev ? prev.crystals : 0, crystalProgress: prev ? prev.crystalProgress : 0, score: prev ? prev.score : 0, kills: prev ? prev.kills : 0,
+    spawnT: 0.6, bonusT: 32, bossSpawned: false, bossRef: null, luOptions: [],
+    shake: 0, flash: 0, flashWhite: 0,
+    bossDefeatT: 0, bossDefeatX: 0, bossDefeatY: 0, bossDefeatStep: -1, bossDefeatFinal: false, bossDefeatCleared: false
+  };
+  if (prev) G.auto = prev.auto;
+  document.getElementById("levelup").classList.remove("on");
+  document.getElementById("overlay").classList.remove("on");
+  document.getElementById("warn").classList.remove("on");
+  document.getElementById("powerBanner").classList.remove("on");
+  document.getElementById("bossbar").classList.remove("on");
+  document.getElementById("btnPause").textContent = "⏸ 一時停止";
+  updateStageUI();
+  updateHUD();
+  showStageBanner();
+}
+function reset(){ startStage(1, false); }
+function updateHUD(){
+  document.getElementById("hpfill").style.transform = "scaleX(" + Math.max(0, G.player.hp / G.player.maxHp) + ")";
+  document.getElementById("hpbar").classList.toggle("low", G.player.hp <= 3);
+  document.getElementById("hpnum").textContent = Math.max(0, G.player.hp) + " / " + G.player.maxHp;
+  var pl = G.player;
+  document.getElementById("playerLevel").textContent = "Lv." + (pl.level || 1);
+  var cost = levelCost(pl.level || 1);
+  document.getElementById("levelProg").textContent = "◆ " + Math.floor(G.crystalProgress || 0) + " / " + cost;
+  document.getElementById("lvfill").style.transform = "scaleX(" + Math.min(1, (G.crystalProgress || 0) / cost) + ")";
+  var upParts = ["ショット×" + (pl.shotCount || 2)];
+  if (pl.spreadPairs) upParts.push("拡散×" + pl.spreadPairs);
+  if (pl.beamCore) upParts.push("太ビーム");
+  if (pl.pierce) upParts.push("貫通");
+  if (pl.gigaInterval) upParts.push("巨大ビーム" + pl.gigaInterval + "秒");
+  if ((pl.crystalMul || 1) > 1) upParts.push("効率" + Math.round(pl.crystalMul * 100) + "%");
+  document.getElementById("levelDesc").textContent = upParts.join("・");
+  document.getElementById("crystals").textContent = Math.floor(G.crystals);
+  document.getElementById("score").textContent = fmtScore(G.score);
+  var ig = document.getElementById("ingameScoreVal"); if (ig) ig.textContent = fmtScore(G.score);
+  var hi = document.getElementById("hiscore"); if (hi) hi.textContent = fmtScore(hiScore);
+  document.getElementById("kills").textContent = G.kills;
+  if (G.bossRef){
+    document.getElementById("bossfill").style.transform = "scaleX(" + Math.max(0, G.bossRef.hp / G.bossRef.maxHp) + ")";
+    document.getElementById("bossnum").textContent = Math.max(0, Math.ceil(G.bossRef.hp)) + " / " + G.bossRef.maxHp;
+  }
+}
+/* ボスHPバーは被弾のたびに即座に追従させるため、毎フレーム同期する */
+function syncBossBar(){
+  if (!G || !G.bossRef) return;
+  var b = G.bossRef;
+  document.getElementById("bossfill").style.transform = "scaleX(" + Math.max(0, b.hp / b.maxHp) + ")";
+  var bn = document.getElementById("bossnum");
+  var txt = Math.max(0, Math.ceil(b.hp)) + " / " + b.maxHp;
+  if (bn && bn.textContent !== txt) bn.textContent = txt;
+}
+
+function spawnFoe(type, y){
+  var cfg = ENEMIES[type];
+  var sc = stageCfg();
+  /* 敵HP倍率：従来の全ステージ分を2倍にし、ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18。ボスHPも従来の2倍でステージ別設定（450/630/840/1120/1680）を使う */
+  var hpMul = (type !== "BOSS" && sc.hpMul) ? sc.hpMul : 1;
+  var bonus = (type !== "BOSS" && sc.hpBonus[type]) ? sc.hpBonus[type] : 0;
+  var bossHp = type === "BOSS" ? sc.bossHp : Math.round(cfg.hp * hpMul) + bonus;
+  var foe = {
+    type: type, x: W + 50, y: (y !== undefined ? y : 60 + Math.random() * (H - 120)),
+    hp: bossHp, maxHp: bossHp, t: Math.random() * 6.28, fireT: 1 + Math.random(),
+    baseY: 0, state: "enter", stateT: 0, atkT: 2.2, atk: 0, warned: false, vx: 0, chargeCount: 0
+  };
+  foe.baseY = foe.y;
+  if (type === "X"){ foe.y = 90 + Math.random() * 120; foe.baseY = foe.y; }
+  if (type === "BOSS"){
+    foe.x = W + 90; foe.y = H/2; foe.baseY = H/2;
+    G.bossRef = foe;
+    document.getElementById("bossbar").classList.add("on");
+    document.getElementById("stageMsg").textContent = "BOSS — " + sc.bossName;
+    warnFlash();
+  }
+  G.foes.push(foe);
+  return foe;
+}
+function warnFlash(){
+  var w = document.getElementById("warn");
+  w.classList.add("on"); setTimeout(function(){ w.classList.remove("on"); }, 1600);
+}
+function explode(x, y, n, colors){
+  for (var i = 0; i < n; i++){
+    var a = Math.random() * 6.28, v = 40 + Math.random() * 190;
+    G.parts.push({ x:x, y:y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:0.35 + Math.random()*0.45, max:0.8,
+      c: colors[(Math.random()*colors.length)|0], s: 3 + ((Math.random()*3)|0) * 2 });
+  }
+}
+function dropItems(foe){
+  var n = foe.type === "X" ? 10 : foe.type === "B" ? 2 : foe.type === "BOSS" ? 0 : 1;
+  for (var i = 0; i < n; i++)
+    G.items.push({ kind:"crystal", x: foe.x + (Math.random()*36-18), y: foe.y + (Math.random()*36-18), vx: -60 - Math.random()*40, vy: Math.random()*50-25, t: Math.random()*6 });
+  if (foe.type === "B" && Math.random() < 0.35)
+    G.items.push({ kind:"repair", x: foe.x, y: foe.y, vx: -55, vy: 0, t: 0 });
+}
+function hurtPlayer(dmg){
+  var p = G.player;
+  if (p.inv > 0 || G.state !== "playing") return;
+  p.hp -= dmg; p.inv = 1.1; G.shake = 8; G.flash = 0.25;
+  explode(p.x, p.y, 10, ["#facc15","#ef4444","#ffffff"]);
+  beep(110, 0.18, "sawtooth", 0.08);
+  updateHUD();
+  if (p.hp <= 0) endGame(false);
+}
+function endGame(clear){
+  G.state = clear ? "clear" : "over";
+  var isFinal = clear && G.stage >= STAGES.length;
+  var hasNext = clear && G.stage < STAGES.length;
+  var ov = document.getElementById("overlay");
+  document.getElementById("ovTitle").textContent = isFinal ? "ALL STAGE CLEAR!" : (clear ? ("STAGE " + G.stage + " CLEAR!") : "GAME OVER");
+  document.getElementById("ovTitle").style.color = clear ? "#facc15" : "#fff";
+  if (G.score > hiScore) hiScore = G.score;
+  document.getElementById("ovScoreVal").textContent = fmtScore(G.score);
+  var nextCfg = hasNext ? STAGES[G.stage] : null;
+  document.getElementById("ovSub").innerHTML =
+    "撃破 " + G.kills + " 機　/　クリスタル " + Math.floor(G.crystals) + " 個　/　Lv." + (G.player.level || 1) + "（強化 " + (G.player.upgradeCount || 0) + "回・最大HP " + G.player.maxHp + "）　/　HI-SCORE " + fmtScore(hiScore) +
+    (isFinal ? "<br>全5ステージ制覇！ おつかれさまでした。最終ボス「" + stageCfg().bossName + "」撃破です。"
+      : hasNext ? ("<br>ボス撃破！ スコアとクリスタルを引き継いで、次はステージ" + nextCfg.id + "「" + nextCfg.theme + "」へ。ボスは「" + nextCfg.bossName + "」です。HPも少し回復します。")
+      : "<br>同じステージから再挑戦できます（企画書3章）。");
+  document.getElementById("ovBtn").textContent = isFinal ? "ステージ1からもう一度" : (hasNext ? ("ステージ" + nextCfg.id + "へ進む ▶") : "リトライ");
+  ov.classList.add("on");
+  if (clear) beep(660, 0.3, "square", 0.06);
+}
+/* ---------- ボス撃破演出 ----------
+   ボスを倒した瞬間に次ステージ確認画面へは行かず、
+   まず大爆発＋画面揺れでボスが消滅する演出を挟んでから endGame(true) を呼ぶ。 */
+function prefersReducedMotion(){
+  try{ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; }
+}
+function startBossDefeat(x, y){
+  if (!G || G.state === "bossDefeat" || G.state === "clear") return;
+  var reduced = prefersReducedMotion();
+  G.bossRef = null;
+  document.getElementById("bossbar").classList.remove("on");
+  G.state = "bossDefeat";
+  G.bossDefeatT = 0;
+  G.bossDefeatX = x; G.bossDefeatY = y;
+  G.bossDefeatStep = -1; G.bossDefeatFinal = false; G.bossDefeatCleared = false;
+  G.shake = reduced ? 6 : 26;
+  G.flash = 0.45;
+  G.flashWhite = reduced ? 0.25 : 0.55;
+  /* 第1爆発：ボス中心に大きく広げる */
+  explode(x, y, 90, ["#fb923c","#ef4444","#fde047","#ffffff","#facc15"]);
+  explode(x, y, 42, ["#ffffff","#fde047","#fb923c"]);
+  explode(x - 34, y - 18, 22, ["#fb923c","#ef4444","#ffffff"]);
+  explode(x + 34, y + 18, 22, ["#fb923c","#ef4444","#ffffff"]);
+  G.popups.push({ x: x, y: y - 74, vy: -16, life: 1.9, max: 1.9, text: "BOSS 撃破！" });
+  document.getElementById("stageMsg").textContent = "BOSS 撃破！";
+  beep(68, 0.5, "sawtooth", 0.09);
+  setTimeout(function(){ beep(52, 0.4, "sawtooth", 0.07); }, 140);
+  updateHUD();
+}
+function stepBossDefeat(dt){
+  G.t += dt;
+  G.bossDefeatT += dt;
+  var t = G.bossDefeatT, bx = G.bossDefeatX, by = G.bossDefeatY;
+  var reduced = prefersReducedMotion();
+  /* 最初のフレームで残りの敵・弾を片付け、ボスの消滅だけに集中させる
+     （撃破処理がフィルター処理の途中で呼ばれる場合があるため、ここで確実に消す） */
+  if (!G.bossDefeatCleared){
+    G.bossDefeatCleared = true;
+    G.foes = [];
+    G.ebullets = [];
+    G.missiles = [];
+    G.bullets = [];
+    if (G.bossRef) G.bossRef = null;
+  }
+  /* 連鎖爆発：約0.28秒ごとにボス跡の周囲で小爆発を起こし、揺れを持続させる */
+  if (t < 1.45){
+    var stepIdx = Math.floor(t / 0.28);
+    if (stepIdx !== G.bossDefeatStep){
+      G.bossDefeatStep = stepIdx;
+      if (stepIdx > 0){
+        var ox = (Math.random() - 0.5) * 118, oy = (Math.random() - 0.5) * 84;
+        explode(bx + ox, by + oy, 30, ["#fb923c","#ef4444","#fde047","#ffffff"]);
+        explode(bx + ox * 0.5, by + oy * 0.5, 14, ["#ffffff","#facc15"]);
+        G.shake = Math.max(G.shake, reduced ? 5 : 17);
+        G.flash = Math.max(G.flash, 0.20);
+        beep(78 + Math.random() * 46, 0.22, "sawtooth", 0.06);
+      }
+    }
+  }
+  /* 最終爆発：消滅の締めにひときわ大きく弾ける */
+  if (!G.bossDefeatFinal && t >= 1.45){
+    G.bossDefeatFinal = true;
+    explode(bx, by, 120, ["#fb923c","#ef4444","#fde047","#ffffff","#facc15","#22d3ee"]);
+    explode(bx, by, 50, ["#ffffff","#fde047","#ffffff"]);
+    G.shake = reduced ? 7 : 30;
+    G.flashWhite = reduced ? 0.3 : 0.7;
+    G.flash = 0.4;
+    beep(50, 0.6, "sawtooth", 0.09);
+  }
+  /* 演出中も自機は動かせる（被弾・射撃・出現は止める） */
+  var p = G.player;
+  var sp = 305 * (p.moveMul || 1);
+  if (keys.left) p.x -= sp * dt;
+  if (keys.right) p.x += sp * dt;
+  if (keys.up) p.y -= sp * dt;
+  if (keys.down) p.y += sp * dt;
+  p.x = Math.max(28, Math.min(W - 200, p.x));
+  p.y = Math.max(26, Math.min(H - 26, p.y));
+  if (p.inv > 0) p.inv -= dt;
+  p.flame += dt * 14;
+  /* アイテムはそのまま漂わせ、拾えるものは拾えるようにする */
+  G.items = G.items.filter(function(it){
+    it.t += dt * 3;
+    var dx = p.x - it.x, dy = p.y - it.y, d = Math.hypot(dx, dy);
+    if (d < (p.magnet || 120) && d > 0.01){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
+    else { it.x += it.vx * dt; it.y += it.vy * dt; }
+    if (d < 24){
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); updateHUD(); }
+      else { p.hp = Math.min(p.maxHp, p.hp + 2); }
+      updateHUD(); return false;
+    }
+    return it.x > -24;
+  });
+  G.parts = G.parts.filter(function(q){ q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.96; q.vy *= 0.96; return q.life > 0; });
+  if (G.popups) G.popups = G.popups.filter(function(pp){ pp.life -= dt; pp.y += pp.vy * dt; return pp.life > 0; });
+  stars.forEach(function(s){ s.x -= s.v * dt; if (s.x < -4){ s.x = W + 4; s.y = Math.random() * H; } });
+  if (G.shake > 0) G.shake = Math.max(0, G.shake - dt * 17);
+  if (G.flash > 0) G.flash = Math.max(0, G.flash - dt * 1.1);
+  if (G.flashWhite > 0) G.flashWhite = Math.max(0, G.flashWhite - dt * 1.4);
+  /* 演出が終わってから、次ステージへ進むかの画面へ */
+  if (t >= 2.35){
+    G.shake = 0; G.flash = 0; G.flashWhite = 0;
+    endGame(true);
+  }
+}
+
+/* ---------- 敵AI ---------- */
+function foeUpdate(f, dt){
+  f.t += dt; f.stateT += dt;
+  var p = G.player;
+  var spdMul = stageCfg().speedMul;
+  if (f.type === "A"){
+    f.x -= ENEMIES.A.speed * spdMul * dt;
+  } else if (f.type === "C"){
+    f.x -= ENEMIES.C.speed * spdMul * dt;
+    f.y = f.baseY + Math.sin(f.t * 3.1) * 68;
+  } else if (f.type === "B"){
+    if (f.x > W - 190) f.x -= ENEMIES.B.speed * spdMul * dt;
+    else f.y += Math.sin(f.t * 1.4) * 22 * dt;
+    f.fireT -= dt;
+    if (f.fireT < 0.35 && f.fireT > 0) f.charge = true; else f.charge = false;
+    if (f.fireT <= 0 && f.x < W - 10){
+      f.fireT = 2.0;
+      /* 弾数はステージ数に比例：ステージ1で1発、2で2発、3で3発、4で4発、5で5発を扇状に同時発射 */
+      var scB = stageCfg();
+      var nB = scB.bBullets || scB.id || 1;
+      var dx = p.x - f.x, dy = p.y - f.y, len = Math.hypot(dx, dy) || 1;
+      var baseA = Math.atan2(dy / len, dx / len);
+      for (var bi = 0; bi < nB; bi++){
+        var offA = (bi - (nB - 1) / 2) * 0.14;
+        var aa = baseA + offA;
+        G.ebullets.push({ x: f.x - 26, y: f.y, vx: Math.cos(aa)*265, vy: Math.sin(aa)*265 });
+      }
+      beep(880, 0.07, "square", 0.03);
+    }
+  } else if (f.type === "X"){
+    f.x -= ENEMIES.X.speed * spdMul * dt;
+    f.y = f.baseY + Math.sin(f.t * 0.9) * 14;
+  } else if (f.type === "BOSS"){
+    bossUpdate(f, dt);
+  }
+}
+function bossUpdate(f, dt){
+  var p = G.player;
+  var sc = stageCfg();
+  if (f.state === "enter"){
+    f.x -= 105 * dt;
+    if (f.x <= W - 150){ f.x = W - 150; f.state = "fight"; f.stateT = 0; }
+    return;
+  }
+  if (f.state === "fight"){
+    f.y += (f.baseY + Math.sin(f.t * 0.7) * 95 - f.y) * dt * 2;
+    f.atkT -= dt * (f.hp < f.maxHp * 0.5 ? 1.35 : 1);
+    if (f.atkT <= 0){
+      f.atk = (f.atk + 1) % 3;
+      if (f.atk === 0){ /* 通常弾：扇状（ステージで方向数が変わる） */
+        var half = (sc.fanCount - 1) / 2;
+        for (var i = -half; i <= half; i++){
+          var a = Math.PI + i * 0.21;
+          G.ebullets.push({ x: f.x - 55, y: f.y, vx: Math.cos(a)*sc.fanSpeed, vy: Math.sin(a)*sc.fanSpeed });
+        }
+        /* ステージ3以降は扇状弾と同時にミサイルも1発放つ複合攻撃 */
+        if (sc.id >= 3) G.missiles.push({ x: f.x - 50, y: f.y + 34, vx: -130, vy: 30, t: 0, turn: 2.4, armed: false });
+        beep(520, 0.1, "square", 0.04); f.atkT = sc.id >= 5 ? 1.9 : sc.id >= 3 ? 2.1 : 2.4;
+      } else if (f.atk === 1){ /* 連続ミサイル：予告→ステージ数に応じた連射 */
+        f.state = "missileWarn"; f.stateT = 0; f.warned = true;
+      } else { /* 突進：後退して予兆 */
+        f.state = "chargeWarn"; f.stateT = 0; f.chargeCount = 0;
+      }
+    }
+  } else if (f.state === "missileWarn"){
+    if (f.stateT > 0.7){
+      f.state = "fight"; f.atkT = 2.6; f.warned = false;
+      var mc = sc.missileCount, mid = (mc - 1) / 2;
+      for (var m = 0; m < mc; m++)
+        G.missiles.push({ x: f.x - 50, y: f.y - 30 + m * (60 / Math.max(1, mc - 1)) , vx: -120 - m*22, vy: (m - mid)*36, t: -m * 0.28, turn: sc.id >= 5 ? 3.2 : sc.id >= 3 ? 2.9 : 2.4, armed: false });
+      beep(190, 0.2, "sawtooth", 0.05);
+    }
+  } else if (f.state === "chargeWarn"){
+    f.x += 130 * dt;
+    if (f.stateT > 0.85){ f.state = "charging"; f.stateT = 0; f.vx = sc.id >= 5 ? -660 : sc.id === 1 ? -560 : -610; f.chargeY = p.y; beep(140, 0.25, "sawtooth", 0.06); }
+  } else if (f.state === "charging"){
+    f.x += f.vx * dt;
+    f.y += (f.chargeY - f.y) * dt * (sc.id >= 5 ? 5.0 : sc.id >= 3 ? 4.4 : 3.2);
+    if (f.x < 130){
+      f.chargeCount = (f.chargeCount || 0) + 1;
+      /* ステージ2・3は突進を2回繰り返す：一度右へ戻ってから再度予兆→突進 */
+      if (f.chargeCount < sc.chargeRepeat){ f.state = "chargeReturn"; }
+      else f.state = "return";
+    }
+  } else if (f.state === "chargeReturn"){
+    f.x += 430 * dt; f.y += (f.baseY - f.y) * dt * 2;
+    if (f.x >= W - 150){ f.x = W - 150; f.state = "chargeWarn"; f.stateT = 0; }
+  } else if (f.state === "return"){
+    f.x += 190 * dt; f.y += (f.baseY - f.y) * dt * 2;
+    if (f.x >= W - 150){ f.x = W - 150; f.state = "fight"; f.atkT = 2.2; }
+  }
+}
+
+/* ---------- メインループ ---------- */
+var last = performance.now();
+function frame(now){
+  var dt = Math.min(0.033, (now - last) / 1000); last = now;
+  if (G.state === "playing") step(dt);
+  else if (G.state === "bossDefeat") stepBossDefeat(dt);
+  render();
+  syncBossBar();
+  requestAnimationFrame(frame);
+}
+function step(dt){
+  G.t += dt;
+  var p = G.player;
+  /* --- 自機 --- */
+  var sp = 305 * (p.moveMul || 1);
+  if (keys.left) p.x -= sp * dt;
+  if (keys.right) p.x += sp * dt;
+  if (keys.up) p.y -= sp * dt;
+  if (keys.down) p.y += sp * dt;
+  p.x = Math.max(28, Math.min(W - 200, p.x));
+  p.y = Math.max(26, Math.min(H - 26, p.y));
+  if (p.inv > 0) p.inv -= dt;
+  p.flame += dt * 14;
+  p.cool -= dt;
+  if (keys.shot && p.cool <= 0){
+    p.cool = 0.115 * (p.fireMul || 1);
+    var bx = p.x + 30;
+    function shot(dy, vy, kind){
+      if (kind === "beam") G.bullets.push({ x: bx, y: p.y + dy, vx: 660, vy: vy || 0, dmg: (p.shotDamage || 1) + (p.beamCore || 1), w: p.beamCore >= 2 ? 48 : 36, h: p.beamCore >= 2 ? 18 : 12, kind: "beam", pierce: !!p.pierce || p.beamCore >= 2, hitFoes: [] });
+      else G.bullets.push({ x: bx, y: p.y + dy, vx: 640, vy: vy || 0, dmg: p.shotDamage || 1, w: 14, h: 4, kind: "normal", pierce: !!p.pierce, hitFoes: [] });
+    }
+    /* 平行ショットは shotCount 発を等間隔に。増えるのは常に1発ずつ */
+    var nShot = p.shotCount || 2, hasCenter = (nShot % 2 === 1);
+    for (var sIdx = 0; sIdx < nShot; sIdx++){
+      var off = (sIdx - (nShot - 1) / 2) * 8;
+      if ((p.beamCore || 0) >= 1 && hasCenter && off === 0) shot(0, 0, "beam");
+      else shot(off);
+    }
+    if ((p.beamCore || 0) >= 1 && !hasCenter) shot(0, 0, "beam");
+    for (var sPair = 1; sPair <= (p.spreadPairs || 0); sPair++){
+      shot(-6, -(170 + sPair * 30)); shot(6, 170 + sPair * 30);
+    }
+    beep((p.beamCore || 0) >= 1 ? 760 : 1240, 0.045, "square", 0.02);
+  }
+  /* 巨大ビーム砲：取得後は一定時間ごとに自動で巨大ビームを放つ */
+  if ((p.gigaInterval || 0) > 0){
+    p.gigaTimer -= dt;
+    if (p.gigaTimer <= 0){
+      p.gigaTimer = p.gigaInterval;
+      G.bullets.push({ x: p.x + 34, y: p.y, vx: 880, vy: 0, dmg: p.gigaDamage || 12, w: 340, h: 54, kind: "giga", pierce: true, hitFoes: [] });
+      G.popups.push({ x: p.x + 96, y: p.y - 42, vy: -24, life: 0.9, max: 0.9, text: "巨大ビーム！" });
+      G.shake = Math.max(G.shake, 5);
+      beep(180, 0.28, "sawtooth", 0.06);
+    }
+  }
+  /* --- 出現 --- */
+  var scNow = stageCfg();
+  if (G.auto && !G.bossRef){
+    G.spawnT -= dt;
+    if (G.spawnT <= 0){
+      G.spawnT = scNow.spawnMin + Math.random() * scNow.spawnVar;
+      var r = Math.random();
+      var bRatio = G.stage === 1 ? 0 : G.stage === 2 ? 0.07 : G.stage === 3 ? 0.12 : G.stage === 4 ? 0.16 : 0.20;
+      if (G.t < 14) spawnFoe(r < 0.6 - bRatio ? "A" : (r < 0.92 ? "C" : "B"));
+      else if (G.t < 34){ if (r < 0.42) spawnFoe("A"); else if (r < 0.78 - bRatio) spawnFoe("C"); else spawnFoe("B"); }
+      else { if (r < 0.36) spawnFoe("A"); else if (r < 0.66 - bRatio) spawnFoe("C"); else spawnFoe("B"); }
+      if (Math.random() < scNow.doubleChance) spawnFoe("A", 50 + Math.random() * (H - 100));
+    }
+    G.bonusT -= dt;
+    if (G.bonusT <= 0){ G.bonusT = 35; spawnFoe("X"); document.getElementById("stageMsg").textContent = "BONUS敵 出現！"; setTimeout(function(){ if(!G.bossRef) updateStageUI(); }, 2600); }
+  }
+  if (G.auto && !G.bossSpawned && G.t >= scNow.duration){
+    G.bossSpawned = true; spawnFoe("BOSS");
+  }
+  /* --- 弾 --- */
+  G.bullets = G.bullets.filter(function(b){ b.x += (b.vx || 640) * dt; b.y += (b.vy || 0) * dt; return b.x < W + 60 && b.y > -30 && b.y < H + 30; });
+  G.ebullets = G.ebullets.filter(function(b){
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    if (Math.hypot(b.x - p.x, b.y - p.y) < 17){ hurtPlayer(1); return false; }
+    return b.x > -20 && b.x < W + 20 && b.y > -20 && b.y < H + 20;
+  });
+  G.missiles = G.missiles.filter(function(m){
+    m.t += dt; if (m.t < 0) return true;
+    /* 追尾は約3.2秒まで。その後は直進するので、進路をボスへ合わせやすくなる */
+    if (m.t < 3.2){
+      var dx = p.x - m.x, dy = p.y - m.y, len = Math.hypot(dx, dy) || 1;
+      m.vx += (dx/len * 300 - m.vx) * Math.min(1, dt * m.turn);
+      m.vy += (dy/len * 300 - m.vy) * Math.min(1, dt * m.turn);
+    }
+    m.x += m.vx * dt; m.y += m.vy * dt;
+    /* ボス自身への当たり判定：発射直後はボスの当たり判定の中にいるので、
+       いったんボスから110px以上離れるまでは当たらない（armedにならない）。
+       離れたあとは、プレイヤーが誘導してボスにぶつければボスがダメージを受ける */
+    var boss = G.bossRef;
+    if (boss){
+      var bdx = m.x - boss.x, bdy = m.y - boss.y;
+      if (!m.armed){
+        if (Math.hypot(bdx, bdy) > 110) m.armed = true;
+      } else if (Math.abs(bdx) < 64 && Math.abs(bdy) < 52){
+        boss.hp -= 7; boss.hit = 0.12;
+        addScore(300, m.x, m.y);
+        explode(m.x, m.y, 24, ["#fb923c","#ef4444","#fde047","#ffffff"]);
+        G.shake = Math.max(G.shake, 9);
+        beep(150, 0.22, "sawtooth", 0.07);
+        if (boss.hp <= 0){
+          var bossX = boss.x, bossY = boss.y;
+          G.kills++; addScore(stageCfg().bossScore, bossX, bossY);
+          dropItems(boss);
+          G.foes = G.foes.filter(function(ff){ return ff !== boss; });
+          G.bossRef = null;
+          document.getElementById("bossbar").classList.remove("on");
+          updateHUD();
+          startBossDefeat(bossX, bossY);
+        } else {
+          updateHUD();
+        }
+        return false;
+      }
+    }
+    if (Math.hypot(m.x - p.x, m.y - p.y) < 19){ hurtPlayer(1); explode(m.x, m.y, 12, ["#fb923c","#ef4444","#fff"]); return false; }
+    return m.x > -30 && m.x < W + 30 && m.y > -30 && m.y < H + 30;
+  });
+  /* --- 敵 --- */
+  G.foes = G.foes.filter(function(f){
+    foeUpdate(f, dt);
+    if (f.type !== "BOSS" && f.x < -70){
+      if (f.type === "X") updateStageUI();
+      return false;
+    }
+    /* 自機弾との判定 */
+    for (var i = 0; i < G.bullets.length; i++){
+      var b = G.bullets[i], rad = f.type === "BOSS" ? 62 : f.type === "X" ? 44 : 24;
+      var bw = (b.w || 14) / 2;
+      if (b.hitFoes && b.hitFoes.indexOf(f) >= 0) continue;
+      if (Math.abs(b.x + bw - f.x) < rad + bw && Math.abs(b.y - f.y) < rad * 0.78 + (b.h || 4) / 2){
+        if (b.pierce || b.kind === "mega" || b.kind === "giga"){ if (!b.hitFoes) b.hitFoes = []; b.hitFoes.push(f); }
+        else { G.bullets.splice(i, 1); i--; }
+        f.hp -= (b.dmg || 1); f.hit = 0.07;
+        explode(b.x, b.y, b.kind === "normal" ? 2 : 5, ["#22d3ee","#fde047","#ffffff"]);
+        if (f.hp <= 0){
+          var wasX = f.type === "X";
+          var isBossKill = f.type === "BOSS";
+          var killX = f.x, killY = f.y;
+          G.kills++; addScore(isBossKill ? stageCfg().bossScore : ENEMIES[f.type].score, killX, killY);
+          if (!isBossKill){
+            explode(f.x, f.y, f.type === "X" ? 34 : 16, ["#fb923c","#ef4444","#fde047","#ffffff"]);
+            G.shake = f.type === "X" ? 9 : 4;
+            beep(90, 0.3, "sawtooth", 0.07);
+          }
+          dropItems(f);
+          if (isBossKill){ G.bossRef = null; document.getElementById("bossbar").classList.remove("on"); updateHUD(); startBossDefeat(killX, killY); }
+          updateHUD();
+          return false;
+        }
+      }
+    }
+    if (f.hit > 0) f.hit -= dt;
+    /* 体当たり */
+    var crad = f.type === "BOSS" ? 58 : f.type === "X" ? 40 : 22;
+    if (Math.hypot(f.x - p.x, f.y - p.y) < crad + 14){
+      hurtPlayer(ENEMIES[f.type].contact);
+      if (f.type !== "BOSS" && f.type !== "X"){ explode(f.x, f.y, 14, ["#fb923c","#ef4444","#fff"]); G.kills++; return false; }
+    }
+    return true;
+  });
+  /* --- アイテム --- */
+  G.items = G.items.filter(function(it){
+    it.t += dt * 3;
+    var dx = p.x - it.x, dy = p.y - it.y, d = Math.hypot(dx, dy);
+    if (d < (p.magnet || 120)){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
+    else { it.x += it.vx * dt; it.y += it.vy * dt; }
+    if (d < 24){
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); beep(1560, 0.06, "sine", 0.04); updateHUD(); maybeLevelUp(); }
+      else { p.hp = Math.min(p.maxHp, p.hp + 2); beep(740, 0.12, "sine", 0.05); }
+      updateHUD(); return false;
+    }
+    return it.x > -24;
+  });
+  /* --- パーティクル／星 --- */
+  G.parts = G.parts.filter(function(q){ q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.96; q.vy *= 0.96; return q.life > 0; });
+  if (G.popups) G.popups = G.popups.filter(function(pp){ pp.life -= dt; pp.y += pp.vy * dt; return pp.life > 0; });
+  stars.forEach(function(s){ s.x -= s.v * dt; if (s.x < -4){ s.x = W + 4; s.y = Math.random() * H; } });
+  if (G.shake > 0) G.shake = Math.max(0, G.shake - dt * 26);
+  if (G.flash > 0) G.flash = Math.max(0, G.flash - dt);
+}
+
+/* ---------- 描画 ---------- */
+function render(){
+  ctx.save();
+  ctx.fillStyle = "#05070f"; ctx.fillRect(0, 0, W, H);
+  if (G.shake > 0) ctx.translate((Math.random()-0.5) * G.shake, (Math.random()-0.5) * G.shake);
+  /* 星空（パララックス） */
+  stars.forEach(function(s){ ctx.fillStyle = s.s === 3 ? "#9db8dd" : "#54678a"; ctx.fillRect(s.x, s.y, s.s, s.s); });
+  /* ステージごとの星雲ティント */
+  var scR = stageCfg();
+  if (scR.nebula){ ctx.fillStyle = scR.nebula; ctx.fillRect(0, 0, W, H); }
+  /* 遠景の惑星（ステージで色が変わる） */
+  ctx.fillStyle = scR.planet; ctx.beginPath(); ctx.arc(W - 180 - (G.t * 4 % 60), 86, 44, 0, 6.29); ctx.fill();
+  ctx.fillStyle = scR.planet2; ctx.beginPath(); ctx.arc(W - 196 - (G.t * 4 % 60), 72, 34, 0, 6.29); ctx.fill();
+  if (scR.id >= 4){ ctx.fillStyle = scR.id === 5 ? "rgba(250,204,21,.55)" : "rgba(45,212,191,.5)"; ctx.fillRect((W - 220 - (G.t * 9 % 140)), 300, 3, 3); ctx.fillRect((W - 420 - (G.t * 9 % 140)), 180, 3, 3); }
+  if (scR.id === 3){ ctx.fillStyle = "rgba(192,132,252,.5)"; ctx.fillRect((W - 300 - (G.t * 9 % 140)), 400, 3, 3); ctx.fillRect((W - 120 - (G.t * 9 % 140)), 120, 3, 3); }
+
+  /* アイテム */
+  G.items.forEach(function(it){
+    var bob = Math.sin(it.t) * 3;
+    drawSprite(ctx, it.kind, it.x, it.y + bob);
+  });
+  /* 敵弾・ミサイル */
+  G.ebullets.forEach(function(b){
+    ctx.fillStyle = "#ff5d7a"; ctx.fillRect(b.x - 5, b.y - 5, 10, 10);
+    ctx.fillStyle = "#ffd3dc"; ctx.fillRect(b.x - 2, b.y - 2, 4, 4);
+  });
+  G.missiles.forEach(function(m){
+    if (m.t < 0) return;
+    ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(Math.atan2(m.vy, m.vx));
+    ctx.fillStyle = "#e2e8f0"; ctx.fillRect(-11, -4, 20, 8);
+    ctx.fillStyle = m.armed ? "#facc15" : "#ef4444"; ctx.fillRect(9, -4, 5, 8);
+    ctx.fillStyle = "#fb923c"; ctx.fillRect(-16 - Math.random()*6, -2, 6, 4);
+    /* armed（ボスにも当たる状態）になったら黄色い枠で点滅表示 */
+    if (m.armed && (G.t * 10 % 2 < 1)){
+      ctx.strokeStyle = "#facc15"; ctx.lineWidth = 2;
+      ctx.strokeRect(-13, -7, 29, 14);
+    }
+    ctx.restore();
+  });
+  /* 自機弾（通常弾／ビーム／メガビーム） */
+  G.bullets.forEach(function(b){
+    var bw = b.w || 14, bh = b.h || 4;
+    if (b.kind === "beam" || b.kind === "mega" || b.kind === "giga"){
+      var pulse = (b.kind === "mega" || b.kind === "giga") ? (Math.sin(G.t * 28) * 2) : 0;
+      ctx.fillStyle = b.kind === "giga" ? "rgba(251,146,60,.40)" : b.kind === "mega" ? "rgba(250,204,21,.35)" : "rgba(34,211,238,.32)";
+      ctx.fillRect(b.x - 3, b.y - bh/2 - 4 - pulse, bw + 8, bh + 8 + pulse * 2);
+      ctx.fillStyle = b.kind === "giga" ? "#fb923c" : b.kind === "mega" ? "#facc15" : "#22d3ee";
+      ctx.fillRect(b.x, b.y - bh/2, bw, bh);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(b.x + 4, b.y - bh/4, bw - 8, bh/2);
+    } else {
+      ctx.fillStyle = "#7ef0ff"; ctx.fillRect(b.x, b.y - 2, bw, bh);
+      ctx.fillStyle = "#e8fbff"; ctx.fillRect(b.x + 3, b.y - 1, 8, 2);
+    }
+  });
+
+  /* 敵 */
+  G.foes.forEach(function(f){
+    if (f.hit > 0){ ctx.save(); ctx.globalAlpha = 0.55; }
+    var bobY = f.type === "B" ? Math.sin(f.t * 2.2) * 3 : 0;
+    drawSprite(ctx, f.type, f.x, f.y + bobY);
+    if (f.hit > 0) ctx.restore();
+    /* Bのチャージ予兆 */
+    if (f.type === "B" && f.charge){
+      ctx.fillStyle = (G.t * 12 % 2 < 1) ? "#f0abfc" : "#fff";
+      ctx.fillRect(f.x - 34, f.y - 3, 6, 6);
+    }
+    /* ボスの予兆 */
+    if (f.type === "BOSS" && (f.state === "chargeWarn" || f.state === "missileWarn")){
+      if (G.t * 10 % 2 < 1){
+        ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3;
+        ctx.strokeRect(f.x - 66, f.y - 52, 132, 104);
+        ctx.fillStyle = "#ef4444"; ctx.font = "16px 'DotGothic16', monospace"; ctx.textAlign = "center";
+        ctx.fillText(f.state === "chargeWarn" ? "! 突進予兆 !" : "! ミサイル予告 !", f.x, f.y - 62);
+      }
+      if (f.state === "chargeWarn"){
+        ctx.fillStyle = "rgba(239,68,68,.16)";
+        ctx.fillRect(0, f.chargeY ? f.chargeY - 30 : f.y - 30, f.x - 60, 60);
+      }
+    }
+    /* HPミニバー（硬い敵だけ） */
+    if ((f.type === "X" || f.type === "B") && f.hp < f.maxHp){
+      ctx.fillStyle = "#1c2942"; ctx.fillRect(f.x - 26, f.y - 40, 52, 6);
+      ctx.fillStyle = f.type === "X" ? "#eab308" : "#e879f9"; ctx.fillRect(f.x - 25, f.y - 39, 50 * (f.hp / f.maxHp), 4);
+    }
+    /* ボスのHPバー＋残りHP数値（頭上に常時表示） */
+    if (f.type === "BOSS"){
+      var bw2 = 176, bx2 = Math.max(6, Math.min(W - bw2 - 6, f.x - bw2 / 2)), by2 = f.y - 78;
+      ctx.fillStyle = "rgba(3,6,14,.78)"; ctx.fillRect(bx2 - 5, by2 - 21, bw2 + 10, 42);
+      ctx.fillStyle = "#fecaca"; ctx.font = "14px 'DotGothic16', monospace"; ctx.textAlign = "center";
+      ctx.fillText("BOSS HP " + Math.max(0, Math.ceil(f.hp)) + " / " + f.maxHp, bx2 + bw2 / 2, by2 - 8);
+      ctx.fillStyle = "#1c2942"; ctx.fillRect(bx2, by2, bw2, 11);
+      ctx.strokeStyle = "#7f2d3a"; ctx.lineWidth = 2; ctx.strokeRect(bx2, by2, bw2, 11);
+      ctx.fillStyle = "#ef4444"; ctx.fillRect(bx2 + 1, by2 + 1, (bw2 - 2) * Math.max(0, f.hp / f.maxHp), 9);
+    }
+  });
+
+  /* 自機 */
+  var p = G.player;
+  if (!(p.inv > 0 && (G.t * 14 % 2 < 1))){
+    /* 推進炎 */
+    var fl = 8 + Math.sin(p.flame) * 4;
+    ctx.fillStyle = "#fb923c"; ctx.fillRect(p.x - 30 - fl, p.y - 3, fl, 6);
+    ctx.fillStyle = "#fde047"; ctx.fillRect(p.x - 30 - fl * 0.5, p.y - 2, fl * 0.5, 4);
+    drawSprite(ctx, "player", p.x, p.y);
+    /* 強化の見た目：ショット数で砲口、太ビーム・コアで輝き、巨大ビーム砲で金色オーラ */
+    if ((p.shotCount || 2) >= 3){ ctx.fillStyle = "#22d3ee"; ctx.fillRect(p.x + 22, p.y - 14, 8, 4); ctx.fillRect(p.x + 22, p.y + 10, 8, 4); }
+    if ((p.beamCore || 0) >= 1){ ctx.fillStyle = (G.t * 10 % 2 < 1) ? "#facc15" : "#ffffff"; ctx.fillRect(p.x + 24, p.y - 3, 10, 6); }
+    if ((p.gigaInterval || 0) > 0){
+      ctx.strokeStyle = "rgba(250,204,21,.75)"; ctx.lineWidth = 2; ctx.strokeRect(p.x - 30, p.y - 24, 62, 48);
+      /* 巨大ビームのチャージゲージ（自機の上） */
+      var gr = 1 - Math.max(0, p.gigaTimer || 0) / p.gigaInterval;
+      ctx.fillStyle = "#1c2942"; ctx.fillRect(p.x - 22, p.y - 36, 44, 5);
+      ctx.fillStyle = gr >= 0.99 ? "#facc15" : "#fb923c"; ctx.fillRect(p.x - 21, p.y - 35, 42 * Math.min(1, gr), 3);
+    }
+  }
+  /* パーティクル */
+  G.parts.forEach(function(q){
+    ctx.globalAlpha = Math.max(0, q.life / q.max);
+    ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, q.s, q.s);
+  });
+  ctx.globalAlpha = 1;
+  /* スコアポップアップ（+100 など） */
+  if (G.popups) G.popups.forEach(function(pp){
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, pp.life / pp.max);
+    ctx.font = "20px 'DotGothic16', monospace"; ctx.textAlign = "center";
+    ctx.fillStyle = "#221a02"; ctx.fillText(pp.text, pp.x + 2, pp.y + 2);
+    ctx.fillStyle = "#facc15"; ctx.fillText(pp.text, pp.x, pp.y);
+    ctx.restore();
+  });
+  /* ボス撃破演出中の大きな表示（爆発の余韻の中で出す） */
+  if (G.state === "bossDefeat"){
+    var bt = G.bossDefeatT || 0;
+    var bAlpha = bt < 0.12 ? bt / 0.12 : (bt > 1.95 ? Math.max(0, 1 - (bt - 1.95) / 0.4) : 1);
+    var bScale = bt < 0.28 ? 0.72 + (bt / 0.28) * 0.28 : 1;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, bAlpha));
+    ctx.translate(W/2, H/2 - 46);
+    ctx.scale(bScale, bScale);
+    ctx.textAlign = "center";
+    ctx.font = "54px 'DotGothic16', monospace";
+    ctx.fillStyle = "#221a02"; ctx.fillText("BOSS 撃破！", 3, 3);
+    ctx.fillStyle = "#facc15"; ctx.fillText("BOSS 撃破！", 0, 0);
+    ctx.font = "17px 'DotGothic16', monospace";
+    ctx.fillStyle = "#221a02"; ctx.fillText("S T A G E   C L E A R", 2, 34);
+    ctx.fillStyle = "#ffffff"; ctx.fillText("S T A G E   C L E A R", 0, 32);
+    ctx.restore();
+  }
+  /* ゲーム画面内のスコア（上部中央・DOM表示と同期する予備描画はせず、視認性はDOM側で担保） */
+  ctx.restore();
+  if (G.flash > 0){ ctx.fillStyle = "rgba(239,68,68," + (G.flash * 0.55) + ")"; ctx.fillRect(0, 0, W, H); }
+  if (G.flashWhite > 0){ ctx.fillStyle = "rgba(255,244,214," + (Math.min(1, G.flashWhite) * 0.75) + ")"; ctx.fillRect(0, 0, W, H); }
+  if (G.state === "paused"){
+    ctx.fillStyle = "rgba(3,6,14,.6)"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#fff"; ctx.font = "40px 'DotGothic16', monospace"; ctx.textAlign = "center";
+    ctx.fillText("PAUSED", W/2, H/2);
+  }
+}
+
+/* ---------- 入力 ---------- */
+var KEYMAP = { ArrowLeft:"left", KeyA:"left", ArrowRight:"right", KeyD:"right", ArrowUp:"up", KeyW:"up", ArrowDown:"down", KeyS:"down", Space:"shot" };
+window.addEventListener("keydown", function(e){
+  if (G && G.state === "levelup" && (e.code === "Digit1" || e.code === "Digit2" || e.code === "Digit3")){ chooseUpgrade(parseInt(e.code.slice(-1), 10) - 1); e.preventDefault(); return; }
+  if (e.code === "KeyP"){ togglePause(); return; }
+  var k = KEYMAP[e.code]; if (k){ if (e.code === "Space" && document.activeElement && document.activeElement.tagName === "BUTTON") document.activeElement.blur(); keys[k] = true; e.preventDefault(); }
+});
+window.addEventListener("keyup", function(e){ var k = KEYMAP[e.code]; if (k){ keys[k] = false; e.preventDefault(); } });
+document.querySelectorAll(".touch button").forEach(function(btn){
+  var k = btn.getAttribute("data-k");
+  function on(e){ e.preventDefault(); keys[k] = true; }
+  function off(e){ e.preventDefault(); keys[k] = false; }
+  btn.addEventListener("pointerdown", on);
+  btn.addEventListener("pointerup", off); btn.addEventListener("pointerleave", off); btn.addEventListener("pointercancel", off);
+});
+/* キャンバスをタッチでドラッグ移動＋自動連射（スマホ向け） */
+var dragging = false;
+function canvasPos(e){
+  var r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+}
+cv.addEventListener("pointerdown", function(e){ dragging = true; var pos = canvasPos(e); G.player.x = pos.x; G.player.y = pos.y; keys.shot = true; });
+window.addEventListener("pointermove", function(e){ if (dragging){ var pos = canvasPos(e); G.player.x = Math.max(28, Math.min(W-200, pos.x)); G.player.y = Math.max(26, Math.min(H-26, pos.y)); } });
+window.addEventListener("pointerup", function(){ dragging = false; keys.shot = false; });
+
+/* ---------- UIボタン ---------- */
+function togglePause(){
+  if (G.state === "playing"){ G.state = "paused"; document.getElementById("btnPause").textContent = "▶ 再開"; }
+  else if (G.state === "paused"){ G.state = "playing"; document.getElementById("btnPause").textContent = "⏸ 一時停止"; }
+}
+document.getElementById("btnPause").addEventListener("click", togglePause);
+document.getElementById("btnReset").addEventListener("click", function(){ reset(); });
+document.getElementById("ovBtn").addEventListener("click", function(){
+  if (G.state === "clear" && G.stage < STAGES.length){ startStage(G.stage + 1, true); }
+  else if (G.state === "over"){ startStage(G.stage, false); }
+  else { reset(); }
+});
+document.querySelectorAll("[data-stage]").forEach(function(btn){
+  btn.addEventListener("click", function(){ startStage(parseInt(btn.getAttribute("data-stage"), 10), false); });
+});
+document.querySelectorAll("[data-goto-stage]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    startStage(parseInt(btn.getAttribute("data-goto-stage"), 10), false);
+    document.getElementById("gamePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+document.getElementById("btnAuto").addEventListener("click", function(){
+  G.auto = !G.auto; this.textContent = G.auto ? "自動出現 ON" : "自動出現 OFF";
+  this.setAttribute("aria-pressed", G.auto ? "true" : "false");
+});
+document.getElementById("btnSound").addEventListener("click", function(){
+  soundOn = !soundOn; this.textContent = soundOn ? "サウンド ON" : "サウンド OFF";
+  this.setAttribute("aria-pressed", soundOn ? "true" : "false");
+  if (soundOn) beep(880, 0.08, "square", 0.04);
+});
+document.querySelectorAll("[data-spawn]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    if (G.state === "bossDefeat" || G.state === "levelup") return;
+    var t = btn.getAttribute("data-spawn");
+    if (t === "BOSS"){ if (G.bossRef) return; G.bossSpawned = true; }
+    if (G.state === "over" || G.state === "clear"){ startStage(G.stage, false); }
+    spawnFoe(t);
+  });
+});
+
+/* ============================================================
+   図鑑カード＆パラメータ表の生成
+   ============================================================ */
+var TRAJ = {
+  A: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><line x1="248" y1="22" x2="18" y2="22" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6"/><path d="M18 22 l14 -7 v14 z" fill="#dc2626"/><circle cx="248" cy="22" r="5" fill="#dc2626"/></svg>',
+  C: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><path d="M248 22 Q 218 2, 188 22 T 128 22 T 68 22 T 14 22" fill="none" stroke="#0f766e" stroke-width="3" stroke-dasharray="8 6"/><path d="M14 22 l14 -7 v14 z" fill="#0f766e"/><circle cx="248" cy="22" r="5" fill="#0f766e"/></svg>',
+  B: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><line x1="248" y1="22" x2="196" y2="22" stroke="#b4238f" stroke-width="3" stroke-dasharray="8 6"/><rect x="188" y="10" width="18" height="24" fill="#b4238f"/><circle cx="150" cy="30" r="4" fill="#ff5d7a"/><circle cx="112" cy="36" r="4" fill="#ff5d7a"/><circle cx="74" cy="40" r="4" fill="#ff5d7a"/><path d="M30 40 l12 -4 v10 z" fill="#ff5d7a"/></svg>',
+  X: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><line x1="248" y1="22" x2="18" y2="22" stroke="#b45309" stroke-width="3" stroke-dasharray="3 7"/><path d="M18 22 l14 -7 v14 z" fill="#b45309"/><rect x="222" y="8" width="26" height="28" rx="3" fill="#eab308"/><text x="130" y="14" font-size="10" fill="#b45309" font-family="DotGothic16">ゆっくり… 時間切れで去る</text></svg>',
+  BOSS: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><rect x="216" y="6" width="34" height="32" rx="3" fill="#475569"/><path d="M216 22 h-52" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6"/><path d="M164 22 l14 -7 v14 z" fill="#ef4444"/><text x="8" y="16" font-size="10" fill="#ef4444" font-family="DotGothic16">突進</text><text x="8" y="38" font-size="10" fill="#94a3b8" font-family="DotGothic16">扇状弾＋誘導ミサイル</text></svg>'
+};
+var codexEl = document.getElementById("codex");
+["A","B","C","X","BOSS"].forEach(function(id){
+  var e = ENEMIES[id];
+  var card = document.createElement("article");
+  card.className = "card" + (id === "BOSS" ? " wide" : "");
+  var statHtml = Object.keys(e.stats).map(function(k){
+    return '<div class="stat"><span>' + k + '</span><span class="bar"><i style="width:' + e.stats[k] + '%;background:' +
+      (id==="A"?"#dc2626":id==="B"?"#b4238f":id==="C"?"#0f766e":id==="X"?"#b45309":"#475569") + '"></i></span><span class="val">' + e.stats[k] + '</span></div>';
+  }).join("");
+  card.innerHTML =
+    '<div class="card-head"><div class="sprite-box"><canvas data-sprite="' + id + '" width="10" height="10"></canvas></div>' +
+    '<div><h3><span class="code ' + (id==="BOSS"?"boss":id.toLowerCase()) + '">' + (id==="BOSS"?"BOSS":"TYPE-"+id) + '</span>' + e.name + '</h3>' +
+    '<p class="role">' + e.role + '</p></div></div>' +
+    '<div class="card-body"><p>' + e.desc + '</p>' +
+    '<div class="stats">' + statHtml + '</div>' +
+    '<div class="traj"><span class="cap">移動パターン（右から左へ）</span>' + TRAJ[id] + '</div>' +
+    '<div class="drops"><span class="chip">HP <b>' + e.hp + (id === "BOSS" ? '（S1：450／S2：630／S3：840／S4：1120／S5：1680）' : '（基準値／S1 ×2／S2 ×4／S3 ×6／S4 ×12／S5 ×18）') + '</b></span><span class="chip">スコア <b>' + e.score + '</b></span><span class="chip">ドロップ <b>' + e.drop + '</b></span><span class="chip">出現 <b>' + e.spawn + '</b></span></div>' +
+    '<button class="dl" type="button" data-dl="' + id + '">⤓ スプライトPNGをダウンロード</button></div>';
+  codexEl.appendChild(card);
+});
+/* 図鑑スプライト描画（拡大・ピクセル維持） */
+document.querySelectorAll("canvas[data-sprite]").forEach(function(c){
+  var key = c.getAttribute("data-sprite");
+  var big = spriteCanvas(key, key === "BOSS" ? 6 : 8);
+  c.width = big.width; c.height = big.height;
+  c.getContext("2d").drawImage(big, 0, 0);
+  c.style.width = ""; c.style.height = "";
+  c.parentElement.parentElement.parentElement.classList.contains("wide") ? 0 : 0;
+});
+/* 図鑑キャンバスの表示サイズ調整 */
+document.querySelectorAll("canvas[data-sprite]").forEach(function(c){
+  var maxW = c.closest(".card").classList.contains("wide") ? 200 : 120;
+  var r = Math.min(1, maxW / c.width);
+  c.style.width = (c.width * r) + "px"; c.style.height = (c.height * r) + "px";
+});
+document.querySelectorAll("[data-dl]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var key = btn.getAttribute("data-dl");
+    var big = spriteCanvas(key, 16);
+    var a = document.createElement("a");
+    a.href = big.toDataURL("image/png");
+    a.download = "enemy_" + key.toLowerCase() + "_sprite.png";
+    a.click();
+  });
+});
+/* パラメータ表 */
+var tbody = document.querySelector("#paramTable tbody");
+["A","B","C","X","BOSS"].forEach(function(id){
+  var e = ENEMIES[id], tr = document.createElement("tr");
+  var cells = [
+    ["敵ID", "<b>" + id + "</b> " + e.name], ["HP", e.hp], ["移動速度", e.speed === 0 ? "固定（上下移動）" : e.speed + " px/s"],
+    ["射撃", e.fire], ["接触ダメ", e.contact], ["スコア", e.score], ["ドロップ", e.drop], ["出現", e.spawn]
+  ];
+  tr.innerHTML = cells.map(function(c, i){ return '<td data-h="' + c[0] + '"' + (i>0 && i<6 ? ' class="num"' : '') + '>' + c[1] + '</td>'; }).join("");
+  tbody.appendChild(tr);
+});
+document.getElementById("dlJson").addEventListener("click", function(){
+  var data = {};
+  Object.keys(ENEMIES).forEach(function(id){
+    var e = ENEMIES[id];
+    data[id] = { name: e.name, role: e.role, hp: e.hp, speed_px_s: e.speed, fire: e.fire, contact_damage: e.contact, score: e.score, drop: e.drop, spawn: e.spawn };
+  });
+  var ups = UPGRADES.map(function(u){ return { id: u.id, name: u.name, max_stacks: u.max >= 99 ? "無制限" : u.max }; });
+  var blob = new Blob([JSON.stringify({ note: "仮調整値（企画書5章・7章準拠）。強化はクリスタル収集によるレベル式：必要数15個から+10ずつ増加し、レベルアップ時にランダム3択から1つ選ぶ", level_cost: "15 + (Lv-1) x 10", upgrades: ups, stages: STAGES, enemies: data }, null, 2)], { type: "application/json" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "enemy_params_all_stages.json"; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+});
+
+/* ---------- 起動 ---------- */
+reset();
+/* 初期配置：3種の敵を見せる */
+spawnFoe("A", 150); spawnFoe("C", 300); spawnFoe("B", 420);
+requestAnimationFrame(function(now){ last = now; requestAnimationFrame(frame); });
+</script>
+</body>
+</html>
