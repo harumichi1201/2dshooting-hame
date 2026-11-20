@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
 <link rel="icon" href="data:," />
-<title>敵キャラ</title>
+<title>2D_Shooting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
@@ -118,6 +118,18 @@
   .stage-card.s1 .s-no{color:var(--accent)}.stage-card.s2 .s-no{color:var(--red)}.stage-card.s3 .s-no{color:var(--magenta)}.stage-card.s4 .s-no{color:var(--teal)}.stage-card.s5 .s-no{color:var(--gold)}
   .stage-card .s-play{margin-top:12px;background:var(--panel);border:2px solid var(--ink);border-radius:4px;font-family:"DotGothic16",monospace;font-size:13px;padding:7px 14px;color:var(--ink)}
   .stage-card .s-play:hover{background:var(--ink);color:var(--bg)}
+  .stage-boss{display:flex;gap:12px;align-items:center;background:#05070f;border-radius:6px;padding:10px 12px;margin-top:12px}
+  .stage-boss canvas{image-rendering:pixelated;flex:0 0 auto;line-height:0}
+  .stage-boss p{margin:0;font-size:12.5px;color:#dbe7f5;line-height:1.55}
+  .stage-boss p b{color:#facc15;font-family:"DotGothic16",monospace;font-weight:400;display:block;font-size:12px;letter-spacing:.08em}
+  .boss-gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:12px 0 4px}
+  .boss-gallery figure{margin:0;background:#05070f;border-radius:6px;padding:10px 6px 12px;text-align:center}
+  .boss-gallery canvas{image-rendering:pixelated}
+  .boss-gallery figcaption{color:#dbe7f5;font-family:"DotGothic16",monospace;font-size:12px;line-height:1.5;margin-top:8px}
+  .boss-gallery figcaption span{display:block;color:#8fa5c0;font-size:11px;font-family:"Zen Kaku Gothic New",sans-serif;line-height:1.45;margin-top:2px}
+  .boss-gallery .dl{margin-top:8px;font-size:11px;padding:4px 9px;background:transparent;color:#dbe7f5;border-color:#33497a}
+  .boss-gallery .dl:hover{background:#dbe7f5;color:#05070f}
+  @media (max-width:720px){.boss-gallery{grid-template-columns:repeat(2,1fr)}}
   @media (prefers-reduced-motion: reduce){.warn.on{animation:none}}
   .controls{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px}
   .controls .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -194,9 +206,9 @@
 <body>
 <main>
   <div class="intro">
-    <h1>敵キャラ <span class="hl">実装デモ</span></h1>
+    <h1>2D_Shooting <span class="hl">実装デモ</span></h1>
     <span class="tag">2D横スクロールシューティング / 全5ステージ</span>
-    <p>企画書の敵仕様（5章・7章）に合わせて、ドット絵スプライトと敵AIをそのまま遊べる形で実装しました。全5ステージ構成で、ステージごとに敵の編成・背景・ボスの攻撃の組み合わせが変わります。下の画面で実際に戦いながら、各敵の動きを確認できます。</p>
+    <p>企画書の敵仕様（5章・7章）に合わせて、ドット絵スプライトと敵AIをそのまま遊べる形で実装しました。全5ステージ構成で、ステージごとに敵の編成・背景・ボスの攻撃の組み合わせとボスの見た目が変わります。下の画面で実際に戦いながら、各敵の動きを確認できます。</p>
   </div>
 
   <!-- ================= GAME ================= -->
@@ -284,7 +296,7 @@
       </div>
       <div class="card">
         <h3>3. ボスを倒して次ステージへ</h3>
-        <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します。全5ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
+        <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスの姿はステージごとに異なります（紫のドーム型スライム、緑のトゲトゲモンスター、橙色の戦闘機、暗紫色の重装メカなど）。ボスは扇状弾を連射し、突進したあとも元の位置へ戻る間ずっと自機を狙って弾を乱射してくるので、帰還中も油断できません。攻撃の間隔はステージが上がるほど短くなります（約1.55秒→約0.95秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します。全5ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
       </div>
     </div>
   </section>
@@ -315,46 +327,51 @@
 
   <section aria-label="ステージ一覧">
     <h2>全5ステージ</h2>
-    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12、ステージ5で×18になります。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型が1回の射撃で撃つ弾の数はステージ数に比例し、ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発になります。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。</p>
+    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12、ステージ5で×18になります。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型が1回の射撃で撃つ弾の数はステージ数に比例し、ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発になります。ボスの攻撃スパン（攻撃と攻撃の間）もステージごとに短くなり、約1.55秒（ステージ1）→約1.38秒→約1.22秒→約1.08秒→約0.95秒（ステージ5）です。扇状弾は1回で終わらず連射になり（2連射→3連射→3連射→4連射→4連射）、突進後に元の位置へ戻る間も自機を狙う3方向弾を乱射します（間隔は約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。ボスの見た目もステージごとに変わります（ステージ1：銀色のガーディアン機／ステージ2：紫のドーム型スライム／ステージ3：緑のトゲトゲモンスター／ステージ4：橙色の戦闘機／ステージ5：暗紫色の重装メカ）。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。</p>
     <div class="stage-grid">
       <div class="card stage-card s1">
         <div class="s-no">STAGE 1</div>
         <h3>オービタル・フロンティア</h3>
         <p class="s-theme">地球軌道上 ― 基本を学ぶ宙域</p>
-        <p>A直進型とC蛇行型が中心。中盤からB射撃型が混ざります。ボスは通常弾・ミサイル3連・突進の基本セットです。敵HPは従来の2倍（×2：A 6／B 10／C 6／ボーナス敵 60）で、B射撃型の弾は1回の射撃で1発です。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>450</b></span><span class="chip">敵HP <b>×2</b></span><span class="chip">Bの弾 <b>1発</b></span><span class="chip">難易度 <b>★☆☆</b></span></div>
+        <p>A直進型とC蛇行型が中心。中盤からB射撃型が混ざります。ボスは扇状5方向弾の2連射・ミサイル3連・突進の基本セットで、突進後の帰還中も0.34秒間隔で3方向弾を乱射します。攻撃スパンは約1.55秒です。敵HPは従来の2倍（×2：A 6／B 10／C 6／ボーナス敵 60）で、B射撃型の弾は1回の射撃で1発です。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>450</b></span><span class="chip">敵HP <b>×2</b></span><span class="chip">Bの弾 <b>1発</b></span><span class="chip">ボス攻撃間隔 <b>約1.55秒</b></span><span class="chip">扇状弾 <b>5方向×2連射</b></span><span class="chip">帰還乱射 <b>0.34秒間隔</b></span><span class="chip">難易度 <b>★☆☆</b></span></div>
+        <div class="stage-boss"><canvas data-stage-boss="BOSS" width="10" height="10" aria-label="ステージ1ボスのドット絵"></canvas><p><b>ボスの見た目</b>ガーディアン・レヴィア ― 銀色の大型ガーディアン機（従来の姿）</p></div>
         <button class="s-play" type="button" data-goto-stage="1">▶ このステージから遊ぶ</button>
       </div>
       <div class="card stage-card s2">
         <div class="s-no">STAGE 2</div>
         <h3>レッド・ネビュラ</h3>
         <p class="s-theme">赤い星雲地帯 ― 射撃型が増える宙域</p>
-        <p>出現ペースが上がり、B射撃型の比率と敵の速度がアップ。通常敵・ボーナス敵のHPは従来のステージ2分の2倍（合計×4：A 12／B 20／C 12／ボーナス敵 120）になります。B射撃型の弾は1回の射撃で2発に増えます。ボスは扇状弾が7方向に広がり、ミサイル4連＋2連続突進に変わります。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>630</b></span><span class="chip">敵HP <b>×4</b></span><span class="chip">Bの弾 <b>2発</b></span><span class="chip">難易度 <b>★★☆</b></span></div>
+        <p>出現ペースが上がり、B射撃型の比率と敵の速度がアップ。通常敵・ボーナス敵のHPは従来のステージ2分の2倍（合計×4：A 12／B 20／C 12／ボーナス敵 120）になります。B射撃型の弾は1回の射撃で2発に増えます。ボスは扇状弾が7方向×3連射に増え、ミサイル4連＋2連続突進に変わります。突進の合間に右端へ戻る間も含め、帰還中は0.29秒間隔で乱射し、攻撃スパンは約1.38秒に短くなります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>630</b></span><span class="chip">敵HP <b>×4</b></span><span class="chip">Bの弾 <b>2発</b></span><span class="chip">ボス攻撃間隔 <b>約1.38秒</b></span><span class="chip">扇状弾 <b>7方向×3連射</b></span><span class="chip">帰還乱射 <b>0.29秒間隔</b></span><span class="chip">難易度 <b>★★☆</b></span></div>
+        <div class="stage-boss"><canvas data-stage-boss="BOSS2" width="10" height="10" aria-label="ステージ2ボスのドット絵"></canvas><p><b>ボスの見た目</b>ブレイズ・ガーディアン ― 紫のドーム型スライム（赤い斑点と短い足）</p></div>
         <button class="s-play" type="button" data-goto-stage="2">▶ このステージから遊ぶ</button>
       </div>
       <div class="card stage-card s3">
         <div class="s-no">STAGE 3</div>
         <h3>アビス・ディープ</h3>
         <p class="s-theme">深淵宙域 ― 最終決戦</p>
-        <p>出現が速く、編隊も厚いステージ。通常敵・ボーナス敵のHPは従来のステージ3分の2倍（合計×6：A 18／B 36／C 18／ボーナス敵 240）。B射撃型の弾は1回の射撃で3発に増えます。ボスは扇状弾9方向とミサイル5連を同時に放ち、突進の追尾も強くなります。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>840</b></span><span class="chip">敵HP <b>×6</b></span><span class="chip">Bの弾 <b>3発</b></span><span class="chip">難易度 <b>★★★</b></span></div>
+        <p>出現が速く、編隊も厚いステージ。通常敵・ボーナス敵のHPは従来のステージ3分の2倍（合計×6：A 18／B 36／C 18／ボーナス敵 240）。B射撃型の弾は1回の射撃で3発に増えます。ボスは扇状弾9方向×3連射とミサイル5連を同時に放ち、突進の追尾も強くなります。帰還乱射は0.25秒間隔、攻撃スパンは約1.22秒です。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>840</b></span><span class="chip">敵HP <b>×6</b></span><span class="chip">Bの弾 <b>3発</b></span><span class="chip">ボス攻撃間隔 <b>約1.22秒</b></span><span class="chip">扇状弾 <b>9方向×3連射</b></span><span class="chip">帰還乱射 <b>0.25秒間隔</b></span><span class="chip">難易度 <b>★★★</b></span></div>
+        <div class="stage-boss"><canvas data-stage-boss="BOSS3" width="10" height="10" aria-label="ステージ3ボスのドット絵"></canvas><p><b>ボスの見た目</b>アビス・レヴィア ― 緑のトゲトゲモンスター（大きな黄色い目と触手）</p></div>
         <button class="s-play" type="button" data-goto-stage="3">▶ このステージから遊ぶ</button>
       </div>
       <div class="card stage-card s4">
         <div class="s-no">STAGE 4</div>
         <h3>イベント・ホライズン</h3>
         <p class="s-theme">ブラックホール近傍 ― 重力が歪む宙域</p>
-        <p>出現ペースと敵の速度がさらに上がります。通常敵・ボーナス敵のHPは従来のステージ4分の2倍（合計×12：A 36／B 72／C 36／ボーナス敵 480）。B射撃型の弾は1回の射撃で4発に増えます。ボスは扇状弾11方向・ミサイル6連を放ち、突進も速くなります。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1120</b></span><span class="chip">敵HP <b>×12</b></span><span class="chip">Bの弾 <b>4発</b></span><span class="chip">難易度 <b>★★★★☆</b></span></div>
+        <p>出現ペースと敵の速度がさらに上がります。通常敵・ボーナス敵のHPは従来のステージ4分の2倍（合計×12：A 36／B 72／C 36／ボーナス敵 480）。B射撃型の弾は1回の射撃で4発に増えます。ボスは扇状弾11方向×4連射・ミサイル6連を放ち、突進も速くなります。帰還乱射は0.21秒間隔、攻撃スパンは約1.08秒です。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1120</b></span><span class="chip">敵HP <b>×12</b></span><span class="chip">Bの弾 <b>4発</b></span><span class="chip">ボス攻撃間隔 <b>約1.08秒</b></span><span class="chip">扇状弾 <b>11方向×4連射</b></span><span class="chip">帰還乱射 <b>0.21秒間隔</b></span><span class="chip">難易度 <b>★★★★☆</b></span></div>
+        <div class="stage-boss"><canvas data-stage-boss="BOSS4" width="10" height="10" aria-label="ステージ4ボスのドット絵"></canvas><p><b>ボスの見た目</b>ヴォイド・レヴィア ― 橙色の戦闘機（青いコックピットと大きく広がる翼）</p></div>
         <button class="s-play" type="button" data-goto-stage="4">▶ このステージから遊ぶ</button>
       </div>
       <div class="card stage-card s5">
         <div class="s-no">STAGE 5</div>
         <h3>ギャラクティック・コア</h3>
         <p class="s-theme">銀河中心核 ― 真の最終決戦</p>
-        <p>最も出現が速く、編隊も厚い最終ステージ。通常敵・ボーナス敵のHPは従来のステージ5分の2倍（合計×18：A 54／B 108／C 54／ボーナス敵 720）。B射撃型の弾は1回の射撃で5発に増えます。ボスは扇状弾13方向＋ミサイル7連の複合攻撃に加え、3連続突進で襲いかかります。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1680</b></span><span class="chip">敵HP <b>×18</b></span><span class="chip">Bの弾 <b>5発</b></span><span class="chip">難易度 <b>★★★★★</b></span></div>
+        <p>最も出現が速く、編隊も厚い最終ステージ。通常敵・ボーナス敵のHPは従来のステージ5分の2倍（合計×18：A 54／B 108／C 54／ボーナス敵 720）。B射撃型の弾は1回の射撃で5発に増えます。ボスは扇状弾13方向×4連射＋ミサイル7連の複合攻撃に加え、3連続突進で襲いかかります。帰還乱射は最速の0.18秒間隔、攻撃スパンは約0.95秒と最も短くなります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1680</b></span><span class="chip">敵HP <b>×18</b></span><span class="chip">Bの弾 <b>5発</b></span><span class="chip">ボス攻撃間隔 <b>約0.95秒</b></span><span class="chip">扇状弾 <b>13方向×4連射</b></span><span class="chip">帰還乱射 <b>0.18秒間隔</b></span><span class="chip">難易度 <b>★★★★★</b></span></div>
+        <div class="stage-boss"><canvas data-stage-boss="BOSS5" width="10" height="10" aria-label="ステージ5ボスのドット絵"></canvas><p><b>ボスの見た目</b>カオス・レヴィア ― 暗紫色の重装メカ（赤い目と青い爪、トゲ状の装甲）</p></div>
         <button class="s-play" type="button" data-goto-stage="5">▶ このステージから遊ぶ</button>
       </div>
     </div>
@@ -370,7 +387,7 @@
   <!-- ================= PARAMS ================= -->
   <section aria-label="実装パラメータ">
     <h2>実装パラメータ（全5ステージ・仮調整値）</h2>
-    <p class="sec-lead">このデモで実際に使っている数値です。下表のHPは基準値で、通常敵・ボーナス敵のHPには従来の2倍となる倍率がかかります（ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18）。実際のHPは、ステージ1：A 6／B 10／C 6／ボーナス敵 60、ステージ2：A 12／B 20／C 12／ボーナス敵 120、ステージ3：A 18／B 36／C 18／ボーナス敵 240、ステージ4：A 36／B 72／C 36／ボーナス敵 480、ステージ5：A 54／B 108／C 54／ボーナス敵 720 です。ボスHPも従来の2倍でステージ別設定（450／630／840／1120／1680）です。B射撃型の弾数はステージ数に比例します（ステージ1で1発、2で2発、3で3発、4で4発、5で5発）。そのほか速度・出現間隔とボス攻撃の組み合わせにもステージ倍率がかかります。JSONで書き出してチームの実装に渡せます。</p>
+    <p class="sec-lead">このデモで実際に使っている数値です。下表のHPは基準値で、通常敵・ボーナス敵のHPには従来の2倍となる倍率がかかります（ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18）。実際のHPは、ステージ1：A 6／B 10／C 6／ボーナス敵 60、ステージ2：A 12／B 20／C 12／ボーナス敵 120、ステージ3：A 18／B 36／C 18／ボーナス敵 240、ステージ4：A 36／B 72／C 36／ボーナス敵 480、ステージ5：A 54／B 108／C 54／ボーナス敵 720 です。ボスHPも従来の2倍でステージ別設定（450／630／840／1120／1680）です。B射撃型の弾数はステージ数に比例します（ステージ1で1発、2で2発、3で3発、4で4発、5で5発）。ボスの攻撃スパンはステージごとに短くなります（約1.55秒／1.38秒／1.22秒／1.08秒／0.95秒）。扇状弾の連射回数（2／3／3／4／4回）、連射間隔（0.38秒／0.34秒／0.30秒／0.27秒／0.24秒）、突進後の帰還時乱射の間隔（0.34秒／0.29秒／0.25秒／0.21秒／0.18秒、3方向弾）もステージごとに短く・多くなります。そのほか速度・出現間隔とボス攻撃の組み合わせにもステージ倍率がかかります。JSONで書き出してチームの実装に渡せます（JSONにはボスの新パラメータも含まれます）。</p>
     <div class="params">
       <table id="paramTable">
         <thead><tr><th>敵ID</th><th>HP</th><th>移動速度</th><th>射撃</th><th>接触ダメ</th><th>スコア</th><th>ドロップ</th><th>出現</th></tr></thead>
@@ -400,7 +417,9 @@ var PAL = {
   P:"#c026d3", p:"#701a75", M:"#f0abfc",
   G:"#16a34a", T:"#2dd4bf", g:"#bbf7d0",
   A:"#eab308", a:"#92600a", E:"#22d3ee",
-  S:"#94a3b8", s:"#475569", d:"#26314a"
+  S:"#94a3b8", s:"#475569", d:"#26314a",
+  L:"#a3e635", j:"#d9f99d", l:"#65a30d",
+  N:"#2a2356", V:"#7c3aed", v:"#4c1d95"
 };
 var SPRITES = {
   player: { scale: 3, map: [
@@ -508,6 +527,87 @@ var SPRITES = {
     "....SSSSSSSSSSSSSSSS......",
     ".....SS..SSSS..SS........."
   ]},
+  /* ステージ2ボス：紫のドーム型スライム（提供イラスト最下段・左端） */
+  BOSS2: { scale: 3, map: [
+    "........KKKKKKKK........",
+    "......KKMMMMMMMMKK......",
+    ".....KMMMMPPPPPPPPK.....",
+    "....KMPPPPPPPPPPPPK.....",
+    "...KPPPPFPPPPPPFPPK.....",
+    "..KPPPPPPPPPPPPPPPPK....",
+    "..KPPFPPPPPPFPPPPPPK....",
+    ".KPPPPPPPPPPPPPPPPPPK...",
+    ".KPPPPPFPPPPPPFPPPPPK...",
+    ".KPPPPPPPPPPPPPPPPPPK...",
+    ".KpPPPPPPPPPPPPPPPPpK...",
+    ".KpPPFPPPPPPPPFPPPPpK...",
+    "..KppppppppppppppppK....",
+    "..KKKKKKKKKKKKKKKKKK....",
+    "...KPK..KPK..KPK.KPK....",
+    "...KPK..KPK..KPK.KPK....",
+    "..KPPK.KPPK.KPPK.KPPK...",
+    "..KKKK.KKKK.KKKK.KKKK..."
+  ]},
+  /* ステージ3ボス：緑のトゲトゲモンスター（提供イラスト最下段・左から2体目） */
+  BOSS3: { scale: 3, map: [
+    "......K.K.K.K.K.K.......",
+    ".....KLKLKLKLKLKLK......",
+    "....KLLLLLLLLLLLLLK.....",
+    "...KLjjLLLLLLLLLLLLK....",
+    "..KLYYYYKLLLLLLLLLLK....",
+    ".KLLYKYYYKLLGGLLLLLK....",
+    ".KLLYYYYKLLLLLLLLLLK....",
+    "KKLLLLLLLLLLLLLLLLLK....",
+    "KLLKKLLGGLLLLLGGLLK.....",
+    ".KKLLLLLLLLLLLLLLK......",
+    "KL.KGLLLLLLLLLLKLLK.....",
+    "KLL.KKLLLLLLLLK.KLK.....",
+    ".KK..KGLLKLLKGLLK.......",
+    "......KLLK.KLLK.KLLK....",
+    ".....KLjLK.KLjK.KLjK....",
+    ".....KKKK..KKKK..KKK...."
+  ]},
+  /* ステージ4ボス：橙色の戦闘機（提供イラスト最下段・左から3体目） */
+  BOSS4: { scale: 3, map: [
+    "...................KFFK.",
+    "..................KOOFFK",
+    ".................KOOOFFK",
+    "................KOOOFFK.",
+    "...............KOOOOOK..",
+    "..............KOOOOOK...",
+    ".............KOOOOOK....",
+    "....KKKKKKKKKOOOOOK.....",
+    "FFOOOOCCCCOOOOOOOOK.....",
+    "FFOOOOCCCCCOOOOOOOK.....",
+    "...KOOOssssssOOOOOK.....",
+    "....KKKKKKKKKOOOOOK.....",
+    ".............KOOOOOK....",
+    "..............KOOOOOK...",
+    "...............KOOOOOK..",
+    "................KOOOFFK.",
+    ".................KOOFFK.",
+    "...................KFFK."
+  ]},
+  /* ステージ5ボス：暗紫色の重装メカ（提供イラスト最下段・右端） */
+  BOSS5: { scale: 3, map: [
+    "...KVK..K.K..KVK........",
+    "...KVVK.KVK.KVVK........",
+    "....KNNKKKKKKNNK........",
+    "...KNNNNNNNNNNNNK.......",
+    "..KNNFNNNVNNNFNNNK......",
+    "..KNNNNNNNNNNNNNNK......",
+    ".KKNNVVVNNNVVVNNNKK.....",
+    "KBBKNNVVVVVVVNNNKBBK....",
+    "KBWBKNNNVVVNNNKBBBK.....",
+    "KBBBKKNNNNNNNKK.KBK.....",
+    ".KBBK.KNNNNNK..KBBK.....",
+    "..KK..KNNKNNK...KK......",
+    "......KNNK.KNNK.........",
+    "......KNNK.KNNK.........",
+    ".....KNNNK.KNNNK........",
+    ".....KBBBK.KBBBK........",
+    ".....KKKKK.KKKKK........"
+  ]},
   crystal: { scale: 2, map: [
     "...EE...",
     "..EWWE..",
@@ -566,8 +666,8 @@ var ENEMIES = {
   X: { name:"ゴールド・キャリアー", role:"高耐久のボーナス敵 ― クリスタル大量ドロップ", hp:30, speed:46, fire:"なし", contact:1, score:1000, drop:"クリスタル×10", spawn:"約35秒ごと",
        desc:"一般の敵よりはるかに硬い大型輸送機。ゆっくり左へ進み、一定時間で画面外へ去ってしまいます。倒すとクリスタル×10を落とすので、クリスタルを一定数集めるとレベルアップして強化をランダム3択から選べる仕組みの大きな近道になります。倒さなくてもステージは進むので、「余裕があれば狙う」追加報酬として配置するのが企画書の方針です。",
        stats:{ "HP":95, "速度":20, "火力":10, "耐久":95 } },
-  BOSS: { name:"ガーディアン・レヴィア", role:"全ステージ ボス ― 3種の攻撃（ステージで組み合わせ変化）", hp:450, speed:0, fire:"通常弾／ミサイル／突進", contact:2, score:5000, drop:"―（ステージクリア）", spawn:"60秒後 or 手動出現",
-       desc:"画面右に陣取り、①扇状の通常弾 ②予告つき連続ミサイル ③後退して光ってから突進、の3攻撃を繰り返します。ステージが進むと弾の数も増えます（ステージ1：扇状5方向・ミサイル3連／ステージ2：扇状7方向・ミサイル4連・2連続突進／ステージ3：扇状9方向＋ミサイル5連の同時攻撃／ステージ4：扇状11方向・ミサイル6連／ステージ5：扇状13方向＋ミサイル7連の同時攻撃・3連続突進）。HPが減ると攻撃間隔が短くなりますが、すべての攻撃に予兆があり、通常移動だけで回避できる調整です。②のミサイルはボスから十分に離れると黄色く点滅し、その後はボス自身にも当たるようになります（1発7ダメージ＋300点）。ミサイルを引きつけてボスへ近づき、直前でかわせば誘導してぶつけられます。追尾は約3秒で切れ、その後はまっすぐ飛びます。",
+  BOSS: { name:"ガーディアン・レヴィア", role:"全ステージ ボス ― 姿はステージごとに変化／3種の攻撃＋帰還時乱射（ステージで組み合わせ変化）", hp:450, speed:0, fire:"扇状弾連射／ミサイル／突進＋帰還時乱射", contact:2, score:5000, drop:"―（ステージクリア）", spawn:"60秒後 or 手動出現",
+       desc:"ボスの姿はステージごとに変わります。ステージ1は銀色の大型ガーディアン機、ステージ2は紫のドーム型スライム（赤い斑点と短い足）、ステージ3は緑のトゲトゲモンスター（大きな黄色い目と触手）、ステージ4は橙色の戦闘機（青いコックピットと大きく広がる翼）、ステージ5は暗紫色の重装メカ（赤い目と青い爪）です。攻撃の仕組みは共通で、画面右に陣取り、①扇状の通常弾を間を置かずに連射 ②予告つき連続ミサイル ③後退して光ってから突進、の3攻撃を繰り返します。突進のあとは無防備に帰るのではなく、元の位置へ戻る間も自機を狙う3方向の弾を一定間隔で乱射し続けます（再突進のために右端へ戻る間も同じ）。攻撃と攻撃の間（攻撃スパン）はステージごとに短くなります（ステージ1：約1.55秒→ステージ2：約1.38秒→ステージ3：約1.22秒→ステージ4：約1.08秒→ステージ5：約0.95秒）。扇状弾の連射回数も増えます（ステージ1：5方向×2連射／ステージ2：7方向×3連射・ミサイル4連・2連続突進／ステージ3：9方向×3連射＋ミサイル5連の同時攻撃／ステージ4：11方向×4連射・ミサイル6連／ステージ5：13方向×4連射＋ミサイル7連の同時攻撃・3連続突進）。帰還時乱射の間隔もステージごとに短くなります（約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。HPが減ると攻撃間隔がさらに短くなりますが、ミサイルと突進には予兆があり、通常移動だけで回避できる調整です。②のミサイルはボスから十分に離れると黄色く点滅し、その後はボス自身にも当たるようになります（1発7ダメージ＋300点）。ミサイルを引きつけてボスへ近づき、直前でかわせば誘導してぶつけられます。追尾は約3秒で切れ、その後はまっすぐ飛びます。",
        stats:{ "HP":100, "速度":30, "火力":90, "耐久":100 } }
 };
 
@@ -575,11 +675,11 @@ var ENEMIES = {
    ステージ定義（全5ステージ）
    ============================================================ */
 var STAGES = [
-  { id:1, theme:"オービタル・フロンティア", duration:60, spawnMin:0.95, spawnVar:0.7, doubleChance:0.30, speedMul:1.0, hpMul:2.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:1, bossName:"ガーディアン・レヴィア", bossHp:450, bossScore:5000, fanCount:5, fanSpeed:250, missileCount:3, chargeRepeat:1, planet:"#101c33", planet2:"#16283f", nebula:null },
-  { id:2, theme:"レッド・ネビュラ", duration:60, spawnMin:0.78, spawnVar:0.55, doubleChance:0.42, speedMul:1.12, hpMul:4.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:2, bossName:"ブレイズ・ガーディアン", bossHp:630, bossScore:7000, fanCount:7, fanSpeed:272, missileCount:4, chargeRepeat:2, planet:"#33161a", planet2:"#47202a", nebula:"rgba(185,28,28,.10)" },
-  { id:3, theme:"アビス・ディープ", duration:60, spawnMin:0.62, spawnVar:0.45, doubleChance:0.55, speedMul:1.24, hpMul:6.0, hpBonus:{A:0,B:6,C:0,X:60}, bBullets:3, bossName:"アビス・レヴィア", bossHp:840, bossScore:10000, fanCount:9, fanSpeed:295, missileCount:5, chargeRepeat:2, planet:"#241233", planet2:"#331a4a", nebula:"rgba(147,51,234,.10)" },
-  { id:4, theme:"イベント・ホライズン", duration:60, spawnMin:0.55, spawnVar:0.40, doubleChance:0.62, speedMul:1.32, hpMul:12.0, hpBonus:{A:0,B:12,C:0,X:120}, bBullets:4, bossName:"ヴォイド・レヴィア", bossHp:1120, bossScore:14000, fanCount:11, fanSpeed:310, missileCount:6, chargeRepeat:2, planet:"#0f2a2e", planet2:"#17403f", nebula:"rgba(45,212,191,.08)" },
-  { id:5, theme:"ギャラクティック・コア", duration:60, spawnMin:0.48, spawnVar:0.35, doubleChance:0.70, speedMul:1.40, hpMul:18.0, hpBonus:{A:0,B:18,C:0,X:180}, bBullets:5, bossName:"カオス・レヴィア", bossHp:1680, bossScore:20000, fanCount:13, fanSpeed:325, missileCount:7, chargeRepeat:3, planet:"#33101f", planet2:"#4a1730", nebula:"rgba(234,179,8,.10)" }
+  { id:1, theme:"オービタル・フロンティア", duration:60, spawnMin:0.95, spawnVar:0.7, doubleChance:0.30, speedMul:1.0, hpMul:2.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:1, bossName:"ガーディアン・レヴィア", bossSprite:"BOSS", bossLook:"銀色の大型ガーディアン機", bossHp:450, bossScore:5000, fanCount:5, fanSpeed:250, missileCount:3, chargeRepeat:1, bossAtkInterval:1.55, fanBurst:2, fanBurstInterval:0.38, returnFireInterval:0.34, returnSpeed:250, chargeReturnSpeed:430, warnMissile:0.60, warnCharge:0.72, planet:"#101c33", planet2:"#16283f", nebula:null },
+  { id:2, theme:"レッド・ネビュラ", duration:60, spawnMin:0.78, spawnVar:0.55, doubleChance:0.42, speedMul:1.12, hpMul:4.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:2, bossName:"ブレイズ・ガーディアン", bossSprite:"BOSS2", bossLook:"紫のドーム型スライム（赤い斑点と短い足）", bossHp:630, bossScore:7000, fanCount:7, fanSpeed:272, missileCount:4, chargeRepeat:2, bossAtkInterval:1.38, fanBurst:3, fanBurstInterval:0.34, returnFireInterval:0.29, returnSpeed:270, chargeReturnSpeed:460, warnMissile:0.55, warnCharge:0.66, planet:"#33161a", planet2:"#47202a", nebula:"rgba(185,28,28,.10)" },
+  { id:3, theme:"アビス・ディープ", duration:60, spawnMin:0.62, spawnVar:0.45, doubleChance:0.55, speedMul:1.24, hpMul:6.0, hpBonus:{A:0,B:6,C:0,X:60}, bBullets:3, bossName:"アビス・レヴィア", bossSprite:"BOSS3", bossLook:"緑のトゲトゲモンスター（大きな黄色い目と触手）", bossHp:840, bossScore:10000, fanCount:9, fanSpeed:295, missileCount:5, chargeRepeat:2, bossAtkInterval:1.22, fanBurst:3, fanBurstInterval:0.30, returnFireInterval:0.25, returnSpeed:290, chargeReturnSpeed:490, warnMissile:0.50, warnCharge:0.60, planet:"#241233", planet2:"#331a4a", nebula:"rgba(147,51,234,.10)" },
+  { id:4, theme:"イベント・ホライズン", duration:60, spawnMin:0.55, spawnVar:0.40, doubleChance:0.62, speedMul:1.32, hpMul:12.0, hpBonus:{A:0,B:12,C:0,X:120}, bBullets:4, bossName:"ヴォイド・レヴィア", bossSprite:"BOSS4", bossLook:"橙色の戦闘機（青いコックピットと大きく広がる翼）", bossHp:1120, bossScore:14000, fanCount:11, fanSpeed:310, missileCount:6, chargeRepeat:2, bossAtkInterval:1.08, fanBurst:4, fanBurstInterval:0.27, returnFireInterval:0.21, returnSpeed:310, chargeReturnSpeed:520, warnMissile:0.46, warnCharge:0.55, planet:"#0f2a2e", planet2:"#17403f", nebula:"rgba(45,212,191,.08)" },
+  { id:5, theme:"ギャラクティック・コア", duration:60, spawnMin:0.48, spawnVar:0.35, doubleChance:0.70, speedMul:1.40, hpMul:18.0, hpBonus:{A:0,B:18,C:0,X:180}, bBullets:5, bossName:"カオス・レヴィア", bossSprite:"BOSS5", bossLook:"暗紫色の重装メカ（赤い目と青い爪、トゲ状の装甲）", bossHp:1680, bossScore:20000, fanCount:13, fanSpeed:325, missileCount:7, chargeRepeat:3, bossAtkInterval:0.95, fanBurst:4, fanBurstInterval:0.24, returnFireInterval:0.18, returnSpeed:330, chargeReturnSpeed:550, warnMissile:0.42, warnCharge:0.50, planet:"#33101f", planet2:"#4a1730", nebula:"rgba(234,179,8,.10)" }
 ];
 function stageCfg(){ return STAGES[(G && G.stage ? G.stage : 1) - 1]; }
 
@@ -825,9 +925,12 @@ function spawnFoe(type, y){
   var foe = {
     type: type, x: W + 50, y: (y !== undefined ? y : 60 + Math.random() * (H - 120)),
     hp: bossHp, maxHp: bossHp, t: Math.random() * 6.28, fireT: 1 + Math.random(),
-    baseY: 0, state: "enter", stateT: 0, atkT: 2.2, atk: 0, warned: false, vx: 0, chargeCount: 0
+    baseY: 0, state: "enter", stateT: 0, atkT: type === "BOSS" ? (sc.bossAtkInterval || 1.55) : 2.2, atk: 0, warned: false, vx: 0, chargeCount: 0,
+    burstLeft: 0, burstT: 0, returnFireT: 0, sprayAlt: 0
   };
   foe.baseY = foe.y;
+  /* ボスの見た目はステージごとに切り替える（S1:従来機／S2:紫ドーム／S3:緑モンスター／S4:橙戦闘機／S5:暗紫メカ） */
+  foe.sprite = type === "BOSS" ? (sc.bossSprite || "BOSS") : type;
   if (type === "X"){ foe.y = 90 + Math.random() * 120; foe.baseY = foe.y; }
   if (type === "BOSS"){
     foe.x = W + 90; foe.y = H/2; foe.baseY = H/2;
@@ -1027,12 +1130,42 @@ function foeUpdate(f, dt){
     bossUpdate(f, dt);
   }
 }
+/* ボスの扇状弾：ステージごとの方向数で左向きに広げる */
+function bossFireFan(f, sc){
+  var half = (sc.fanCount - 1) / 2;
+  for (var i = -half; i <= half; i++){
+    var a = Math.PI + i * 0.21;
+    G.ebullets.push({ x: f.x - 55, y: f.y, vx: Math.cos(a)*sc.fanSpeed, vy: Math.sin(a)*sc.fanSpeed });
+  }
+}
+/* 帰還時の乱射：自機を狙う3方向弾。ボスが画面左端から右の定位置へ戻る間も、
+   再突進のために右端へ戻る間も撃ち続ける。自機がボスの右側にいても狙えるよう中心から発射する */
+function bossFireReturnSpray(f, sc){
+  var p = G.player;
+  var baseA = Math.atan2(p.y - f.y, p.x - f.x);
+  f.sprayAlt = (f.sprayAlt || 0) + 1;
+  var jitter = (f.sprayAlt % 2 === 0 ? 0.07 : -0.07);
+  var spd = Math.max(235, sc.fanSpeed * 0.94);
+  [-0.27, 0, 0.27].forEach(function(off){
+    var aa = baseA + off + jitter;
+    G.ebullets.push({ x: f.x, y: f.y, vx: Math.cos(aa)*spd, vy: Math.sin(aa)*spd });
+  });
+  beep(660, 0.06, "square", 0.025);
+}
+function bossReturnFireTick(f, dt, sc){
+  f.returnFireT -= dt;
+  if (f.returnFireT <= 0){
+    bossFireReturnSpray(f, sc);
+    f.returnFireT = sc.returnFireInterval || 0.3;
+  }
+}
 function bossUpdate(f, dt){
   var p = G.player;
   var sc = stageCfg();
+  var atkInterval = sc.bossAtkInterval || 1.55;
   if (f.state === "enter"){
     f.x -= 105 * dt;
-    if (f.x <= W - 150){ f.x = W - 150; f.state = "fight"; f.stateT = 0; }
+    if (f.x <= W - 150){ f.x = W - 150; f.state = "fight"; f.stateT = 0; f.atkT = Math.min(f.atkT, atkInterval); }
     return;
   }
   if (f.state === "fight"){
@@ -1040,24 +1173,31 @@ function bossUpdate(f, dt){
     f.atkT -= dt * (f.hp < f.maxHp * 0.5 ? 1.35 : 1);
     if (f.atkT <= 0){
       f.atk = (f.atk + 1) % 3;
-      if (f.atk === 0){ /* 通常弾：扇状（ステージで方向数が変わる） */
-        var half = (sc.fanCount - 1) / 2;
-        for (var i = -half; i <= half; i++){
-          var a = Math.PI + i * 0.21;
-          G.ebullets.push({ x: f.x - 55, y: f.y, vx: Math.cos(a)*sc.fanSpeed, vy: Math.sin(a)*sc.fanSpeed });
-        }
-        /* ステージ3以降は扇状弾と同時にミサイルも1発放つ複合攻撃 */
-        if (sc.id >= 3) G.missiles.push({ x: f.x - 50, y: f.y + 34, vx: -130, vy: 30, t: 0, turn: 2.4, armed: false });
-        beep(520, 0.1, "square", 0.04); f.atkT = sc.id >= 5 ? 1.9 : sc.id >= 3 ? 2.1 : 2.4;
+      if (f.atk === 0){ /* 通常弾：扇状を連射する状態へ（1回で終わらせず burst 回続ける） */
+        f.state = "fanBurst"; f.stateT = 0; f.burstLeft = sc.fanBurst || 2; f.burstT = 0;
       } else if (f.atk === 1){ /* 連続ミサイル：予告→ステージ数に応じた連射 */
         f.state = "missileWarn"; f.stateT = 0; f.warned = true;
       } else { /* 突進：後退して予兆 */
         f.state = "chargeWarn"; f.stateT = 0; f.chargeCount = 0;
       }
     }
+  } else if (f.state === "fanBurst"){
+    /* 扇状弾の連射：fanBurstInterval ごとに1斉射。合間も通常の上下移動を続ける */
+    f.y += (f.baseY + Math.sin(f.t * 0.7) * 95 - f.y) * dt * 2;
+    f.burstT -= dt;
+    if (f.burstT <= 0){
+      var isFirstVolley = (f.burstLeft === (sc.fanBurst || 2));
+      bossFireFan(f, sc);
+      /* ステージ3以降は連射の初弾と同時にミサイルも1発放つ複合攻撃（連射全弾では多すぎるため初弾のみ） */
+      if (isFirstVolley && sc.id >= 3) G.missiles.push({ x: f.x - 50, y: f.y + 34, vx: -130, vy: 30, t: 0, turn: 2.4, armed: false });
+      beep(520, 0.1, "square", 0.04);
+      f.burstLeft -= 1;
+      f.burstT = sc.fanBurstInterval || 0.34;
+      if (f.burstLeft <= 0){ f.state = "fight"; f.stateT = 0; f.atkT = atkInterval; }
+    }
   } else if (f.state === "missileWarn"){
-    if (f.stateT > 0.7){
-      f.state = "fight"; f.atkT = 2.6; f.warned = false;
+    if (f.stateT > (sc.warnMissile || 0.6)){
+      f.state = "fight"; f.atkT = atkInterval; f.warned = false;
       var mc = sc.missileCount, mid = (mc - 1) / 2;
       for (var m = 0; m < mc; m++)
         G.missiles.push({ x: f.x - 50, y: f.y - 30 + m * (60 / Math.max(1, mc - 1)) , vx: -120 - m*22, vy: (m - mid)*36, t: -m * 0.28, turn: sc.id >= 5 ? 3.2 : sc.id >= 3 ? 2.9 : 2.4, armed: false });
@@ -1065,22 +1205,26 @@ function bossUpdate(f, dt){
     }
   } else if (f.state === "chargeWarn"){
     f.x += 130 * dt;
-    if (f.stateT > 0.85){ f.state = "charging"; f.stateT = 0; f.vx = sc.id >= 5 ? -660 : sc.id === 1 ? -560 : -610; f.chargeY = p.y; beep(140, 0.25, "sawtooth", 0.06); }
+    if (f.stateT > (sc.warnCharge || 0.72)){ f.state = "charging"; f.stateT = 0; f.vx = sc.id >= 5 ? -660 : sc.id === 1 ? -560 : -610; f.chargeY = p.y; beep(140, 0.25, "sawtooth", 0.06); }
   } else if (f.state === "charging"){
     f.x += f.vx * dt;
     f.y += (f.chargeY - f.y) * dt * (sc.id >= 5 ? 5.0 : sc.id >= 3 ? 4.4 : 3.2);
     if (f.x < 130){
       f.chargeCount = (f.chargeCount || 0) + 1;
-      /* ステージ2・3は突進を2回繰り返す：一度右へ戻ってから再度予兆→突進 */
-      if (f.chargeCount < sc.chargeRepeat){ f.state = "chargeReturn"; }
-      else f.state = "return";
+      /* 突進後は帰還中も乱射する：最初の1射はほぼ即座に出す */
+      f.returnFireT = 0.10;
+      /* ステージ2・3は突進を2回繰り返す：一度右へ戻ってから再度予兆→突進（戻る間も乱射） */
+      if (f.chargeCount < sc.chargeRepeat){ f.state = "chargeReturn"; f.stateT = 0; }
+      else { f.state = "return"; f.stateT = 0; }
     }
   } else if (f.state === "chargeReturn"){
-    f.x += 430 * dt; f.y += (f.baseY - f.y) * dt * 2;
+    f.x += (sc.chargeReturnSpeed || 430) * dt; f.y += (f.baseY - f.y) * dt * 2;
+    bossReturnFireTick(f, dt, sc);
     if (f.x >= W - 150){ f.x = W - 150; f.state = "chargeWarn"; f.stateT = 0; }
   } else if (f.state === "return"){
-    f.x += 190 * dt; f.y += (f.baseY - f.y) * dt * 2;
-    if (f.x >= W - 150){ f.x = W - 150; f.state = "fight"; f.atkT = 2.2; }
+    f.x += (sc.returnSpeed || 250) * dt; f.y += (f.baseY - f.y) * dt * 2;
+    bossReturnFireTick(f, dt, sc);
+    if (f.x >= W - 150){ f.x = W - 150; f.state = "fight"; f.stateT = 0; f.atkT = atkInterval * 0.7; }
   }
 }
 
@@ -1330,7 +1474,7 @@ function render(){
   G.foes.forEach(function(f){
     if (f.hit > 0){ ctx.save(); ctx.globalAlpha = 0.55; }
     var bobY = f.type === "B" ? Math.sin(f.t * 2.2) * 3 : 0;
-    drawSprite(ctx, f.type, f.x, f.y + bobY);
+    drawSprite(ctx, f.sprite || f.type, f.x, f.y + bobY);
     if (f.hit > 0) ctx.restore();
     /* Bのチャージ予兆 */
     if (f.type === "B" && f.charge){
@@ -1503,7 +1647,7 @@ var TRAJ = {
   C: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><path d="M248 22 Q 218 2, 188 22 T 128 22 T 68 22 T 14 22" fill="none" stroke="#0f766e" stroke-width="3" stroke-dasharray="8 6"/><path d="M14 22 l14 -7 v14 z" fill="#0f766e"/><circle cx="248" cy="22" r="5" fill="#0f766e"/></svg>',
   B: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><line x1="248" y1="22" x2="196" y2="22" stroke="#b4238f" stroke-width="3" stroke-dasharray="8 6"/><rect x="188" y="10" width="18" height="24" fill="#b4238f"/><circle cx="150" cy="30" r="4" fill="#ff5d7a"/><circle cx="112" cy="36" r="4" fill="#ff5d7a"/><circle cx="74" cy="40" r="4" fill="#ff5d7a"/><path d="M30 40 l12 -4 v10 z" fill="#ff5d7a"/></svg>',
   X: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><line x1="248" y1="22" x2="18" y2="22" stroke="#b45309" stroke-width="3" stroke-dasharray="3 7"/><path d="M18 22 l14 -7 v14 z" fill="#b45309"/><rect x="222" y="8" width="26" height="28" rx="3" fill="#eab308"/><text x="130" y="14" font-size="10" fill="#b45309" font-family="DotGothic16">ゆっくり… 時間切れで去る</text></svg>',
-  BOSS: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><rect x="216" y="6" width="34" height="32" rx="3" fill="#475569"/><path d="M216 22 h-52" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6"/><path d="M164 22 l14 -7 v14 z" fill="#ef4444"/><text x="8" y="16" font-size="10" fill="#ef4444" font-family="DotGothic16">突進</text><text x="8" y="38" font-size="10" fill="#94a3b8" font-family="DotGothic16">扇状弾＋誘導ミサイル</text></svg>'
+  BOSS: '<svg viewBox="0 0 260 44" width="100%" height="44" aria-hidden="true"><rect x="216" y="6" width="34" height="32" rx="3" fill="#475569"/><path d="M216 22 h-52" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6"/><path d="M164 22 l14 -7 v14 z" fill="#ef4444"/><text x="8" y="16" font-size="10" fill="#ef4444" font-family="DotGothic16">突進→帰還も乱射</text><text x="8" y="38" font-size="10" fill="#94a3b8" font-family="DotGothic16">扇状弾連射＋誘導ミサイル</text></svg>'
 };
 var codexEl = document.getElementById("codex");
 ["A","B","C","X","BOSS"].forEach(function(id){
@@ -1519,6 +1663,11 @@ var codexEl = document.getElementById("codex");
     '<div><h3><span class="code ' + (id==="BOSS"?"boss":id.toLowerCase()) + '">' + (id==="BOSS"?"BOSS":"TYPE-"+id) + '</span>' + e.name + '</h3>' +
     '<p class="role">' + e.role + '</p></div></div>' +
     '<div class="card-body"><p>' + e.desc + '</p>' +
+    (id === "BOSS" ? '<div class="boss-gallery">' + STAGES.map(function(st){
+      return '<figure><canvas data-sprite="' + st.bossSprite + '" data-gallery="1" width="10" height="10"></canvas>' +
+        '<figcaption>STAGE ' + st.id + '：' + st.bossName + '<span>' + st.bossLook + '</span></figcaption>' +
+        '<button class="dl" type="button" data-dl="' + st.bossSprite + '">⤓ PNG</button></figure>';
+    }).join("") + '</div>' : '') +
     '<div class="stats">' + statHtml + '</div>' +
     '<div class="traj"><span class="cap">移動パターン（右から左へ）</span>' + TRAJ[id] + '</div>' +
     '<div class="drops"><span class="chip">HP <b>' + e.hp + (id === "BOSS" ? '（S1：450／S2：630／S3：840／S4：1120／S5：1680）' : '（基準値／S1 ×2／S2 ×4／S3 ×6／S4 ×12／S5 ×18）') + '</b></span><span class="chip">スコア <b>' + e.score + '</b></span><span class="chip">ドロップ <b>' + e.drop + '</b></span><span class="chip">出現 <b>' + e.spawn + '</b></span></div>' +
@@ -1528,7 +1677,7 @@ var codexEl = document.getElementById("codex");
 /* 図鑑スプライト描画（拡大・ピクセル維持） */
 document.querySelectorAll("canvas[data-sprite]").forEach(function(c){
   var key = c.getAttribute("data-sprite");
-  var big = spriteCanvas(key, key === "BOSS" ? 6 : 8);
+  var big = spriteCanvas(key, key.indexOf("BOSS") === 0 ? 6 : 8);
   c.width = big.width; c.height = big.height;
   c.getContext("2d").drawImage(big, 0, 0);
   c.style.width = ""; c.style.height = "";
@@ -1536,9 +1685,17 @@ document.querySelectorAll("canvas[data-sprite]").forEach(function(c){
 });
 /* 図鑑キャンバスの表示サイズ調整 */
 document.querySelectorAll("canvas[data-sprite]").forEach(function(c){
-  var maxW = c.closest(".card").classList.contains("wide") ? 200 : 120;
+  var maxW = c.hasAttribute("data-gallery") ? 92 : (c.closest(".card").classList.contains("wide") ? 200 : 120);
   var r = Math.min(1, maxW / c.width);
   c.style.width = (c.width * r) + "px"; c.style.height = (c.height * r) + "px";
+});
+/* ステージカードのボス見た目サムネイル描画 */
+document.querySelectorAll("canvas[data-stage-boss]").forEach(function(c){
+  var key = c.getAttribute("data-stage-boss");
+  var big = spriteCanvas(key, 4);
+  c.width = big.width; c.height = big.height;
+  c.getContext("2d").drawImage(big, 0, 0);
+  c.style.width = big.width + "px"; c.style.height = big.height + "px";
 });
 document.querySelectorAll("[data-dl]").forEach(function(btn){
   btn.addEventListener("click", function(){
