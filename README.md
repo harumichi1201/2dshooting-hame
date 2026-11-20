@@ -1,1 +1,2 @@
-# 2dshooting-hame
+# 2dshooting-game
+# 敵キャラHTMLは触らないでください
