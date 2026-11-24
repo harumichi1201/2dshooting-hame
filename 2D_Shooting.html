@@ -115,6 +115,18 @@
   .hud .level-item #levelDesc{font-size:12px;color:#a5f3fc;white-space:normal}
   .lvlbar{width:74px;height:10px;background:#1c2942;border:2px solid #3b5175;position:relative;display:inline-block;flex:0 0 auto}
   .lvlbar i{position:absolute;inset:0;background:#22d3ee;transform-origin:left;transform:scaleX(0)}
+  .hud .special-item{background:#2a1503;border:2px solid #b45309;border-radius:4px;padding:3px 10px 4px;color:#ffedd5}
+  .hud .special-item .lbl{color:#fdba74}
+  .hud .special-item #spnum{color:#fde68a;font-variant-numeric:tabular-nums;min-width:4ch}
+  .hud .special-item .sp-ready{color:#facc15;font-size:12px;letter-spacing:.06em}
+  .hud .special-item .sp-hint{color:#fdba74;font-size:11.5px;letter-spacing:.02em;white-space:nowrap}
+  .spbar{width:180px;max-width:42vw;height:14px;background:#1c2942;border:2px solid #92600a;position:relative;display:inline-block;flex:1 1 120px;min-width:110px}
+  .spbar i{position:absolute;inset:0;background:#f59e0b;transform-origin:left;transform:scaleX(0)}
+  .hud .special-item.ready{border-color:#facc15;animation:spready .6s ease-in-out infinite alternate}
+  @keyframes spready{from{box-shadow:0 0 0 0 rgba(250,204,21,0)}to{box-shadow:0 0 0 4px rgba(250,204,21,.35)}}
+  @media (prefers-reduced-motion: reduce){.hud .special-item.ready{animation:none}}
+  .cbtn.special-ready{background:#facc15;border-color:#facc15;color:#221a02}
+  .touch .special{align-self:center;width:84px;height:84px;border-radius:50%;background:#92600a;border-color:#facc15;font-family:"DotGothic16",monospace;color:#fff}
   .levelup{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(3,8,18,.9);padding:16px;text-align:center;overflow-y:auto}
   .levelup.on{display:flex}
   .levelup .lu-big{font-size:clamp(26px,5vw,42px);color:#facc15;line-height:1.1}
@@ -260,6 +272,7 @@
       <span class="item"><span class="lbl">◆ クリスタル</span><span id="crystals">0</span></span>
       <span class="item"><span class="lbl">撃破</span><span id="kills">0</span></span>
       <span class="item level-item" id="levelItem"><span class="lbl">LEVEL</span><span id="playerLevel">Lv.1</span><span class="lvlbar"><i id="lvfill"></i></span><span id="levelProg">◆ 0 / 15</span><span id="levelDesc">ショット×2</span></span>
+      <span class="item special-item" id="specialItem"><span class="lbl">必殺ゲージ</span><span class="spbar"><i id="spfill"></i></span><span id="spnum">0%</span><span class="sp-ready" id="spReady" style="display:none">READY! Xキーで発動</span><span class="sp-hint" id="spHint">Xキーで発動</span></span>
       <span class="bossbar" id="bossbar"><span class="lbl" style="color:#fca5a5">BOSS HP</span><span class="track"><i id="bossfill"></i></span><span class="bnum" id="bossnum"></span></span>
       <span class="item"><span class="stage-dots" id="stageDots" aria-label="ステージ進行"><i class="now"></i><i></i><i></i><i></i><i></i></span></span>
       <span class="stage-msg dot" id="stageMsg">STAGE 1 / 5</span>
@@ -280,7 +293,7 @@
         <div>
           <div class="big dot">2D_<span class="hl">Shooting</span></div>
           <div class="start-tag">全5ステージ ／ 横スクロールシューティング</div>
-          <div class="sub">敵を倒してクリスタルを集め、レベルアップしながら各ステージのボスを倒そう。♪ BGMと効果音つき（音はスタートと同時に鳴り始めます）。<span class="start-controls"><br>移動：WASD／矢印キー　ショット：Space（押しっぱなし連射）　ポーズ：Pキー</span></div>
+          <div class="sub">敵を倒してクリスタルを集め、レベルアップしながら各ステージのボスを倒そう。♪ BGMと効果音つき（音はスタートと同時に鳴り始めます）。<span class="start-controls"><br>移動：WASD／矢印キー　ショット：Space（押しっぱなし連射）　必殺ビーム：Xキー（ゲージ満タン時）　ポーズ：Pキー</span></div>
           <div class="btn-row"><button class="start-btn" id="btnStart" type="button">▶ ゲームスタート</button></div>
           <div class="ov-hint">ボタンをクリックするとステージ1から始まります<br>スマホはタッチボタンでも操作できます</div>
         </div>
@@ -315,6 +328,7 @@
         <button class="cbtn primary" id="btnPause" type="button">⏸ 一時停止</button>
         <button class="cbtn" id="btnReset" type="button">↺ リスタート</button>
         <button class="cbtn" id="btnAuto" type="button" aria-pressed="true">自動出現 ON</button>
+        <button class="cbtn" id="btnSpecial" type="button">必殺ビーム 0%（X）</button>
         <button class="cbtn sound-on" id="btnSound" type="button" aria-pressed="true">🔊 サウンド ON</button>
         <label class="vol-wrap" for="volSlider">音量 <input type="range" id="volSlider" min="0" max="100" value="80" aria-label="音量"><span class="vol-val" id="volVal">80</span></label>
         <span class="bgm-ind" id="bgmInd" aria-live="off"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="bgmLabel">♪ BGM：タイトル</span></span>
@@ -341,11 +355,13 @@
         <button class="r" data-k="right" type="button" aria-label="右">▶</button>
         <button class="d" data-k="down" type="button" aria-label="下">▼</button>
       </div>
+      <button class="special" id="btnTouchSpecial" type="button">必殺</button>
       <button class="shot" data-k="shot" type="button">SHOT</button>
     </div>
     <div class="keys">
       <span><kbd>WASD</kbd>/<kbd>←↑↓→</kbd> 移動</span>
       <span><kbd>Space</kbd> ショット（押しっぱなし連射）</span>
+      <span><kbd>X</kbd> 必殺ビーム（必殺ゲージ満タン時／画面下のボタン・スマホの「必殺」ボタンでも発動可）</span>
       <span>レベルアップ時 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 強化を選択</span>
       <span><kbd>P</kbd>/<kbd>Esc</kbd> ポーズ（画面右下の「⏸ ポーズ」ボタンでも可）</span>
       <span>タイトルで <kbd>Enter</kbd> スタート ／ ゲームオーバーで <kbd>C</kbd> コンティニュー・<kbd>R</kbd> 最初から</span>
@@ -368,6 +384,22 @@
         <h3>3. ボスを倒して次ステージへ</h3>
         <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスの姿はステージごとに異なります（紫のドーム型スライム、緑のトゲトゲモンスター、橙色の戦闘機、暗紫色の重装メカなど）。ボスは扇状弾を連射し、突進したあとも元の位置へ戻る間ずっと自機を狙って弾を乱射してくるので、帰還中も油断できません。攻撃の間隔はステージが上がるほど短くなります（約1.55秒→約0.95秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します。全5ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
       </div>
+    </div>
+  </section>
+
+  <section aria-label="必殺技">
+    <h2>必殺技 — ハイパービーム</h2>
+    <p class="sec-lead">戦いながら必殺ゲージを溜めて、ここぞという場面で放つ切り札です。ゲージは敵を撃破すると+2、クリスタルを拾うと+1、被弾すると+5溜まります（最大100）。HUDの大きなバーと、自機の上に常時出るミニバーで、プレイ中いつでも残量が確認できます。ステージをまたいでも引き継がれます（最初からやり直すとリセット）。</p>
+    <div class="params">
+      <table>
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td data-h="項目"><b>発動方法</b></td><td data-h="内容">ゲージ満タン（HUDの「必殺」が100%になり READY と表示）のときに <b>Xキー</b>、画面下の「必殺ビーム」ボタン、またはスマホの「必殺」ボタンを押す</td></tr>
+          <tr><td data-h="項目"><b>演出</b></td><td data-h="内容">約0.4秒のチャージ（エネルギーが砲口へ集まる）のあと、白い閃光と画面の揺れとともに、画面右端まで届く極太ビームを約1.3秒間発射します。発射中に上下へ動くとビームも追従します。ビーム終了後は白い閃光の残光が約0.9秒かけて徐々に消え、画面全体がビームを撃つ前の状態に戻ります</td></tr>
+          <tr><td data-h="項目"><b>ダメージ</b></td><td data-h="内容">ビームに触れた敵へ0.12秒ごとに12ダメージ（合計 約130）。ボスにも有効です</td></tr>
+          <tr><td data-h="項目"><b>追加効果</b></td><td data-h="内容">ビームの範囲内にある敵弾とミサイルを消し去ります。発動中（チャージ〜発射終了まで）自機は無敵です</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -899,6 +931,26 @@ function sfxGigaBeam(){
   toneAt(160, t, 0.32, "sawtooth", 0.09, sfxGain, 720);
   noiseAt(t, 0.3, 0.06, "bandpass", 700, 2600);
 }
+/* 必殺ビーム：チャージの上昇音 */
+function sfxSpecialCharge(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  toneAt(180, t, 0.42, "sawtooth", 0.07, sfxGain, 1400);
+  toneAt(90, t, 0.42, "square", 0.05, sfxGain, 720);
+}
+/* 必殺ビーム：発射の大爆発音＋持続する轰音 */
+function sfxSpecialBeam(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  noiseAt(t, 1.15, 0.16, "lowpass", 5200, 300);
+  toneAt(70, t, 1.1, "sawtooth", 0.14, sfxGain, 42);
+  toneAt(1240, t, 0.5, "square", 0.05, sfxGain, 220);
+  noiseAt(t + 0.05, 0.9, 0.07, "bandpass", 900, 2600);
+}
+/* 必殺ゲージが満タンになった合図 */
+function sfxSpecialReady(){
+  sfxJingle([1046, 1318, 1568], 0.06, "square", 0.045);
+}
 /* --- BGMシーケンサー --- */
 function midiFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
 var bgm = { playing: false, timer: null, step: 0, nextTime: 0, mode: "title", stage: 1 };
@@ -1015,6 +1067,17 @@ function addScore(points, x, y){
   if (G.score > hiScore) hiScore = G.score;
   if (x !== undefined && y !== undefined && points > 0)
     G.popups.push({ x: x, y: y, vy: -46, life: 0.9, max: 0.9, text: "+" + points });
+  updateHUD();
+}
+/* 必殺ゲージ：撃破+2／クリスタル+1／被弾+5で最大100まで溜まる。満タンになったら合図を出す */
+function addSpecial(n){
+  if (!G) return;
+  var before = G.special || 0;
+  G.special = Math.max(0, Math.min(100, before + n));
+  if (before < 100 && G.special >= 100 && G.state === "playing"){
+    G.popups.push({ x: G.player.x + 30, y: G.player.y - 46, vy: -26, life: 1.1, max: 1.1, text: "必殺 READY!" });
+    sfxSpecialReady();
+  }
   updateHUD();
 }
 function updateStageUI(){
@@ -1151,7 +1214,7 @@ function startStage(n, keep){
     ["level","upgradeCount","shotCount","shotDamage","fireMul","moveMul","spreadPairs","beamCore","pierce","magnet","crystalMul","gigaInterval","gigaDamage"].forEach(function(k){ if (pp[k] !== undefined) up[k] = pp[k]; });
     up.stacks = {}; if (pp.stacks) Object.keys(pp.stacks).forEach(function(k){ up.stacks[k] = pp.stacks[k]; });
     up.gigaTimer = up.gigaInterval > 0 ? Math.min(pp.gigaTimer || 0, up.gigaInterval) : 0;
-    prev = { score: G.score, crystals: G.crystals, kills: G.kills, hp: pp.hp, maxHp: pp.maxHp, up: up, crystalProgress: G.crystalProgress || 0, auto: G.auto };
+    prev = { score: G.score, crystals: G.crystals, kills: G.kills, hp: pp.hp, maxHp: pp.maxHp, up: up, crystalProgress: G.crystalProgress || 0, auto: G.auto, special: G.special || 0 };
   }
   var prevMaxHp = prev ? prev.maxHp : 10;
   var player = { x: 120, y: H/2, hp: prev ? Math.min(prevMaxHp, Math.max(1, prev.hp) + 3) : 10, maxHp: prevMaxHp, cool: 0, inv: 0, flame: 0 };
@@ -1163,8 +1226,9 @@ function startStage(n, keep){
     player: player,
     bullets: [], ebullets: [], missiles: [], foes: [], parts: [], items: [], popups: [],
     crystals: prev ? prev.crystals : 0, crystalProgress: prev ? prev.crystalProgress : 0, score: prev ? prev.score : 0, kills: prev ? prev.kills : 0,
+    special: prev ? (prev.special || 0) : 0, beam: null,
     spawnT: 0.6, bonusT: 32, bossSpawned: false, bossRef: null, luOptions: [],
-    shake: 0, flash: 0, flashWhite: 0,
+    shake: 0, flash: 0, flashWhite: 0, beamFade: 0, beamFadeMax: 0, beamFadeFrom: 0,
     bossDefeatT: 0, bossDefeatX: 0, bossDefeatY: 0, bossDefeatStep: -1, bossDefeatFinal: false, bossDefeatCleared: false
   };
   if (prev) G.auto = prev.auto;
@@ -1208,6 +1272,18 @@ function updateHUD(){
   if (G.bossRef){
     document.getElementById("bossfill").style.transform = "scaleX(" + Math.max(0, G.bossRef.hp / G.bossRef.maxHp) + ")";
     document.getElementById("bossnum").textContent = Math.max(0, Math.ceil(G.bossRef.hp)) + " / " + G.bossRef.maxHp;
+  }
+  /* 必殺ゲージの表示同期 */
+  var spv = Math.max(0, Math.min(100, G.special || 0));
+  var spf = document.getElementById("spfill"); if (spf) spf.style.transform = "scaleX(" + (spv / 100) + ")";
+  var spn = document.getElementById("spnum"); if (spn) spn.textContent = Math.floor(spv) + "%";
+  var spr = document.getElementById("spReady"); if (spr) spr.style.display = spv >= 100 ? "" : "none";
+  var sph = document.getElementById("spHint"); if (sph) sph.style.display = spv >= 100 ? "none" : "";
+  var spi = document.getElementById("specialItem"); if (spi) spi.classList.toggle("ready", spv >= 100);
+  var bsp = document.getElementById("btnSpecial");
+  if (bsp){
+    bsp.textContent = spv >= 100 ? "必殺ビーム READY!（X）" : "必殺ビーム " + Math.floor(spv) + "%（X）";
+    bsp.classList.toggle("special-ready", spv >= 100);
   }
 }
 /* ボスHPバーは被弾のたびに即座に追従させるため、毎フレーム同期する */
@@ -1269,8 +1345,9 @@ function dropItems(foe){
 }
 function hurtPlayer(dmg){
   var p = G.player;
-  if (p.inv > 0 || G.state !== "playing") return;
+  if (p.inv > 0 || G.state !== "playing" || G.beam) return;
   p.hp -= dmg; p.inv = 1.1; G.shake = 8; G.flash = 0.25;
+  addSpecial(5);
   explode(p.x, p.y, 10, ["#facc15","#ef4444","#ffffff"]);
   sfxPlayerDamage();
   updateHUD();
@@ -1317,7 +1394,7 @@ function continueGame(){
   p.y = Math.max(26, Math.min(H - 26, p.y));
   G.ebullets = (G.ebullets || []).filter(function(b){ return Math.hypot(b.x - p.x, b.y - p.y) > 130; });
   G.missiles = (G.missiles || []).filter(function(m){ return Math.hypot(m.x - p.x, m.y - p.y) > 150; });
-  G.flash = 0; G.shake = 0;
+  G.flash = 0; G.shake = 0; G.flashWhite = 0; G.beamFade = 0; G.beamFadeMax = 0; G.beamFadeFrom = 0;
   G.state = "playing";
   document.getElementById("overlay").classList.remove("on");
   document.getElementById("btnPause").textContent = "⏸ 一時停止";
@@ -1438,7 +1515,7 @@ function stepBossDefeat(dt){
     if (d < (p.magnet || 120) && d > 0.01){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
     else { it.x += it.vx * dt; it.y += it.vy * dt; }
     if (d < 24){
-      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); updateHUD(); }
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); addSpecial(1); updateHUD(); }
       else { p.hp = Math.min(p.maxHp, p.hp + 2); sfxRepair(); }
       updateHUD(); return false;
     }
@@ -1449,11 +1526,107 @@ function stepBossDefeat(dt){
   stars.forEach(function(s){ s.x -= s.v * dt; if (s.x < -4){ s.x = W + 4; s.y = Math.random() * H; } });
   if (G.shake > 0) G.shake = Math.max(0, G.shake - dt * 17);
   if (G.flash > 0) G.flash = Math.max(0, G.flash - dt * 1.1);
-  if (G.flashWhite > 0) G.flashWhite = Math.max(0, G.flashWhite - dt * 1.4);
+  /* flashWhite の減衰は frame() 側で一元管理する（二重減衰防止） */
   /* 演出が終わってから、次ステージへ進むかの画面へ */
   if (t >= 2.35){
     G.shake = 0; G.flash = 0; G.flashWhite = 0;
     endGame(true);
+  }
+}
+
+/* ---------- 必殺技：ハイパービーム ----------
+   ゲージ満タンで発動。約0.42秒のチャージのあと、画面右端まで届く極太ビームを
+   約1.3秒間発射する。0.12秒ごとに12ダメージ、範囲内の敵弾・ミサイルを消し、
+   発動中は無敵。ビームは自機の上下移動に追従する。 */
+function tryFireSpecial(){
+  if (!G || G.state !== "playing" || G.beam) return;
+  if ((G.special || 0) < 100) return;
+  G.special = 0;
+  G.beam = { phase: "charge", t: 0, y: G.player.y, tick: 0 };
+  sfxSpecialCharge();
+  updateHUD();
+}
+function specialKillFoe(f){
+  var isBossKill = f.type === "BOSS";
+  var killX = f.x, killY = f.y;
+  G.kills++; addScore(isBossKill ? stageCfg().bossScore : ENEMIES[f.type].score, killX, killY);
+  if (!isBossKill){
+    explode(f.x, f.y, f.type === "X" ? 34 : 18, ["#fb923c","#ef4444","#fde047","#ffffff"]);
+    G.shake = Math.max(G.shake, f.type === "X" ? 9 : 5);
+    sfxExplosion(f.type === "X");
+    addSpecial(2);
+  }
+  dropItems(f);
+  if (isBossKill){
+    G.bossRef = null;
+    document.getElementById("bossbar").classList.remove("on");
+    G.beam = null;
+    updateHUD();
+    startBossDefeat(killX, killY);
+  }
+  updateHUD();
+}
+function beamStep(dt){
+  var p = G.player, bm = G.beam;
+  if (!bm) return;
+  bm.t += dt;
+  if (bm.phase === "charge"){
+    /* チャージ：周囲のエネルギーが砲口へ吸い込まれる */
+    for (var i = 0; i < 3; i++){
+      var a = Math.random() * 6.28, r = 90 + Math.random() * 70;
+      var sx = p.x + 34 + Math.cos(a) * r, sy = p.y + Math.sin(a) * r * 0.6;
+      G.parts.push({ x: sx, y: sy, vx: (p.x + 34 - sx) * 3.4, vy: (p.y - sy) * 3.4, life: 0.3, max: 0.3, c: ["#7ef0ff","#facc15","#ffffff"][(Math.random() * 3) | 0], s: 4 });
+    }
+    if (bm.t >= 0.42){
+      var reduced = prefersReducedMotion();
+      bm.phase = "fire"; bm.t = 0; bm.tick = 0; bm.y = p.y;
+      G.flashWhite = Math.max(G.flashWhite || 0, reduced ? 0.4 : 0.85);
+      G.shake = Math.max(G.shake, reduced ? 6 : 14);
+      G.popups.push({ x: W / 2, y: 96, vy: -6, life: 0.9, max: 0.9, text: "必殺ビーム！" });
+      sfxSpecialBeam();
+    }
+    return;
+  }
+  /* 発射中：ビームは自機の上下に追従し、画面が揺れ続ける */
+  bm.y += (p.y - bm.y) * Math.min(1, dt * 9);
+  G.shake = Math.max(G.shake, prefersReducedMotion() ? 2 : 6);
+  for (var j = 0; j < 4; j++){
+    var bx2 = p.x + 40 + Math.random() * (W - p.x - 40);
+    G.parts.push({ x: bx2, y: bm.y + (Math.random() - 0.5) * 190, vx: 120 + Math.random() * 160, vy: (Math.random() - 0.5) * 90, life: 0.28 + Math.random() * 0.2, max: 0.45, c: ["#7ef0ff","#ffffff","#facc15"][(Math.random() * 3) | 0], s: 3 + ((Math.random() * 2) | 0) * 2 });
+  }
+  bm.tick -= dt;
+  if (bm.tick <= 0){
+    bm.tick = 0.12;
+    var hh = 95;
+    G.foes = G.foes.filter(function(f){
+      var rad = f.type === "BOSS" ? 62 : f.type === "X" ? 44 : 24;
+      if (f.x > p.x + 6 && Math.abs(f.y - bm.y) < hh + rad * 0.72){
+        f.hp -= 12; f.hit = 0.07;
+        sfxHitTick();
+        explode(f.x, f.y, 4, ["#7ef0ff","#fde047","#ffffff"]);
+        if (f.hp <= 0){ specialKillFoe(f); return false; }
+      }
+      return true;
+    });
+    if (!G.beam) return; /* ボス撃破演出へ移行した */
+    G.ebullets = G.ebullets.filter(function(b){
+      if (b.x > p.x && Math.abs(b.y - bm.y) < hh + 8){ explode(b.x, b.y, 2, ["#7ef0ff","#ffffff"]); return false; }
+      return true;
+    });
+    G.missiles = G.missiles.filter(function(m){
+      if (m.t >= 0 && m.x > p.x && Math.abs(m.y - bm.y) < hh + 10){ explode(m.x, m.y, 8, ["#fb923c","#fde047","#ffffff"]); return false; }
+      return true;
+    });
+  }
+  if (bm.t >= 1.3){
+    /* ビーム終了：いきなり通常画面に戻さず、残光（白い閃光）をフェードアウトさせる。
+       beamFade の間、frame() 側で flashWhite を残光の初期値から0まで徐々に下げる */
+    G.beam = null;
+    var reducedEnd = prefersReducedMotion();
+    G.beamFadeMax = reducedEnd ? 0.45 : 0.9;
+    G.beamFade = G.beamFadeMax;
+    G.beamFadeFrom = reducedEnd ? 0.3 : 0.6;
+    G.flashWhite = Math.max(G.flashWhite || 0, G.beamFadeFrom);
   }
 }
 
@@ -1598,6 +1771,19 @@ function frame(now){
   if (G.state === "playing") step(dt);
   else if (G.state === "bossDefeat") stepBossDefeat(dt);
   else if (G.state === "title"){ G.t += dt; stars.forEach(function(s){ s.x -= s.v * dt * 0.35; if (s.x < -4){ s.x = W + 4; s.y = Math.random() * H; } }); }
+  /* 白い閃光（flashWhite）の減衰はここで一元管理する。
+     以前はボス撃破演出の中でしか減衰せず、必殺ビーム発射時の閃光が
+     通常プレイ中に減る場所がなく、白飛びしたまま戻らなかった。
+     必殺ビーム終了直後は beamFade が優先され、残光が約0.9秒かけて
+     徐々に消えてビームを撃つ前の画面に戻る */
+  if (G.beamFade > 0){
+    G.beamFade = Math.max(0, G.beamFade - dt);
+    var bk = G.beamFadeMax > 0 ? (G.beamFade / G.beamFadeMax) : 0;
+    G.flashWhite = (G.beamFadeFrom || 0) * bk;
+    if (G.beamFade <= 0){ G.flashWhite = 0; G.beamFadeFrom = 0; G.beamFadeMax = 0; }
+  } else if (G.flashWhite > 0){
+    G.flashWhite = Math.max(0, G.flashWhite - dt * 1.4);
+  }
   render();
   syncBossBar();
   requestAnimationFrame(frame);
@@ -1737,6 +1923,7 @@ function step(dt){
           var isBossKill = f.type === "BOSS";
           var killX = f.x, killY = f.y;
           G.kills++; addScore(isBossKill ? stageCfg().bossScore : ENEMIES[f.type].score, killX, killY);
+          if (!isBossKill) addSpecial(2);
           if (!isBossKill){
             explode(f.x, f.y, f.type === "X" ? 34 : 16, ["#fb923c","#ef4444","#fde047","#ffffff"]);
             G.shake = f.type === "X" ? 9 : 4;
@@ -1758,6 +1945,8 @@ function step(dt){
     }
     return true;
   });
+  /* --- 必殺ビームの進行（チャージ／発射／ダメージ） --- */
+  beamStep(dt);
   /* --- アイテム --- */
   G.items = G.items.filter(function(it){
     it.t += dt * 3;
@@ -1765,7 +1954,7 @@ function step(dt){
     if (d < (p.magnet || 120)){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
     else { it.x += it.vx * dt; it.y += it.vy * dt; }
     if (d < 24){
-      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); updateHUD(); maybeLevelUp(); }
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); addSpecial(1); updateHUD(); maybeLevelUp(); }
       else { p.hp = Math.min(p.maxHp, p.hp + 2); sfxRepair(); }
       updateHUD(); return false;
     }
@@ -1895,6 +2084,75 @@ function render(){
       ctx.fillStyle = gr >= 0.99 ? "#facc15" : "#fb923c"; ctx.fillRect(p.x - 21, p.y - 35, 42 * Math.min(1, gr), 3);
     }
   }
+  /* 必殺ゲージ（自機の上に常時表示：プレイ中でも残量が分かるように） */
+  {
+    var spv2 = Math.max(0, Math.min(100, G.special || 0));
+    var spReady2 = spv2 >= 100;
+    var spW = 96, spH = 9;
+    var spX = Math.max(8, Math.min(W - spW - 8, p.x - spW / 2));
+    var spY = Math.max(30, p.y - ((p.gigaInterval || 0) > 0 ? 62 : 52));
+    ctx.save();
+    ctx.fillStyle = "rgba(3,6,14,.82)"; ctx.fillRect(spX - 6, spY - 16, spW + 12, spH + 22);
+    ctx.font = "11px 'DotGothic16', monospace"; ctx.textAlign = "center";
+    ctx.fillStyle = spReady2 ? ((G.t * 6 % 2 < 1) ? "#facc15" : "#ffffff") : "#fdba74";
+    ctx.fillText(spReady2 ? "必殺 READY! Xキー" : ("必殺ゲージ " + Math.floor(spv2) + "%"), spX + spW / 2, spY - 4);
+    ctx.fillStyle = "#1c2942"; ctx.fillRect(spX, spY, spW, spH);
+    ctx.strokeStyle = spReady2 ? "#facc15" : "#92600a"; ctx.lineWidth = 2; ctx.strokeRect(spX, spY, spW, spH);
+    ctx.fillStyle = spReady2 ? "#facc15" : "#f59e0b"; ctx.fillRect(spX + 1, spY + 1, (spW - 2) * (spv2 / 100), spH - 2);
+    ctx.restore();
+  }
+  /* 必殺ビーム（チャージの光球／画面一面の極太ビーム） */
+  if (G.beam){
+    var bm2 = G.beam, mx = p.x + 30;
+    if (bm2.phase === "charge"){
+      var cr = 10 + bm2.t * 60;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = "rgba(126,240,255,.35)"; ctx.beginPath(); ctx.arc(mx, p.y, cr + 14, 0, 6.29); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.beginPath(); ctx.arc(mx, p.y, cr * 0.55, 0, 6.29); ctx.fill();
+      ctx.strokeStyle = "rgba(250,204,21,.8)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 34 + Math.sin(G.t * 30) * 3, 0, 6.29); ctx.stroke();
+      ctx.restore();
+    } else {
+      var fade = bm2.t < 0.08 ? bm2.t / 0.08 : (bm2.t > 1.12 ? Math.max(0, 1 - (bm2.t - 1.12) / 0.18) : 1);
+      var flick = 1 + Math.sin(G.t * 47) * 0.05 + Math.sin(G.t * 31) * 0.04;
+      var coreH = 190 * flick, midH = 250 * flick, glowH = 330 * flick;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = 0.55 * fade;
+      var grd = ctx.createLinearGradient(0, bm2.y - glowH / 2, 0, bm2.y + glowH / 2);
+      grd.addColorStop(0, "rgba(34,211,238,0)");
+      grd.addColorStop(0.5, "rgba(34,211,238,.55)");
+      grd.addColorStop(1, "rgba(34,211,238,0)");
+      ctx.fillStyle = grd; ctx.fillRect(mx, bm2.y - glowH / 2, W - mx + 40, glowH);
+      ctx.globalAlpha = 0.8 * fade;
+      ctx.fillStyle = "rgba(250,204,21,.30)"; ctx.fillRect(mx, bm2.y - midH / 2, W - mx + 40, midH);
+      ctx.fillStyle = "rgba(126,240,255,.75)"; ctx.fillRect(mx, bm2.y - coreH / 2, W - mx + 40, coreH);
+      ctx.fillStyle = "rgba(255,255,255,.95)"; ctx.fillRect(mx, bm2.y - coreH / 4, W - mx + 40, coreH / 2);
+      /* 流れるエネルギーの帯 */
+      ctx.fillStyle = "rgba(255,255,255,.5)";
+      for (var bi2 = 0; bi2 < 5; bi2++){
+        var bx3 = mx + ((G.t * 620 + bi2 * 190) % (W - mx + 60));
+        ctx.fillRect(bx3, bm2.y - coreH / 2 + 6, 26, coreH - 12);
+      }
+      /* 砲口の閃光と右端の衝撃光 */
+      ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.beginPath(); ctx.arc(mx, bm2.y, 26 + Math.sin(G.t * 40) * 4, 0, 6.29); ctx.fill();
+      ctx.fillStyle = "rgba(250,204,21,.5)"; ctx.beginPath(); ctx.arc(W - 6, bm2.y, 60 + Math.sin(G.t * 33) * 10, 0, 6.29); ctx.fill();
+      ctx.restore();
+      /* 発射直後の大見出し */
+      if (bm2.t < 0.95){
+        var ta = bm2.t < 0.1 ? bm2.t / 0.1 : (bm2.t > 0.7 ? Math.max(0, 1 - (bm2.t - 0.7) / 0.25) : 1);
+        var ts = bm2.t < 0.22 ? 0.7 + (bm2.t / 0.22) * 0.3 : 1;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, ta));
+        ctx.translate(W / 2, 128); ctx.scale(ts, ts); ctx.textAlign = "center";
+        ctx.font = "52px 'DotGothic16', monospace";
+        ctx.fillStyle = "#221a02"; ctx.fillText("必殺ビーム！", 3, 3);
+        ctx.fillStyle = "#facc15"; ctx.fillText("必殺ビーム！", 0, 0);
+        ctx.restore();
+      }
+    }
+  }
   /* パーティクル */
   G.parts.forEach(function(q){
     ctx.globalAlpha = Math.max(0, q.life / q.max);
@@ -1944,12 +2202,14 @@ window.addEventListener("keydown", function(e){
   if (G && G.state === "title" && (e.code === "Enter" || e.code === "Space")){ startGameFromTitle(); e.preventDefault(); return; }
   if (G && G.state === "over" && e.code === "KeyC"){ continueGame(); e.preventDefault(); return; }
   if (G && G.state === "over" && e.code === "KeyR"){ reset(); e.preventDefault(); return; }
+  if (e.code === "KeyX"){ if (G && G.state === "playing"){ tryFireSpecial(); e.preventDefault(); } return; }
   if (e.code === "KeyP" || e.code === "Escape"){ if (G && (G.state === "playing" || G.state === "paused")){ togglePause(); e.preventDefault(); } return; }
   var k = KEYMAP[e.code]; if (k){ if (e.code === "Space" && document.activeElement && document.activeElement.tagName === "BUTTON") document.activeElement.blur(); keys[k] = true; e.preventDefault(); }
 });
 window.addEventListener("keyup", function(e){ var k = KEYMAP[e.code]; if (k){ keys[k] = false; e.preventDefault(); } });
 document.querySelectorAll(".touch button").forEach(function(btn){
   var k = btn.getAttribute("data-k");
+  if (!k) return;
   function on(e){ e.preventDefault(); keys[k] = true; }
   function off(e){ e.preventDefault(); keys[k] = false; }
   btn.addEventListener("pointerdown", on);
@@ -2006,6 +2266,8 @@ document.getElementById("btnAuto").addEventListener("click", function(){
   G.auto = !G.auto; this.textContent = G.auto ? "自動出現 ON" : "自動出現 OFF";
   this.setAttribute("aria-pressed", G.auto ? "true" : "false");
 });
+document.getElementById("btnSpecial").addEventListener("click", function(){ tryFireSpecial(); });
+document.getElementById("btnTouchSpecial").addEventListener("click", function(){ tryFireSpecial(); });
 document.getElementById("btnSound").addEventListener("click", function(){
   soundOn = !soundOn;
   this.textContent = soundOn ? "🔊 サウンド ON" : "🔇 サウンド OFF";
@@ -2136,7 +2398,7 @@ document.getElementById("dlJson").addEventListener("click", function(){
     data[id] = { name: e.name, role: e.role, hp: e.hp, speed_px_s: e.speed, fire: e.fire, contact_damage: e.contact, score: e.score, drop: e.drop, spawn: e.spawn };
   });
   var ups = UPGRADES.map(function(u){ return { id: u.id, name: u.name, max_stacks: u.max >= 99 ? "無制限" : u.max }; });
-  var blob = new Blob([JSON.stringify({ note: "仮調整値（企画書5章・7章準拠）。強化はクリスタル収集によるレベル式：必要数15個から+10ずつ増加し、レベルアップ時にランダム3択から1つ選ぶ", level_cost: "15 + (Lv-1) x 10", upgrades: ups, stages: STAGES, enemies: data }, null, 2)], { type: "application/json" });
+  var blob = new Blob([JSON.stringify({ note: "仮調整値（企画書5章・7章準拠）。強化はクリスタル収集によるレベル式：必要数15個から+10ずつ増加し、レベルアップ時にランダム3択から1つ選ぶ", level_cost: "15 + (Lv-1) x 10", special_beam: { name: "必殺技 ハイパービーム", charge: "敵撃破+2／クリスタル+1／被弾+5（最大100、ステージ間で引き継ぎ）", trigger: "Xキー／必殺ボタン（ゲージ満タン時）", charge_time_s: 0.42, duration_s: 1.3, damage: "0.12秒ごとに12（合計約130）", notes: "範囲内の敵弾・ミサイルを消滅／発動中は無敵／上下移動でビームが追従" }, upgrades: ups, stages: STAGES, enemies: data }, null, 2)], { type: "application/json" });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "enemy_params_all_stages.json"; a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
