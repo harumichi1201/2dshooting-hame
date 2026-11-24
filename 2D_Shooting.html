@@ -66,6 +66,35 @@
   .overlay .big{font-family:"DotGothic16",monospace;font-size:clamp(30px,6vw,52px);color:#fff;line-height:1.15}
   .overlay .sub{color:#b9c9de;font-size:14px;margin:10px 0 18px}
   .overlay button{background:#facc15;color:#221a02;border:0;border-radius:4px;font-family:"DotGothic16",monospace;font-size:18px;padding:10px 26px;min-height:44px}
+  .overlay .btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center}
+  .overlay button.secondary{background:transparent;color:#dbe7f5;border:2px solid #33497a}
+  .overlay button.secondary:hover{background:#1e2f4f}
+  .overlay button.continue-btn{background:#22d3ee;border:2px solid #22d3ee;color:#06202b}
+  .overlay button.continue-btn:hover{background:#67e8f9;border-color:#67e8f9}
+  .overlay .ov-hint{color:#8fa5c0;font-size:12.5px;margin-top:12px;font-family:"DotGothic16",monospace;line-height:1.6}
+  .overlay.start-overlay{background:rgba(3,6,14,.88);z-index:8}
+  .overlay.start-overlay .big{font-size:clamp(36px,7vw,60px)}
+  .overlay.start-overlay .big .hl{color:#facc15}
+  .overlay.start-overlay .start-tag{color:#fde68a;font-family:"DotGothic16",monospace;font-size:13px;letter-spacing:.18em;margin-top:6px}
+  .overlay.start-overlay .sub{max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7}
+  .overlay.start-overlay .start-btn{font-size:21px;padding:13px 38px;box-shadow:0 0 0 3px rgba(250,204,21,.22)}
+  .overlay.pause-overlay{background:rgba(3,6,14,.78);z-index:7}
+  .pause-float{position:absolute;bottom:10px;right:10px;z-index:4;background:rgba(3,6,14,.82);color:#dbe7f5;border:2px solid #33497a;border-radius:4px;font-family:"DotGothic16",monospace;font-size:14px;padding:7px 14px;min-height:40px}
+  .pause-float:hover{background:#1e2f4f}
+  .pause-float[disabled]{opacity:.45;cursor:default}
+  @media (max-width:560px){
+    .overlay{padding:8px;overflow-y:auto}
+    .overlay .big{font-size:clamp(24px,7vw,32px)}
+    .overlay .sub{font-size:11.5px;margin:6px 0 10px;line-height:1.5}
+    .overlay button{font-size:15px;padding:8px 18px;min-height:40px}
+    .overlay .ov-score{font-size:24px;margin-top:4px}
+    .overlay .ov-hint{font-size:11px;margin-top:8px;line-height:1.5}
+    .overlay.start-overlay .big{font-size:30px}
+    .overlay.start-overlay .start-tag{font-size:11px;margin-top:2px}
+    .overlay.start-overlay .start-btn{font-size:17px;padding:10px 26px}
+    .overlay.start-overlay .ov-hint{display:none}
+    .overlay.start-overlay .start-controls{display:none}
+  }
   .warn{position:absolute;top:78px;left:50%;transform:translateX(-50%);z-index:4;display:none;background:#7f1d1d;color:#fecaca;border:2px solid #ef4444;font-family:"DotGothic16",monospace;padding:4px 14px;font-size:15px}
   .warn.on{display:block;animation:blink .5s steps(2) infinite}
   @keyframes blink{50%{opacity:.35}}
@@ -139,6 +168,17 @@
   .cbtn.primary{background:#facc15;border-color:#facc15;color:#221a02}
   .cbtn.spawn-a{border-color:#7f2d2d}.cbtn.spawn-b{border-color:#6d2160}.cbtn.spawn-c{border-color:#14532d}.cbtn.spawn-x{border-color:#92600a;color:#fde68a}
   .cbtn[aria-pressed="true"]{background:#0e7490;border-color:#0e7490;color:#fff}
+  .cbtn.sound-on{background:#facc15;border-color:#facc15;color:#221a02}
+  .vol-wrap{display:inline-flex;align-items:center;gap:7px;background:#16223a;border:2px solid #33497a;border-radius:4px;padding:5px 11px;color:#dbe7f5;font-family:"DotGothic16",monospace;font-size:12px}
+  .vol-wrap input[type="range"]{width:92px;accent-color:#facc15;cursor:pointer}
+  .vol-wrap .vol-val{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;color:#fde68a}
+  .bgm-ind{display:inline-flex;align-items:center;gap:6px;color:#7dd3fc;font-family:"DotGothic16",monospace;font-size:12px}
+  .bgm-ind .bars{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+  .bgm-ind .bars i{display:block;width:3px;background:#22d3ee;height:4px}
+  .bgm-ind.playing .bars i{animation:eq .7s ease-in-out infinite alternate}
+  .bgm-ind.playing .bars i:nth-child(2){animation-delay:.18s}.bgm-ind.playing .bars i:nth-child(3){animation-delay:.36s}.bgm-ind.playing .bars i:nth-child(4){animation-delay:.1s}
+  @keyframes eq{from{height:3px}to{height:12px}}
+  @media (prefers-reduced-motion: reduce){.bgm-ind.playing .bars i{animation:none;height:8px}}
   .keys{display:flex;flex-wrap:wrap;gap:6px 18px;color:#8fa5c0;font-size:12.5px;padding:10px 4px 2px;font-family:"DotGothic16",monospace}
   kbd{background:#1c2942;border:1px solid #3b5175;border-bottom-width:3px;border-radius:4px;padding:0 6px;color:#e2ecfa;font-family:"DotGothic16",monospace;font-size:12px}
   /* touch controls */
@@ -235,12 +275,38 @@
         <div class="lu-cards" id="luCards"></div>
         <div class="lu-hint">クリック／タップ、またはキー 1・2・3 で選択（選ぶまでゲームは停止します）</div>
       </div>
+      <button class="pause-float dot" id="btnPauseFloat" type="button" aria-label="一時停止／再開" style="display:none">⏸ ポーズ</button>
+      <div class="overlay start-overlay on" id="startOverlay">
+        <div>
+          <div class="big dot">2D_<span class="hl">Shooting</span></div>
+          <div class="start-tag">全5ステージ ／ 横スクロールシューティング</div>
+          <div class="sub">敵を倒してクリスタルを集め、レベルアップしながら各ステージのボスを倒そう。♪ BGMと効果音つき（音はスタートと同時に鳴り始めます）。<span class="start-controls"><br>移動：WASD／矢印キー　ショット：Space（押しっぱなし連射）　ポーズ：Pキー</span></div>
+          <div class="btn-row"><button class="start-btn" id="btnStart" type="button">▶ ゲームスタート</button></div>
+          <div class="ov-hint">ボタンをクリックするとステージ1から始まります<br>スマホはタッチボタンでも操作できます</div>
+        </div>
+      </div>
+      <div class="overlay pause-overlay" id="pauseOverlay" role="dialog" aria-label="一時停止">
+        <div>
+          <div class="big dot">PAUSED</div>
+          <div class="sub">一時停止中です。ゲームは止まっています。</div>
+          <div class="btn-row">
+            <button id="btnResume" type="button">▶ 再開する</button>
+            <button class="secondary" id="btnPauseRestart" type="button">↺ このステージを最初から</button>
+            <button class="secondary" id="btnToTitle" type="button">タイトルに戻る</button>
+          </div>
+          <div class="ov-hint">Pキーでも再開できます</div>
+        </div>
+      </div>
       <div class="overlay" id="overlay">
         <div>
           <div class="big dot" id="ovTitle">GAME OVER</div>
           <div class="ov-score dot" id="ovScore"><small>SCORE スコア</small><span id="ovScoreVal">000000</span></div>
           <div class="sub" id="ovSub"></div>
-          <button id="ovBtn" type="button">もう一度プレイ</button>
+          <div class="btn-row">
+            <button id="ovBtn" type="button">もう一度プレイ</button>
+            <button class="continue-btn" id="ovContinueBtn" type="button" style="display:none">コンティニュー（HP半分でその場復活）</button>
+          </div>
+          <div class="ov-hint" id="ovHint" style="display:none">コンティニュー：死んだその場で、HPが最大HPの半分まで回復して復活します（スコア・クリスタル・強化はそのまま）。<br>最初から：ステージ1からすべてやり直します。キー：<b>C</b> コンティニュー ／ <b>R</b> 最初から</div>
         </div>
       </div>
     </div>
@@ -249,7 +315,9 @@
         <button class="cbtn primary" id="btnPause" type="button">⏸ 一時停止</button>
         <button class="cbtn" id="btnReset" type="button">↺ リスタート</button>
         <button class="cbtn" id="btnAuto" type="button" aria-pressed="true">自動出現 ON</button>
-        <button class="cbtn" id="btnSound" type="button" aria-pressed="false">サウンド OFF</button>
+        <button class="cbtn sound-on" id="btnSound" type="button" aria-pressed="true">🔊 サウンド ON</button>
+        <label class="vol-wrap" for="volSlider">音量 <input type="range" id="volSlider" min="0" max="100" value="80" aria-label="音量"><span class="vol-val" id="volVal">80</span></label>
+        <span class="bgm-ind" id="bgmInd" aria-live="off"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="bgmLabel">♪ BGM：タイトル</span></span>
       </div>
       <div class="grp" role="group" aria-label="ステージ選択">
         <button class="cbtn stage-sel" data-stage="1" type="button" aria-pressed="true">STAGE 1</button>
@@ -279,7 +347,9 @@
       <span><kbd>WASD</kbd>/<kbd>←↑↓→</kbd> 移動</span>
       <span><kbd>Space</kbd> ショット（押しっぱなし連射）</span>
       <span>レベルアップ時 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 強化を選択</span>
-      <span><kbd>P</kbd> 一時停止</span>
+      <span><kbd>P</kbd>/<kbd>Esc</kbd> ポーズ（画面右下の「⏸ ポーズ」ボタンでも可）</span>
+      <span>タイトルで <kbd>Enter</kbd> スタート ／ ゲームオーバーで <kbd>C</kbd> コンティニュー・<kbd>R</kbd> 最初から</span>
+      <span>♪ 音：BGM＋効果音つき（下の「サウンド」ボタンと音量スライダーで調整／ブラウザの仕様で、最初のクリックやキー操作で音が鳴り始めます）</span>
       <span>スマホ: 画面のボタンでも操作できます</span>
     </div>
   </div>
@@ -327,7 +397,7 @@
 
   <section aria-label="ステージ一覧">
     <h2>全5ステージ</h2>
-    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12、ステージ5で×18になります。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型が1回の射撃で撃つ弾の数はステージ数に比例し、ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発になります。ボスの攻撃スパン（攻撃と攻撃の間）もステージごとに短くなり、約1.55秒（ステージ1）→約1.38秒→約1.22秒→約1.08秒→約0.95秒（ステージ5）です。扇状弾は1回で終わらず連射になり（2連射→3連射→3連射→4連射→4連射）、突進後に元の位置へ戻る間も自機を狙う3方向弾を乱射します（間隔は約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。ボスの見た目もステージごとに変わります（ステージ1：銀色のガーディアン機／ステージ2：紫のドーム型スライム／ステージ3：緑のトゲトゲモンスター／ステージ4：橙色の戦闘機／ステージ5：暗紫色の重装メカ）。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。</p>
+    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12になります。ステージ5は高すぎたため、×18から3分の1減らして×12にしました。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型が1回の射撃で撃つ弾の数はステージ数に比例し、ステージ1で1発、ステージ2で2発、ステージ3で3発、ステージ4で4発、ステージ5で5発になります。ボスの攻撃スパン（攻撃と攻撃の間）もステージごとに短くなり、約1.55秒（ステージ1）→約1.38秒→約1.22秒→約1.08秒→約0.95秒（ステージ5）です。扇状弾は1回で終わらず連射になり（2連射→3連射→3連射→4連射→4連射）、突進後に元の位置へ戻る間も自機を狙う3方向弾を乱射します（間隔は約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。ボスの見た目もステージごとに変わります（ステージ1：銀色のガーディアン機／ステージ2：紫のドーム型スライム／ステージ3：緑のトゲトゲモンスター／ステージ4：橙色の戦闘機／ステージ5：暗紫色の重装メカ）。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。</p>
     <div class="stage-grid">
       <div class="card stage-card s1">
         <div class="s-no">STAGE 1</div>
@@ -369,8 +439,8 @@
         <div class="s-no">STAGE 5</div>
         <h3>ギャラクティック・コア</h3>
         <p class="s-theme">銀河中心核 ― 真の最終決戦</p>
-        <p>最も出現が速く、編隊も厚い最終ステージ。通常敵・ボーナス敵のHPは従来のステージ5分の2倍（合計×18：A 54／B 108／C 54／ボーナス敵 720）。B射撃型の弾は1回の射撃で5発に増えます。ボスは扇状弾13方向×4連射＋ミサイル7連の複合攻撃に加え、3連続突進で襲いかかります。帰還乱射は最速の0.18秒間隔、攻撃スパンは約0.95秒と最も短くなります。</p>
-        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1680</b></span><span class="chip">敵HP <b>×18</b></span><span class="chip">Bの弾 <b>5発</b></span><span class="chip">ボス攻撃間隔 <b>約0.95秒</b></span><span class="chip">扇状弾 <b>13方向×4連射</b></span><span class="chip">帰還乱射 <b>0.18秒間隔</b></span><span class="chip">難易度 <b>★★★★★</b></span></div>
+        <p>最も出現が速く、編隊も厚い最終ステージ。通常敵・ボーナス敵のHPは、高すぎたため従来（合計×18：A 54／B 108／C 54／ボーナス敵 720）から3分の1減らして合計×12（A 36／B 72／C 36／ボーナス敵 480）にしました。B射撃型の弾は1回の射撃で5発に増えます。ボスは扇状弾13方向×4連射＋ミサイル7連の複合攻撃に加え、3連続突進で襲いかかります。帰還乱射は最速の0.18秒間隔、攻撃スパンは約0.95秒と最も短くなります。</p>
+        <div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>1680</b></span><span class="chip">敵HP <b>×12</b></span><span class="chip">Bの弾 <b>5発</b></span><span class="chip">ボス攻撃間隔 <b>約0.95秒</b></span><span class="chip">扇状弾 <b>13方向×4連射</b></span><span class="chip">帰還乱射 <b>0.18秒間隔</b></span><span class="chip">難易度 <b>★★★★★</b></span></div>
         <div class="stage-boss"><canvas data-stage-boss="BOSS5" width="10" height="10" aria-label="ステージ5ボスのドット絵"></canvas><p><b>ボスの見た目</b>カオス・レヴィア ― 暗紫色の重装メカ（赤い目と青い爪、トゲ状の装甲）</p></div>
         <button class="s-play" type="button" data-goto-stage="5">▶ このステージから遊ぶ</button>
       </div>
@@ -387,7 +457,7 @@
   <!-- ================= PARAMS ================= -->
   <section aria-label="実装パラメータ">
     <h2>実装パラメータ（全5ステージ・仮調整値）</h2>
-    <p class="sec-lead">このデモで実際に使っている数値です。下表のHPは基準値で、通常敵・ボーナス敵のHPには従来の2倍となる倍率がかかります（ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18）。実際のHPは、ステージ1：A 6／B 10／C 6／ボーナス敵 60、ステージ2：A 12／B 20／C 12／ボーナス敵 120、ステージ3：A 18／B 36／C 18／ボーナス敵 240、ステージ4：A 36／B 72／C 36／ボーナス敵 480、ステージ5：A 54／B 108／C 54／ボーナス敵 720 です。ボスHPも従来の2倍でステージ別設定（450／630／840／1120／1680）です。B射撃型の弾数はステージ数に比例します（ステージ1で1発、2で2発、3で3発、4で4発、5で5発）。ボスの攻撃スパンはステージごとに短くなります（約1.55秒／1.38秒／1.22秒／1.08秒／0.95秒）。扇状弾の連射回数（2／3／3／4／4回）、連射間隔（0.38秒／0.34秒／0.30秒／0.27秒／0.24秒）、突進後の帰還時乱射の間隔（0.34秒／0.29秒／0.25秒／0.21秒／0.18秒、3方向弾）もステージごとに短く・多くなります。そのほか速度・出現間隔とボス攻撃の組み合わせにもステージ倍率がかかります。JSONで書き出してチームの実装に渡せます（JSONにはボスの新パラメータも含まれます）。</p>
+    <p class="sec-lead">このデモで実際に使っている数値です。下表のHPは基準値で、通常敵・ボーナス敵のHPには従来の2倍となる倍率がかかります（ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12）。ステージ5は高すぎたため、×18から3分の1減らして×12にしました。実際のHPは、ステージ1：A 6／B 10／C 6／ボーナス敵 60、ステージ2：A 12／B 20／C 12／ボーナス敵 120、ステージ3：A 18／B 36／C 18／ボーナス敵 240、ステージ4：A 36／B 72／C 36／ボーナス敵 480、ステージ5：A 36／B 72／C 36／ボーナス敵 480 です。ボスHPも従来の2倍でステージ別設定（450／630／840／1120／1680）です。B射撃型の弾数はステージ数に比例します（ステージ1で1発、2で2発、3で3発、4で4発、5で5発）。ボスの攻撃スパンはステージごとに短くなります（約1.55秒／1.38秒／1.22秒／1.08秒／0.95秒）。扇状弾の連射回数（2／3／3／4／4回）、連射間隔（0.38秒／0.34秒／0.30秒／0.27秒／0.24秒）、突進後の帰還時乱射の間隔（0.34秒／0.29秒／0.25秒／0.21秒／0.18秒、3方向弾）もステージごとに短く・多くなります。そのほか速度・出現間隔とボス攻撃の組み合わせにもステージ倍率がかかります。JSONで書き出してチームの実装に渡せます（JSONにはボスの新パラメータも含まれます）。</p>
     <div class="params">
       <table id="paramTable">
         <thead><tr><th>敵ID</th><th>HP</th><th>移動速度</th><th>射撃</th><th>接触ダメ</th><th>スコア</th><th>ドロップ</th><th>出現</th></tr></thead>
@@ -679,7 +749,7 @@ var STAGES = [
   { id:2, theme:"レッド・ネビュラ", duration:60, spawnMin:0.78, spawnVar:0.55, doubleChance:0.42, speedMul:1.12, hpMul:4.0, hpBonus:{A:0,B:0,C:0,X:0}, bBullets:2, bossName:"ブレイズ・ガーディアン", bossSprite:"BOSS2", bossLook:"紫のドーム型スライム（赤い斑点と短い足）", bossHp:630, bossScore:7000, fanCount:7, fanSpeed:272, missileCount:4, chargeRepeat:2, bossAtkInterval:1.38, fanBurst:3, fanBurstInterval:0.34, returnFireInterval:0.29, returnSpeed:270, chargeReturnSpeed:460, warnMissile:0.55, warnCharge:0.66, planet:"#33161a", planet2:"#47202a", nebula:"rgba(185,28,28,.10)" },
   { id:3, theme:"アビス・ディープ", duration:60, spawnMin:0.62, spawnVar:0.45, doubleChance:0.55, speedMul:1.24, hpMul:6.0, hpBonus:{A:0,B:6,C:0,X:60}, bBullets:3, bossName:"アビス・レヴィア", bossSprite:"BOSS3", bossLook:"緑のトゲトゲモンスター（大きな黄色い目と触手）", bossHp:840, bossScore:10000, fanCount:9, fanSpeed:295, missileCount:5, chargeRepeat:2, bossAtkInterval:1.22, fanBurst:3, fanBurstInterval:0.30, returnFireInterval:0.25, returnSpeed:290, chargeReturnSpeed:490, warnMissile:0.50, warnCharge:0.60, planet:"#241233", planet2:"#331a4a", nebula:"rgba(147,51,234,.10)" },
   { id:4, theme:"イベント・ホライズン", duration:60, spawnMin:0.55, spawnVar:0.40, doubleChance:0.62, speedMul:1.32, hpMul:12.0, hpBonus:{A:0,B:12,C:0,X:120}, bBullets:4, bossName:"ヴォイド・レヴィア", bossSprite:"BOSS4", bossLook:"橙色の戦闘機（青いコックピットと大きく広がる翼）", bossHp:1120, bossScore:14000, fanCount:11, fanSpeed:310, missileCount:6, chargeRepeat:2, bossAtkInterval:1.08, fanBurst:4, fanBurstInterval:0.27, returnFireInterval:0.21, returnSpeed:310, chargeReturnSpeed:520, warnMissile:0.46, warnCharge:0.55, planet:"#0f2a2e", planet2:"#17403f", nebula:"rgba(45,212,191,.08)" },
-  { id:5, theme:"ギャラクティック・コア", duration:60, spawnMin:0.48, spawnVar:0.35, doubleChance:0.70, speedMul:1.40, hpMul:18.0, hpBonus:{A:0,B:18,C:0,X:180}, bBullets:5, bossName:"カオス・レヴィア", bossSprite:"BOSS5", bossLook:"暗紫色の重装メカ（赤い目と青い爪、トゲ状の装甲）", bossHp:1680, bossScore:20000, fanCount:13, fanSpeed:325, missileCount:7, chargeRepeat:3, bossAtkInterval:0.95, fanBurst:4, fanBurstInterval:0.24, returnFireInterval:0.18, returnSpeed:330, chargeReturnSpeed:550, warnMissile:0.42, warnCharge:0.50, planet:"#33101f", planet2:"#4a1730", nebula:"rgba(234,179,8,.10)" }
+  { id:5, theme:"ギャラクティック・コア", duration:60, spawnMin:0.48, spawnVar:0.35, doubleChance:0.70, speedMul:1.40, hpMul:12.0, hpBonus:{A:0,B:12,C:0,X:120}, bBullets:5, bossName:"カオス・レヴィア", bossSprite:"BOSS5", bossLook:"暗紫色の重装メカ（赤い目と青い爪、トゲ状の装甲）", bossHp:1680, bossScore:20000, fanCount:13, fanSpeed:325, missileCount:7, chargeRepeat:3, bossAtkInterval:0.95, fanBurst:4, fanBurstInterval:0.24, returnFireInterval:0.18, returnSpeed:330, chargeReturnSpeed:550, warnMissile:0.42, warnCharge:0.50, planet:"#33101f", planet2:"#4a1730", nebula:"rgba(234,179,8,.10)" }
 ];
 function stageCfg(){ return STAGES[(G && G.stage ? G.stage : 1) - 1]; }
 
@@ -691,19 +761,248 @@ var cv = document.getElementById("game"), ctx = cv.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 
 var keys = {};
-var soundOn = false, AC = null;
-function beep(freq, dur, type, vol){
-  if (!soundOn) return;
+/* ============================================================
+   サウンド（Web Audio API：外部ファイルなしでBGM＋効果音を合成）
+   - BGM：ステージ／ボス／タイトルで切り替わるチップチューン風ループ
+   - 効果音：ショット・爆発・被弾・アイテム・レベルアップ・警告・撃破など
+   ブラウザの仕様上、AudioContextは最初のクリック／キー操作で開始する。
+   ============================================================ */
+var soundOn = true, AC = null;
+var masterGain = null, bgmGain = null, sfxGain = null, noiseBuf = null;
+var masterVolume = 0.8;
+var audioPrimed = false;
+function ensureAudio(){
+  if (!soundOn || !audioPrimed) return false;
   try{
-    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (!AC){
+      var Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return false;
+      AC = new Ctor();
+      masterGain = AC.createGain(); masterGain.gain.value = masterVolume; masterGain.connect(AC.destination);
+      bgmGain = AC.createGain(); bgmGain.gain.value = 0.46; bgmGain.connect(masterGain);
+      sfxGain = AC.createGain(); sfxGain.gain.value = 0.9; sfxGain.connect(masterGain);
+      var len = Math.floor(AC.sampleRate * 0.6);
+      noiseBuf = AC.createBuffer(1, len, AC.sampleRate);
+      var d = noiseBuf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
     if (AC.state === "suspended") AC.resume();
+    return true;
+  }catch(e){ return false; }
+}
+function toneAt(freq, when, dur, type, vol, dest, slideTo){
+  if (!AC) return;
+  try{
     var o = AC.createOscillator(), g = AC.createGain();
-    o.type = type || "square"; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol || 0.05, AC.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
-    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
+    o.type = type || "square";
+    o.frequency.setValueAtTime(Math.max(20, freq), when);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), when + dur);
+    g.gain.setValueAtTime(vol || 0.05, when);
+    g.gain.exponentialRampToValueAtTime(0.001, when + dur);
+    o.connect(g); g.connect(dest || sfxGain);
+    o.start(when); o.stop(when + dur + 0.02);
   }catch(e){}
 }
+function noiseAt(when, dur, vol, filterType, freqFrom, freqTo, dest){
+  if (!AC || !noiseBuf) return;
+  try{
+    var src = AC.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    src.playbackRate.value = 0.85 + Math.random() * 0.3;
+    var f = AC.createBiquadFilter(); f.type = filterType || "lowpass";
+    f.frequency.setValueAtTime(freqFrom || 1200, when);
+    if (freqTo) f.frequency.exponentialRampToValueAtTime(Math.max(30, freqTo), when + dur);
+    var g = AC.createGain();
+    g.gain.setValueAtTime(vol || 0.08, when);
+    g.gain.exponentialRampToValueAtTime(0.001, when + dur);
+    src.connect(f); f.connect(g); g.connect(dest || sfxGain);
+    src.start(when); src.stop(when + dur + 0.02);
+  }catch(e){}
+}
+/* 従来の beep() 呼び出しとの互換（既存の効果音フックはそのまま鳴る） */
+function beep(freq, dur, type, vol){
+  if (!soundOn || !ensureAudio()) return;
+  toneAt(freq, AC.currentTime, dur, type, vol, sfxGain);
+}
+/* --- 個別の効果音 --- */
+var sfxLast = {};
+function sfxThrottle(key, ms){
+  var now = performance.now();
+  if (sfxLast[key] && now - sfxLast[key] < ms) return false;
+  sfxLast[key] = now; return true;
+}
+function sfxShoot(hasBeam){
+  if (!soundOn || !sfxThrottle("shoot", 55) || !ensureAudio()) return;
+  var t = AC.currentTime;
+  toneAt(hasBeam ? 720 : 1180, t, 0.055, "square", 0.016, sfxGain, hasBeam ? 320 : 640);
+}
+function sfxEnemyShoot(){
+  if (!soundOn || !sfxThrottle("eshoot", 90) || !ensureAudio()) return;
+  toneAt(840, AC.currentTime, 0.07, "square", 0.022, sfxGain, 520);
+}
+function sfxHitTick(){
+  if (!soundOn || !sfxThrottle("hit", 60) || !ensureAudio()) return;
+  noiseAt(AC.currentTime, 0.035, 0.02, "highpass", 2400, 3200);
+}
+function sfxExplosion(big){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  noiseAt(t, big ? 0.55 : 0.28, big ? 0.20 : 0.11, "lowpass", big ? 2600 : 2000, 90);
+  toneAt(big ? 130 : 160, t, big ? 0.5 : 0.26, "sawtooth", big ? 0.13 : 0.07, sfxGain, 38);
+  if (big){ toneAt(64, t + 0.05, 0.55, "sine", 0.16, sfxGain, 30); noiseAt(t + 0.16, 0.3, 0.08, "lowpass", 1400, 120); }
+}
+function sfxPlayerDamage(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  toneAt(220, t, 0.2, "sawtooth", 0.10, sfxGain, 70);
+  noiseAt(t, 0.18, 0.09, "bandpass", 900, 240);
+}
+var crystalPitchStep = 0;
+function sfxCrystal(){
+  if (!soundOn || !ensureAudio()) return;
+  var scale = [1318, 1568, 1760, 2093, 2349];
+  var f = scale[crystalPitchStep % scale.length];
+  crystalPitchStep++;
+  toneAt(f, AC.currentTime, 0.07, "sine", 0.05, sfxGain);
+  toneAt(f * 1.5, AC.currentTime + 0.03, 0.06, "sine", 0.025, sfxGain);
+}
+function sfxRepair(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  toneAt(659, t, 0.1, "sine", 0.06, sfxGain);
+  toneAt(880, t + 0.09, 0.14, "sine", 0.06, sfxGain);
+}
+function sfxUIClick(){
+  if (!soundOn || !ensureAudio()) return;
+  toneAt(980, AC.currentTime, 0.05, "square", 0.03, sfxGain, 760);
+}
+function sfxJingle(notes, stepSec, type, vol){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  notes.forEach(function(n, i){ if (n > 0) toneAt(n, t + i * stepSec, stepSec * 1.7, type || "square", vol || 0.055, sfxGain); });
+}
+function sfxStartJingle(){ sfxJingle([523, 659, 784, 1046], 0.09, "square", 0.06); }
+function sfxLevelUpJingle(){ sfxJingle([523, 659, 784, 1046, 1318], 0.075, "square", 0.06); }
+function sfxStageClearJingle(){ sfxJingle([659, 784, 988, 1318, 0, 1175, 1318], 0.11, "square", 0.06); }
+function sfxGameOverJingle(){ sfxJingle([392, 370, 349, 311], 0.22, "triangle", 0.08); }
+function sfxAllClearJingle(){ sfxJingle([523, 659, 784, 1046, 784, 1046, 1318, 1568], 0.12, "square", 0.06); }
+function sfxBossWarn(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  for (var i = 0; i < 4; i++){
+    toneAt(740, t + i * 0.32, 0.16, "square", 0.055, sfxGain, 740);
+    toneAt(554, t + i * 0.32 + 0.16, 0.16, "square", 0.055, sfxGain, 554);
+  }
+}
+function sfxGigaBeam(){
+  if (!soundOn || !ensureAudio()) return;
+  var t = AC.currentTime;
+  toneAt(160, t, 0.32, "sawtooth", 0.09, sfxGain, 720);
+  noiseAt(t, 0.3, 0.06, "bandpass", 700, 2600);
+}
+/* --- BGMシーケンサー --- */
+function midiFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+var bgm = { playing: false, timer: null, step: 0, nextTime: 0, mode: "title", stage: 1 };
+function bgmTempo(){
+  if (bgm.mode === "title") return 92;
+  if (bgm.mode === "boss") return 148 + (bgm.stage - 1) * 4;
+  return 126 + (bgm.stage - 1) * 5;
+}
+function bgmChords(){
+  if (bgm.mode === "boss") return { roots: [45, 45, 41, 40], tones: [[57, 60, 64], [57, 60, 64], [53, 57, 60], [52, 56, 59]] };
+  if (bgm.mode === "title") return { roots: [45, 41, 48, 43], tones: [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]] };
+  return { roots: [45, 41, 48, 43], tones: [[57, 60, 64], [53, 57, 60], [60, 64, 67], [55, 59, 62]] };
+}
+function playKick(t){ if (!AC) return; try{ var o = AC.createOscillator(), g = AC.createGain(); o.type = "sine"; o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.11); g.gain.setValueAtTime(0.20, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.13); o.connect(g); g.connect(bgmGain); o.start(t); o.stop(t + 0.15); }catch(e){} }
+function playSnare(t){ noiseAt(t, 0.11, 0.055, "bandpass", 1900, 900, bgmGain); }
+function playHat(t, vol){ noiseAt(t, 0.04, vol, "highpass", 6800, 7600, bgmGain); }
+function bgmScheduleStep(step, t, stepDur){
+  var ch = bgmChords();
+  var bar = Math.floor(step / 16), s16 = step % 16;
+  var root = ch.roots[bar], tones = ch.tones[bar];
+  var isTitle = bgm.mode === "title", isBoss = bgm.mode === "boss";
+  if (!isTitle){
+    if (s16 % 4 === 0) playKick(t);
+    if (s16 === 4 || s16 === 12) playSnare(t);
+    if (s16 % 2 === 0) playHat(t, s16 % 4 === 2 ? 0.028 : 0.018);
+    else if (isBoss) playHat(t, 0.012);
+  } else if (s16 % 8 === 0){ playHat(t, 0.012); }
+  /* ベース：8分で駆動（タイトルは4分中心で穏やかに） */
+  if (isTitle ? (s16 % 4 === 0) : (s16 % 2 === 0)){
+    var bn = root;
+    if (s16 === 6 || s16 === 14) bn = root + 7;
+    if (s16 === 10) bn = root + 12;
+    toneAt(midiFreq(bn), t, stepDur * (isTitle ? 1.8 : 0.92), "triangle", isTitle ? 0.075 : 0.105, bgmGain);
+  }
+  /* アルペジオ／リード */
+  var arpSeq = [0, 1, 2, 1, 0, 2, 1, 2];
+  if (isTitle ? (s16 % 4 === 0) : true){
+    var idx = arpSeq[Math.floor(s16 / 2) % arpSeq.length];
+    var mn = tones[idx % tones.length] + 12;
+    if (s16 === 14) mn = tones[0] + 19;
+    toneAt(midiFreq(mn), t, stepDur * 0.72, "square", isTitle ? 0.020 : (isBoss ? 0.034 : 0.028), bgmGain);
+  }
+  /* バーの頭に薄いパッド */
+  if (s16 === 0){
+    tones.forEach(function(n){ toneAt(midiFreq(n), t, stepDur * 14, "triangle", 0.012, bgmGain); });
+  }
+}
+function bgmTick(){
+  if (!bgm.playing || !AC) return;
+  var stepDur = 60 / bgmTempo() / 2;
+  while (bgm.nextTime < AC.currentTime + 0.14){
+    bgmScheduleStep(bgm.step, bgm.nextTime, stepDur);
+    bgm.nextTime += stepDur;
+    bgm.step = (bgm.step + 1) % 64;
+  }
+}
+function updateBgmLabel(){
+  var ind = document.getElementById("bgmInd"), lab = document.getElementById("bgmLabel");
+  if (!ind || !lab) return;
+  var names = { title: "タイトル", stage: "ステージ", boss: "ボス戦", off: "停止中" };
+  lab.textContent = "♪ BGM：" + (soundOn && bgm.playing ? (names[bgm.mode] || "ステージ") : "停止中");
+  ind.classList.toggle("playing", !!(soundOn && bgm.playing));
+}
+function startBGM(mode){
+  if (!soundOn) { updateBgmLabel(); return; }
+  if (!ensureAudio()) { updateBgmLabel(); return; }
+  var st = (typeof G !== "undefined" && G && G.stage) ? G.stage : 1;
+  var changed = !bgm.playing || bgm.mode !== mode || bgm.stage !== st;
+  bgm.mode = mode; bgm.stage = st;
+  if (!bgm.playing){
+    bgm.playing = true; bgm.step = 0; bgm.nextTime = AC.currentTime + 0.07;
+    bgm.timer = setInterval(bgmTick, 27);
+    bgmTick();
+  } else if (changed){
+    /* 曲調だけ切り替える（ステップは継続し、プツッと切らない） */
+  }
+  if (bgmGain && AC) bgmGain.gain.setTargetAtTime(mode === "title" ? 0.34 : 0.46, AC.currentTime, 0.12);
+  updateBgmLabel();
+}
+function stopBGM(){
+  if (bgm.timer){ clearInterval(bgm.timer); bgm.timer = null; }
+  bgm.playing = false;
+  updateBgmLabel();
+}
+function duckBGM(duck){
+  if (!AC || !bgmGain) return;
+  var base = bgm.mode === "title" ? 0.34 : 0.46;
+  bgmGain.gain.setTargetAtTime(duck ? 0.13 : base, AC.currentTime, 0.09);
+}
+/* 最初のユーザー操作でAudioContextを解放し、その場面に合ったBGMを開始する */
+function primeAudio(){
+  if (audioPrimed){ if (AC && AC.state === "suspended") AC.resume(); return; }
+  audioPrimed = true;
+  if (!soundOn) return;
+  if (!ensureAudio()) return;
+  if (typeof G !== "undefined" && G){
+    if (G.state === "title") startBGM("title");
+    else if (G.state === "playing") startBGM(G.bossRef ? "boss" : "stage");
+    else if (G.state === "paused"){ startBGM(G.bossRef ? "boss" : "stage"); duckBGM(true); }
+  }
+}
+window.addEventListener("pointerdown", primeAudio);
+window.addEventListener("keydown", primeAudio);
+window.addEventListener("touchstart", primeAudio, { passive: true });
 
 var stars = [];
 for (var si = 0; si < 110; si++) stars.push({ x: Math.random()*W, y: Math.random()*H, s: Math.random()<0.7?2:3, v: 12 + Math.random()*55 });
@@ -814,7 +1113,7 @@ function openLevelUp(){
     wrap.appendChild(b);
   });
   document.getElementById("levelup").classList.add("on");
-  beep(523, 0.12, "square", 0.06); setTimeout(function(){ beep(784, 0.16, "square", 0.06); }, 110);
+  duckBGM(true); sfxLevelUpJingle();
   updateHUD();
 }
 function chooseUpgrade(idx){
@@ -826,6 +1125,7 @@ function chooseUpgrade(idx){
   p.upgradeCount = (p.upgradeCount || 0) + 1;
   document.getElementById("levelup").classList.remove("on");
   G.state = "playing";
+  duckBGM(false); sfxJingle([784, 988, 1175, 1568], 0.06, "square", 0.05);
   var remain = Math.max(0, Math.ceil(levelCost(p.level || 1) - (G.crystalProgress || 0)));
   showPowerBanner("LEVEL UP! Lv." + p.level, u.name + " を取得しました", "次のレベルまで クリスタル あと約 " + remain + " 個");
   explode(p.x + 20, p.y, 22, ["#22d3ee","#facc15","#ffffff","#67e8f9"]);
@@ -870,6 +1170,10 @@ function startStage(n, keep){
   if (prev) G.auto = prev.auto;
   document.getElementById("levelup").classList.remove("on");
   document.getElementById("overlay").classList.remove("on");
+  var soEl = document.getElementById("startOverlay"); if (soEl) soEl.classList.remove("on");
+  var poEl = document.getElementById("pauseOverlay"); if (poEl) poEl.classList.remove("on");
+  var pfEl = document.getElementById("btnPauseFloat"); if (pfEl){ pfEl.textContent = "⏸ ポーズ"; pfEl.removeAttribute("disabled"); pfEl.style.display = ""; }
+  var igEl = document.getElementById("ingameScore"); if (igEl) igEl.style.display = "";
   document.getElementById("warn").classList.remove("on");
   document.getElementById("powerBanner").classList.remove("on");
   document.getElementById("bossbar").classList.remove("on");
@@ -877,6 +1181,7 @@ function startStage(n, keep){
   updateStageUI();
   updateHUD();
   showStageBanner();
+  startBGM("stage");
 }
 function reset(){ startStage(1, false); }
 function updateHUD(){
@@ -918,7 +1223,7 @@ function syncBossBar(){
 function spawnFoe(type, y){
   var cfg = ENEMIES[type];
   var sc = stageCfg();
-  /* 敵HP倍率：従来の全ステージ分を2倍にし、ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12、ステージ5 ×18。ボスHPも従来の2倍でステージ別設定（450/630/840/1120/1680）を使う */
+  /* 敵HP倍率：従来の全ステージ分を2倍にし、ステージ1 ×2、ステージ2 ×4、ステージ3 ×6、ステージ4 ×12。ステージ5は高すぎたため×18から3分の1減らして×12。ボスHPも従来の2倍でステージ別設定（450/630/840/1120/1680）を使う */
   var hpMul = (type !== "BOSS" && sc.hpMul) ? sc.hpMul : 1;
   var bonus = (type !== "BOSS" && sc.hpBonus[type]) ? sc.hpBonus[type] : 0;
   var bossHp = type === "BOSS" ? sc.bossHp : Math.round(cfg.hp * hpMul) + bonus;
@@ -938,6 +1243,8 @@ function spawnFoe(type, y){
     document.getElementById("bossbar").classList.add("on");
     document.getElementById("stageMsg").textContent = "BOSS — " + sc.bossName;
     warnFlash();
+    sfxBossWarn();
+    setTimeout(function(){ if (typeof G !== "undefined" && G && G.bossRef) startBGM("boss"); }, 1350);
   }
   G.foes.push(foe);
   return foe;
@@ -965,7 +1272,7 @@ function hurtPlayer(dmg){
   if (p.inv > 0 || G.state !== "playing") return;
   p.hp -= dmg; p.inv = 1.1; G.shake = 8; G.flash = 0.25;
   explode(p.x, p.y, 10, ["#facc15","#ef4444","#ffffff"]);
-  beep(110, 0.18, "sawtooth", 0.08);
+  sfxPlayerDamage();
   updateHUD();
   if (p.hp <= 0) endGame(false);
 }
@@ -973,6 +1280,7 @@ function endGame(clear){
   G.state = clear ? "clear" : "over";
   var isFinal = clear && G.stage >= STAGES.length;
   var hasNext = clear && G.stage < STAGES.length;
+  var isOver = !clear;
   var ov = document.getElementById("overlay");
   document.getElementById("ovTitle").textContent = isFinal ? "ALL STAGE CLEAR!" : (clear ? ("STAGE " + G.stage + " CLEAR!") : "GAME OVER");
   document.getElementById("ovTitle").style.color = clear ? "#facc15" : "#fff";
@@ -983,10 +1291,64 @@ function endGame(clear){
     "撃破 " + G.kills + " 機　/　クリスタル " + Math.floor(G.crystals) + " 個　/　Lv." + (G.player.level || 1) + "（強化 " + (G.player.upgradeCount || 0) + "回・最大HP " + G.player.maxHp + "）　/　HI-SCORE " + fmtScore(hiScore) +
     (isFinal ? "<br>全5ステージ制覇！ おつかれさまでした。最終ボス「" + stageCfg().bossName + "」撃破です。"
       : hasNext ? ("<br>ボス撃破！ スコアとクリスタルを引き継いで、次はステージ" + nextCfg.id + "「" + nextCfg.theme + "」へ。ボスは「" + nextCfg.bossName + "」です。HPも少し回復します。")
-      : "<br>同じステージから再挑戦できます（企画書3章）。");
-  document.getElementById("ovBtn").textContent = isFinal ? "ステージ1からもう一度" : (hasNext ? ("ステージ" + nextCfg.id + "へ進む ▶") : "リトライ");
+      : "<br>「最初から」か「コンティニュー」を選べます。コンティニューは死んだその場で復活し、HPが最大HPの半分（" + Math.max(1, Math.ceil(G.player.maxHp / 2)) + " / " + G.player.maxHp + "）まで回復します。");
+  document.getElementById("ovBtn").textContent = isFinal ? "ステージ1からもう一度" : (hasNext ? ("ステージ" + nextCfg.id + "へ進む ▶") : "最初からやり直す");
+  var contBtn = document.getElementById("ovContinueBtn");
+  if (contBtn) contBtn.style.display = isOver ? "" : "none";
+  var hintEl = document.getElementById("ovHint");
+  if (hintEl) hintEl.style.display = isOver ? "" : "none";
+  var pfO = document.getElementById("btnPauseFloat"); if (pfO) pfO.style.display = "none";
   ov.classList.add("on");
-  if (clear) beep(660, 0.3, "square", 0.06);
+  stopBGM();
+  if (isFinal) sfxAllClearJingle();
+  else if (clear) sfxStageClearJingle();
+  else sfxGameOverJingle();
+}
+/* コンティニュー：死んだその場（位置・ステージ・スコア・クリスタル・強化・敵とボスの状態はそのまま）で
+   HPを最大HPの半分まで回復して復活する。復活直後に即死しないよう、近くの敵弾・ミサイルを消し、短い無敵時間を付ける */
+function continueGame(){
+  if (!G || G.state !== "over") return;
+  var p = G.player;
+  p.hp = Math.max(1, Math.ceil(p.maxHp / 2));
+  p.inv = 2.5;
+  p.cool = 0;
+  /* その場復活が分かるよう位置は変えない（p.x / p.y は死亡時のまま） */
+  p.x = Math.max(28, Math.min(W - 200, p.x));
+  p.y = Math.max(26, Math.min(H - 26, p.y));
+  G.ebullets = (G.ebullets || []).filter(function(b){ return Math.hypot(b.x - p.x, b.y - p.y) > 130; });
+  G.missiles = (G.missiles || []).filter(function(m){ return Math.hypot(m.x - p.x, m.y - p.y) > 150; });
+  G.flash = 0; G.shake = 0;
+  G.state = "playing";
+  document.getElementById("overlay").classList.remove("on");
+  document.getElementById("btnPause").textContent = "⏸ 一時停止";
+  var pfC = document.getElementById("btnPauseFloat"); if (pfC){ pfC.textContent = "⏸ ポーズ"; pfC.style.display = ""; }
+  explode(p.x, p.y, 26, ["#22d3ee", "#ffffff", "#facc15"]);
+  G.popups.push({ x: p.x, y: p.y - 42, vy: -28, life: 1.2, max: 1.2, text: "CONTINUE! HP " + p.hp + " / " + p.maxHp });
+  sfxJingle([523, 784, 1046], 0.07, "square", 0.055);
+  startBGM(G.bossRef ? "boss" : "stage");
+  updateHUD();
+}
+/* スタート画面表示／タイトルに戻る */
+function showTitleScreen(){
+  if (!G) return;
+  G.state = "title";
+  document.getElementById("overlay").classList.remove("on");
+  document.getElementById("pauseOverlay").classList.remove("on");
+  document.getElementById("levelup").classList.remove("on");
+  document.getElementById("startOverlay").classList.add("on");
+  document.getElementById("btnPause").textContent = "⏸ 一時停止";
+  var pfT = document.getElementById("btnPauseFloat"); if (pfT){ pfT.textContent = "⏸ ポーズ"; pfT.style.display = "none"; }
+  var sbT = document.getElementById("stageBanner"); if (sbT) sbT.classList.remove("on");
+  var igT = document.getElementById("ingameScore"); if (igT) igT.style.display = "none";
+  var wnT = document.getElementById("warn"); if (wnT) wnT.classList.remove("on");
+  keys = {};
+  startBGM("title");
+}
+function startGameFromTitle(){
+  audioPrimed = true;
+  ensureAudio();
+  reset();
+  sfxStartJingle();
 }
 /* ---------- ボス撃破演出 ----------
    ボスを倒した瞬間に次ステージ確認画面へは行かず、
@@ -1013,8 +1375,9 @@ function startBossDefeat(x, y){
   explode(x + 34, y + 18, 22, ["#fb923c","#ef4444","#ffffff"]);
   G.popups.push({ x: x, y: y - 74, vy: -16, life: 1.9, max: 1.9, text: "BOSS 撃破！" });
   document.getElementById("stageMsg").textContent = "BOSS 撃破！";
-  beep(68, 0.5, "sawtooth", 0.09);
-  setTimeout(function(){ beep(52, 0.4, "sawtooth", 0.07); }, 140);
+  stopBGM();
+  sfxExplosion(true);
+  setTimeout(function(){ sfxExplosion(true); }, 160);
   updateHUD();
 }
 function stepBossDefeat(dt){
@@ -1043,7 +1406,7 @@ function stepBossDefeat(dt){
         explode(bx + ox * 0.5, by + oy * 0.5, 14, ["#ffffff","#facc15"]);
         G.shake = Math.max(G.shake, reduced ? 5 : 17);
         G.flash = Math.max(G.flash, 0.20);
-        beep(78 + Math.random() * 46, 0.22, "sawtooth", 0.06);
+        sfxExplosion(false);
       }
     }
   }
@@ -1055,7 +1418,7 @@ function stepBossDefeat(dt){
     G.shake = reduced ? 7 : 30;
     G.flashWhite = reduced ? 0.3 : 0.7;
     G.flash = 0.4;
-    beep(50, 0.6, "sawtooth", 0.09);
+    sfxExplosion(true);
   }
   /* 演出中も自機は動かせる（被弾・射撃・出現は止める） */
   var p = G.player;
@@ -1075,8 +1438,8 @@ function stepBossDefeat(dt){
     if (d < (p.magnet || 120) && d > 0.01){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
     else { it.x += it.vx * dt; it.y += it.vy * dt; }
     if (d < 24){
-      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); updateHUD(); }
-      else { p.hp = Math.min(p.maxHp, p.hp + 2); }
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); updateHUD(); }
+      else { p.hp = Math.min(p.maxHp, p.hp + 2); sfxRepair(); }
       updateHUD(); return false;
     }
     return it.x > -24;
@@ -1121,7 +1484,7 @@ function foeUpdate(f, dt){
         var aa = baseA + offA;
         G.ebullets.push({ x: f.x - 26, y: f.y, vx: Math.cos(aa)*265, vy: Math.sin(aa)*265 });
       }
-      beep(880, 0.07, "square", 0.03);
+      sfxEnemyShoot();
     }
   } else if (f.type === "X"){
     f.x -= ENEMIES.X.speed * spdMul * dt;
@@ -1150,7 +1513,7 @@ function bossFireReturnSpray(f, sc){
     var aa = baseA + off + jitter;
     G.ebullets.push({ x: f.x, y: f.y, vx: Math.cos(aa)*spd, vy: Math.sin(aa)*spd });
   });
-  beep(660, 0.06, "square", 0.025);
+  sfxEnemyShoot();
 }
 function bossReturnFireTick(f, dt, sc){
   f.returnFireT -= dt;
@@ -1234,6 +1597,7 @@ function frame(now){
   var dt = Math.min(0.033, (now - last) / 1000); last = now;
   if (G.state === "playing") step(dt);
   else if (G.state === "bossDefeat") stepBossDefeat(dt);
+  else if (G.state === "title"){ G.t += dt; stars.forEach(function(s){ s.x -= s.v * dt * 0.35; if (s.x < -4){ s.x = W + 4; s.y = Math.random() * H; } }); }
   render();
   syncBossBar();
   requestAnimationFrame(frame);
@@ -1270,7 +1634,7 @@ function step(dt){
     for (var sPair = 1; sPair <= (p.spreadPairs || 0); sPair++){
       shot(-6, -(170 + sPair * 30)); shot(6, 170 + sPair * 30);
     }
-    beep((p.beamCore || 0) >= 1 ? 760 : 1240, 0.045, "square", 0.02);
+    sfxShoot((p.beamCore || 0) >= 1);
   }
   /* 巨大ビーム砲：取得後は一定時間ごとに自動で巨大ビームを放つ */
   if ((p.gigaInterval || 0) > 0){
@@ -1280,7 +1644,7 @@ function step(dt){
       G.bullets.push({ x: p.x + 34, y: p.y, vx: 880, vy: 0, dmg: p.gigaDamage || 12, w: 340, h: 54, kind: "giga", pierce: true, hitFoes: [] });
       G.popups.push({ x: p.x + 96, y: p.y - 42, vy: -24, life: 0.9, max: 0.9, text: "巨大ビーム！" });
       G.shake = Math.max(G.shake, 5);
-      beep(180, 0.28, "sawtooth", 0.06);
+      sfxGigaBeam();
     }
   }
   /* --- 出現 --- */
@@ -1331,7 +1695,7 @@ function step(dt){
         addScore(300, m.x, m.y);
         explode(m.x, m.y, 24, ["#fb923c","#ef4444","#fde047","#ffffff"]);
         G.shake = Math.max(G.shake, 9);
-        beep(150, 0.22, "sawtooth", 0.07);
+        sfxExplosion(false);
         if (boss.hp <= 0){
           var bossX = boss.x, bossY = boss.y;
           G.kills++; addScore(stageCfg().bossScore, bossX, bossY);
@@ -1366,6 +1730,7 @@ function step(dt){
         if (b.pierce || b.kind === "mega" || b.kind === "giga"){ if (!b.hitFoes) b.hitFoes = []; b.hitFoes.push(f); }
         else { G.bullets.splice(i, 1); i--; }
         f.hp -= (b.dmg || 1); f.hit = 0.07;
+        sfxHitTick();
         explode(b.x, b.y, b.kind === "normal" ? 2 : 5, ["#22d3ee","#fde047","#ffffff"]);
         if (f.hp <= 0){
           var wasX = f.type === "X";
@@ -1375,7 +1740,7 @@ function step(dt){
           if (!isBossKill){
             explode(f.x, f.y, f.type === "X" ? 34 : 16, ["#fb923c","#ef4444","#fde047","#ffffff"]);
             G.shake = f.type === "X" ? 9 : 4;
-            beep(90, 0.3, "sawtooth", 0.07);
+            sfxExplosion(f.type === "X");
           }
           dropItems(f);
           if (isBossKill){ G.bossRef = null; document.getElementById("bossbar").classList.remove("on"); updateHUD(); startBossDefeat(killX, killY); }
@@ -1400,8 +1765,8 @@ function step(dt){
     if (d < (p.magnet || 120)){ it.x += dx / d * 300 * dt; it.y += dy / d * 300 * dt; }
     else { it.x += it.vx * dt; it.y += it.vy * dt; }
     if (d < 24){
-      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); beep(1560, 0.06, "sine", 0.04); updateHUD(); maybeLevelUp(); }
-      else { p.hp = Math.min(p.maxHp, p.hp + 2); beep(740, 0.12, "sine", 0.05); }
+      if (it.kind === "crystal"){ var gain = p.crystalMul || 1; G.crystals += gain; G.crystalProgress = (G.crystalProgress || 0) + gain; addScore(10, it.x, it.y); sfxCrystal(); updateHUD(); maybeLevelUp(); }
+      else { p.hp = Math.min(p.maxHp, p.hp + 2); sfxRepair(); }
       updateHUD(); return false;
     }
     return it.x > -24;
@@ -1568,9 +1933,7 @@ function render(){
   if (G.flash > 0){ ctx.fillStyle = "rgba(239,68,68," + (G.flash * 0.55) + ")"; ctx.fillRect(0, 0, W, H); }
   if (G.flashWhite > 0){ ctx.fillStyle = "rgba(255,244,214," + (Math.min(1, G.flashWhite) * 0.75) + ")"; ctx.fillRect(0, 0, W, H); }
   if (G.state === "paused"){
-    ctx.fillStyle = "rgba(3,6,14,.6)"; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "#fff"; ctx.font = "40px 'DotGothic16', monospace"; ctx.textAlign = "center";
-    ctx.fillText("PAUSED", W/2, H/2);
+    ctx.fillStyle = "rgba(3,6,14,.35)"; ctx.fillRect(0, 0, W, H);
   }
 }
 
@@ -1578,7 +1941,10 @@ function render(){
 var KEYMAP = { ArrowLeft:"left", KeyA:"left", ArrowRight:"right", KeyD:"right", ArrowUp:"up", KeyW:"up", ArrowDown:"down", KeyS:"down", Space:"shot" };
 window.addEventListener("keydown", function(e){
   if (G && G.state === "levelup" && (e.code === "Digit1" || e.code === "Digit2" || e.code === "Digit3")){ chooseUpgrade(parseInt(e.code.slice(-1), 10) - 1); e.preventDefault(); return; }
-  if (e.code === "KeyP"){ togglePause(); return; }
+  if (G && G.state === "title" && (e.code === "Enter" || e.code === "Space")){ startGameFromTitle(); e.preventDefault(); return; }
+  if (G && G.state === "over" && e.code === "KeyC"){ continueGame(); e.preventDefault(); return; }
+  if (G && G.state === "over" && e.code === "KeyR"){ reset(); e.preventDefault(); return; }
+  if (e.code === "KeyP" || e.code === "Escape"){ if (G && (G.state === "playing" || G.state === "paused")){ togglePause(); e.preventDefault(); } return; }
   var k = KEYMAP[e.code]; if (k){ if (e.code === "Space" && document.activeElement && document.activeElement.tagName === "BUTTON") document.activeElement.blur(); keys[k] = true; e.preventDefault(); }
 });
 window.addEventListener("keyup", function(e){ var k = KEYMAP[e.code]; if (k){ keys[k] = false; e.preventDefault(); } });
@@ -1595,22 +1961,38 @@ function canvasPos(e){
   var r = cv.getBoundingClientRect();
   return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
 }
-cv.addEventListener("pointerdown", function(e){ dragging = true; var pos = canvasPos(e); G.player.x = pos.x; G.player.y = pos.y; keys.shot = true; });
+cv.addEventListener("pointerdown", function(e){ if (!G || G.state !== "playing") return; dragging = true; var pos = canvasPos(e); G.player.x = pos.x; G.player.y = pos.y; keys.shot = true; });
 window.addEventListener("pointermove", function(e){ if (dragging){ var pos = canvasPos(e); G.player.x = Math.max(28, Math.min(W-200, pos.x)); G.player.y = Math.max(26, Math.min(H-26, pos.y)); } });
 window.addEventListener("pointerup", function(){ dragging = false; keys.shot = false; });
 
 /* ---------- UIボタン ---------- */
+function syncPauseUI(){
+  var paused = G && G.state === "paused";
+  document.getElementById("btnPause").textContent = paused ? "▶ 再開" : "⏸ 一時停止";
+  var pf = document.getElementById("btnPauseFloat"); if (pf) pf.textContent = paused ? "▶ 再開" : "⏸ ポーズ";
+  var po = document.getElementById("pauseOverlay"); if (po) po.classList.toggle("on", !!paused);
+  if (!paused) keys = {};
+}
 function togglePause(){
-  if (G.state === "playing"){ G.state = "paused"; document.getElementById("btnPause").textContent = "▶ 再開"; }
-  else if (G.state === "paused"){ G.state = "playing"; document.getElementById("btnPause").textContent = "⏸ 一時停止"; }
+  if (!G) return;
+  if (G.state === "playing"){ G.state = "paused"; duckBGM(true); }
+  else if (G.state === "paused"){ G.state = "playing"; duckBGM(false); }
+  else return;
+  syncPauseUI();
 }
 document.getElementById("btnPause").addEventListener("click", togglePause);
+document.getElementById("btnPauseFloat").addEventListener("click", function(){ if (G.state === "title" || G.state === "over" || G.state === "clear") return; togglePause(); });
+document.getElementById("btnResume").addEventListener("click", function(){ if (G.state === "paused") togglePause(); });
+document.getElementById("btnPauseRestart").addEventListener("click", function(){ var st = G.stage || 1; startStage(st, false); });
+document.getElementById("btnToTitle").addEventListener("click", function(){ showTitleScreen(); });
+document.getElementById("btnStart").addEventListener("click", function(){ startGameFromTitle(); });
 document.getElementById("btnReset").addEventListener("click", function(){ reset(); });
 document.getElementById("ovBtn").addEventListener("click", function(){
   if (G.state === "clear" && G.stage < STAGES.length){ startStage(G.stage + 1, true); }
-  else if (G.state === "over"){ startStage(G.stage, false); }
+  else if (G.state === "over"){ reset(); }
   else { reset(); }
 });
+document.getElementById("ovContinueBtn").addEventListener("click", function(){ continueGame(); });
 document.querySelectorAll("[data-stage]").forEach(function(btn){
   btn.addEventListener("click", function(){ startStage(parseInt(btn.getAttribute("data-stage"), 10), false); });
 });
@@ -1625,16 +2007,45 @@ document.getElementById("btnAuto").addEventListener("click", function(){
   this.setAttribute("aria-pressed", G.auto ? "true" : "false");
 });
 document.getElementById("btnSound").addEventListener("click", function(){
-  soundOn = !soundOn; this.textContent = soundOn ? "サウンド ON" : "サウンド OFF";
+  soundOn = !soundOn;
+  this.textContent = soundOn ? "🔊 サウンド ON" : "🔇 サウンド OFF";
+  this.classList.toggle("sound-on", soundOn);
   this.setAttribute("aria-pressed", soundOn ? "true" : "false");
-  if (soundOn) beep(880, 0.08, "square", 0.04);
+  if (soundOn){
+    audioPrimed = true;
+    ensureAudio();
+    if (G){
+      if (G.state === "title") startBGM("title");
+      else if (G.state === "playing") startBGM(G.bossRef ? "boss" : "stage");
+      else if (G.state === "paused"){ startBGM(G.bossRef ? "boss" : "stage"); duckBGM(true); }
+    }
+    sfxUIClick();
+  } else {
+    stopBGM();
+  }
+  updateBgmLabel();
+});
+var volSliderEl = document.getElementById("volSlider");
+if (volSliderEl) volSliderEl.addEventListener("input", function(){
+  masterVolume = this.value / 100;
+  document.getElementById("volVal").textContent = this.value;
+  if (masterGain && AC) masterGain.gain.setTargetAtTime(masterVolume, AC.currentTime, 0.03);
+});
+/* 静的なボタン全般にクリック音（タッチ操作ボタンとサウンドボタン自身は除く） */
+document.querySelectorAll("button").forEach(function(b){
+  b.addEventListener("click", function(){
+    if (b.id === "btnSound" || b.closest(".touch")) return;
+    sfxUIClick();
+  });
 });
 document.querySelectorAll("[data-spawn]").forEach(function(btn){
   btn.addEventListener("click", function(){
     if (G.state === "bossDefeat" || G.state === "levelup") return;
     var t = btn.getAttribute("data-spawn");
     if (t === "BOSS"){ if (G.bossRef) return; G.bossSpawned = true; }
-    if (G.state === "over" || G.state === "clear"){ startStage(G.stage, false); }
+    if (G.state === "title"){ startStage(1, false); }
+    else if (G.state === "paused"){ G.state = "playing"; syncPauseUI(); }
+    else if (G.state === "over" || G.state === "clear"){ startStage(G.stage, false); }
     spawnFoe(t);
   });
 });
@@ -1670,7 +2081,7 @@ var codexEl = document.getElementById("codex");
     }).join("") + '</div>' : '') +
     '<div class="stats">' + statHtml + '</div>' +
     '<div class="traj"><span class="cap">移動パターン（右から左へ）</span>' + TRAJ[id] + '</div>' +
-    '<div class="drops"><span class="chip">HP <b>' + e.hp + (id === "BOSS" ? '（S1：450／S2：630／S3：840／S4：1120／S5：1680）' : '（基準値／S1 ×2／S2 ×4／S3 ×6／S4 ×12／S5 ×18）') + '</b></span><span class="chip">スコア <b>' + e.score + '</b></span><span class="chip">ドロップ <b>' + e.drop + '</b></span><span class="chip">出現 <b>' + e.spawn + '</b></span></div>' +
+    '<div class="drops"><span class="chip">HP <b>' + e.hp + (id === "BOSS" ? '（S1：450／S2：630／S3：840／S4：1120／S5：1680）' : '（基準値／S1 ×2／S2 ×4／S3 ×6／S4 ×12／S5 ×12）') + '</b></span><span class="chip">スコア <b>' + e.score + '</b></span><span class="chip">ドロップ <b>' + e.drop + '</b></span><span class="chip">出現 <b>' + e.spawn + '</b></span></div>' +
     '<button class="dl" type="button" data-dl="' + id + '">⤓ スプライトPNGをダウンロード</button></div>';
   codexEl.appendChild(card);
 });
@@ -1733,8 +2144,9 @@ document.getElementById("dlJson").addEventListener("click", function(){
 
 /* ---------- 起動 ---------- */
 reset();
-/* 初期配置：3種の敵を見せる */
+/* 初期配置：スタート画面の背景として3種の敵を見せる（スタートを押すまでゲームは始まらない） */
 spawnFoe("A", 150); spawnFoe("C", 300); spawnFoe("B", 420);
+showTitleScreen();
 requestAnimationFrame(function(now){ last = now; requestAnimationFrame(frame); });
 </script>
 </body>
