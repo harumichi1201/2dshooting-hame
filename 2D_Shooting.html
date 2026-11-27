@@ -274,7 +274,7 @@
   <div class="intro">
     <h1>2D_Shooting <span class="hl">実装デモ</span></h1>
     <span class="tag">2D横スクロールシューティング / 全15ステージ</span>
-    <p>企画書の敵仕様（5章・7章）に合わせて、ドット絵スプライトと敵AIをそのまま遊べる形で実装しました。今回、新しい敵3種を追加しました：発射前に赤いラインが点滅して照準を予告する高速ビーム型（D）、5方向の扇状弾を撃つ扇形型（E）、斜めと横へ1発ずつ連続発射する連射型（F）です。あわせて、どの敵も「1回の射撃パターンは全ステージ共通で、ステージが進むほど撃つ頻度が上がる」設計に統一し、B射撃型も扇状の複数発をやめて1発ずつ・高頻度に変更しました。全15ステージ構成で、ステージごとに敵の編成・背景・ボスの攻撃の組み合わせとボスの見た目が変わります。ステージ6〜10と11〜15はステージ1〜5の再戦で、敵とボスのHPがそれぞれ1.25倍・1.5倍になり、ステージ5・10をクリアすると自機のレベル・強化・クリスタルが初期状態にリセットされます。下の画面で実際に戦いながら、各敵の動きを確認できます。</p>
+    <p>企画書の敵仕様（5章・7章）に合わせて、ドット絵スプライトと敵AIをそのまま遊べる形で実装しました。今回、新しい敵3種を追加しました：発射前に赤いラインが点滅して照準を予告する高速ビーム型（D）、5方向の扇状弾を撃つ扇形型（E）、斜めと横へ1発ずつ連続発射する連射型（F）です。あわせて、どの敵も「1回の射撃パターンは全ステージ共通で、ステージが進むほど撃つ頻度が上がる」設計に統一し、B射撃型も扇状の複数発をやめて1発ずつ・高頻度に変更しました。全15ステージ構成で、ステージごとに敵の編成・背景・ボスの攻撃の組み合わせとボスの見た目が変わります。ステージ6〜10と11〜15はステージ1〜5の再戦で、敵とボスのHPがそれぞれ1.25倍・1.5倍になり、ボスの見た目は各ステージ専用の新しい姿（岩ゴーレム、巨大な眼球、黄色い毒蜂、紫のエイリアン、円形ドローン、骨の宇宙ドラゴン、黄金の天使型、クリスタルを宿す岩塊、青いクラゲ、黒い戦艦）になります。ステージ5・10をクリアすると自機のレベル・強化・クリスタルが初期状態にリセットされます。下の画面で実際に戦いながら、各敵の動きを確認できます。</p>
   </div>
 
   <!-- ================= GAME ================= -->
@@ -406,11 +406,11 @@
       </div>
       <div class="card">
         <h3>2. クリスタルでレベルアップ</h3>
-        <p>敵を倒して落とすクリスタルを集めるとレベルアップします（最初は15個、以降は必要数が+10ずつ増加）。レベルアップ時はゲームが止まり、ランダムで提示される3つの強化から1つを選べます。ショットは1発ずつ増え、巨大ビーム砲やクリスタル効率アップなど全12種の候補があります。金色のボーナス敵はクリスタル×10を落とす近道です。B射撃型が落とす回復アイテムは、白地に赤十字の救急バッジに緑の光の輪と「HP +2」の表示が付いた見た目で、取るとその場でHPが2回復します（拾った瞬間にも緑色で「HP +2 回復！」と表示されます）。強化は次のステージにも引き継がれます（リトライでリセット）。ただしステージ5・10をクリアして次へ進むときは区切りのリセットがかかり、レベル・強化・クリスタルがすべて初期状態に戻ります（スコアは引き継ぎ）。</p>
+        <p>敵を倒して落とすクリスタルを集めるとレベルアップします（最初は15個、以降は必要数が+10ずつ増加）。レベルアップ時はゲームが止まり、ランダムで提示される3つの強化から1つを選べます。ショットは1発ずつ増え、巨大ビーム砲やクリスタル効率アップなど全12種の候補があります（移動速度アップはスマホ／ゲームパッド操作のときだけ出現します）。金色のボーナス敵はクリスタル×10を落とす近道です。B射撃型が落とす回復アイテムは、白地に赤十字の救急バッジに緑の光の輪と「HP +2」の表示が付いた見た目で、取るとその場でHPが2回復します（拾った瞬間にも緑色で「HP +2 回復！」と表示されます）。強化は次のステージにも引き継がれます（リトライでリセット）。ただしステージ5・10をクリアして次へ進むときは区切りのリセットがかかり、レベル・強化・クリスタルがすべて初期状態に戻ります（スコアは引き継ぎ）。</p>
       </div>
       <div class="card">
         <h3>3. ボスを倒して次ステージへ</h3>
-        <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスの姿はステージごとに異なります（紫のドーム型スライム、緑のトゲトゲモンスター、橙色の戦闘機、暗紫色の重装メカなど）。ボスは扇状弾を連射し、突進したあとも元の位置へ戻る間ずっと自機を狙って弾を乱射してくるので、帰還中も油断できません。攻撃の間隔はステージが上がるほど短くなります（約1.55秒→約0.95秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します（ステージ5・10をクリアしたときは区切りのリセットで、自機のレベル・強化・クリスタルが初期状態に戻ります。スコアは引き継ぎ）。全15ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
+        <p>制限時間を耐えると警告とともにボスが出現します（全ステージ60秒）。ボスの姿はステージごとに異なります（紫のドーム型スライム、緑のトゲトゲモンスター、橙色の戦闘機、暗紫色の重装メカ、岩ゴーレム、巨大な眼球、黄色い毒蜂、紫のエイリアン、円形ドローン、骨の宇宙ドラゴン、黄金の天使型、クリスタルを宿す岩塊、青いクラゲ、黒い戦艦など、全15ステージすべて違う姿です）。ボスは扇状弾を連射し、突進したあとも元の位置へ戻る間ずっと自機を狙って弾を乱射してくるので、帰還中も油断できません。攻撃の間隔はステージが上がるほど短くなります（約1.55秒→約0.95秒）。ボスを倒すと大爆発と画面の揺れとともにボスが消滅し、余韻のあとで次のステージへ進むかどうかの画面が表示されます。進む場合はスコアとクリスタルを引き継ぎ、HPも少し回復します（ステージ5・10をクリアしたときは区切りのリセットで、自機のレベル・強化・クリスタルが初期状態に戻ります。スコアは引き継ぎ）。全15ステージのボスを倒せばゲームクリアです。ボスのミサイルは、黄色く点滅し始めたらボス自身にも当たります。引きつけてボスへ向かわせ、直前でかわすと1発7ダメージを与えられます。ボス出現中は、画面上部のHUDとボスの頭上にHPバーと残りHPの数値が表示されます。</p>
       </div>
     </div>
   </section>
@@ -433,7 +433,7 @@
 
   <section aria-label="自機強化システム">
     <h2>自機強化 — クリスタルを集めてレベルアップ（ランダム3択）</h2>
-    <p class="sec-lead">敵を倒すと落とすクリスタルを集めるとレベルアップします。必要数は Lv.1→2 が15個、以降はレベルが上がるごとに+10個（25個、35個、45個…）です。レベルアップするとゲームが一時停止し、下の12種からランダムに提示される3つの強化候補のうち1つを選べます。余ったクリスタルは次のレベルに繰り越されます。金色のボーナス敵はクリスタル×10を落とすのでレベルアップの近道です。HUDの「LEVEL」バーで進み具合がいつでも確認できます。</p>
+    <p class="sec-lead">敵を倒すと落とすクリスタルを集めるとレベルアップします。必要数は Lv.1→2 が15個、以降はレベルが上がるごとに+10個（25個、35個、45個…）です。レベルアップするとゲームが一時停止し、下の12種からランダムに提示される3つの強化候補のうち1つを選べます。「移動速度アップ」はスマホ（タッチ操作）／ゲームパッド操作のときだけ候補に出て、PC（キーボード／マウス）操作では出現しません（下の表でも非表示になります）。「緊急修理」は自機のHPが最大HPの半分以下のときだけ候補に出ます（HPが半分より多いときは出現しません）。余ったクリスタルは次のレベルに繰り越されます。金色のボーナス敵はクリスタル×10を落とすのでレベルアップの近道です。HUDの「LEVEL」バーで進み具合がいつでも確認できます。</p>
     <div class="params">
       <table>
         <thead><tr><th>強化候補</th><th>効果</th><th>取得上限</th></tr></thead>
@@ -447,9 +447,9 @@
           <tr><td data-h="強化候補"><b>貫通弾</b></td><td data-h="効果">通常ショットが敵を貫通し、編隊をまとめて倒せるようになります</td><td data-h="取得上限" class="num">1回</td></tr>
           <tr><td data-h="強化候補"><b>クリスタル磁石</b></td><td data-h="効果">クリスタルを引き寄せる範囲が+90px広がり、取り逃しが減ります</td><td data-h="取得上限" class="num">3回</td></tr>
           <tr><td data-h="強化候補"><b>クリスタル効率アップ</b></td><td data-h="効果">クリスタル1個の価値が+50%（100%→150%→200%→250%）。レベルアップが速くなります</td><td data-h="取得上限" class="num">3回</td></tr>
-          <tr><td data-h="強化候補"><b>移動速度アップ</b></td><td data-h="効果">自機の移動速度が約10%上がり、回避がしやすくなります</td><td data-h="取得上限" class="num">3回</td></tr>
+          <tr id="rowSpeedUpgrade"><td data-h="強化候補"><b>移動速度アップ</b></td><td data-h="効果">自機の移動速度が約10%上がり、回避がしやすくなります。候補に出現するのはスマホ（タッチ操作）／ゲームパッド操作のときだけです（PCのキーボード／マウス操作では出現しません）</td><td data-h="取得上限" class="num">3回</td></tr>
           <tr><td data-h="強化候補"><b>最大HPアップ</b></td><td data-h="効果">最大HP +2 ＆ その場で2回復。HPバーの上限自体が伸びます</td><td data-h="取得上限" class="num">無制限</td></tr>
-          <tr><td data-h="強化候補"><b>緊急修理</b></td><td data-h="効果">その場でHPを5回復。ピンチの立て直しに</td><td data-h="取得上限" class="num">無制限</td></tr>
+          <tr><td data-h="強化候補"><b>緊急修理</b></td><td data-h="効果">その場でHPを5回復。ピンチの立て直しに。候補に出現するのは自機のHPが最大HPの半分以下のときだけです（HPが半分より多いときは出現しません）</td><td data-h="取得上限" class="num">無制限</td></tr>
         </tbody>
       </table>
     </div>
@@ -457,7 +457,7 @@
 
   <section aria-label="ステージ一覧">
     <h2>全15ステージ</h2>
-    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12になります。ステージ5は高すぎたため、×18から3分の1減らして×12にしました。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型は全ステージで1発ずつ撃ち、代わりに射撃間隔がステージごとに短くなります（約2.6秒→約2.35秒→約2.1秒→約1.85秒→約1.6秒）。新しく追加したビーム型（D）・扇形型（E）・連射型（F）も同じ考え方で、1回の射撃パターン（ビーム1本／扇状5発／斜めと横の5連バースト）は全ステージ共通、ステージが進むほど発射間隔が短くなります。ボスの攻撃スパン（攻撃と攻撃の間）もステージごとに短くなり、約1.55秒（ステージ1）→約1.38秒→約1.22秒→約1.08秒→約0.95秒（ステージ5）です。扇状弾は1回で終わらず連射になり（2連射→3連射→3連射→4連射→4連射）、突進後に元の位置へ戻る間も自機を狙う3方向弾を乱射します（間隔は約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。ボスの見た目もステージごとに変わります（ステージ1：銀色のガーディアン機／ステージ2：紫のドーム型スライム／ステージ3：緑のトゲトゲモンスター／ステージ4：橙色の戦闘機／ステージ5：暗紫色の重装メカ）。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。ステージ6〜10はステージ1〜5の再戦で、通常敵・ボーナス敵のHPとボスHPが対応するステージの1.25倍（ボスHP 563／788／1050／1400／2100）、ステージ11〜15は1.5倍（ボスHP 675／945／1260／1680／2520）になります。編成・出現ペース・ボスの見た目と攻撃パターンは対応するステージ1〜5と同じです。ステージ5とステージ10をクリアして次へ進むと、自機のレベル・強化・クリスタルが初期状態にリセットされます（スコア・撃破数は引き継がれます）。</p>
+    <p class="sec-lead">ステージが進むほど敵の出現ペースと編成が厳しくなり、ボスの攻撃の組み合わせも変わります。通常敵・ボーナス敵のHPは従来の全ステージ分を2倍にし、ステージ1で×2、ステージ2で×4、ステージ3で×6、ステージ4で×12になります。ステージ5は高すぎたため、×18から3分の1減らして×12にしました。ボスHPも従来の2倍で450／630／840／1120／1680です。B射撃型は全ステージで1発ずつ撃ち、代わりに射撃間隔がステージごとに短くなります（約2.6秒→約2.35秒→約2.1秒→約1.85秒→約1.6秒）。新しく追加したビーム型（D）・扇形型（E）・連射型（F）も同じ考え方で、1回の射撃パターン（ビーム1本／扇状5発／斜めと横の5連バースト）は全ステージ共通、ステージが進むほど発射間隔が短くなります。ボスの攻撃スパン（攻撃と攻撃の間）もステージごとに短くなり、約1.55秒（ステージ1）→約1.38秒→約1.22秒→約1.08秒→約0.95秒（ステージ5）です。扇状弾は1回で終わらず連射になり（2連射→3連射→3連射→4連射→4連射）、突進後に元の位置へ戻る間も自機を狙う3方向弾を乱射します（間隔は約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。ボスの見た目もステージごとに変わります（ステージ1：銀色のガーディアン機／ステージ2：紫のドーム型スライム／ステージ3：緑のトゲトゲモンスター／ステージ4：橙色の戦闘機／ステージ5：暗紫色の重装メカ）。スコア・クリスタル・撃破数はステージをまたいで引き継がれます。ステージ6〜10はステージ1〜5の再戦で、通常敵・ボーナス敵のHPとボスHPが対応するステージの1.25倍（ボスHP 563／788／1050／1400／2100）、ステージ11〜15は1.5倍（ボスHP 675／945／1260／1680／2520）になります。編成・出現ペース・攻撃パターンは対応するステージ1〜5と同じですが、ボスの見た目はステージ6〜15専用の新しい姿になります（ステージ6：岩ゴーレム／ステージ7：巨大な眼球／ステージ8：黄色い毒蜂／ステージ9：紫のエイリアン／ステージ10：円形ドローン／ステージ11：骨の宇宙ドラゴン／ステージ12：黄金の天使型／ステージ13：クリスタルを宿す岩塊／ステージ14：青いクラゲ／ステージ15：黒い戦艦）。ステージ5とステージ10をクリアして次へ進むと、自機のレベル・強化・クリスタルが初期状態にリセットされます（スコア・撃破数は引き継がれます）。</p>
     <div class="stage-grid">
       <div class="card stage-card s1">
         <div class="s-no">STAGE 1</div>
@@ -789,6 +789,193 @@ var SPRITES = {
     ".....KBBBK.KBBBK........",
     ".....KKKKK.KKKKK........"
   ]},
+  /* ステージ6ボス：岩ゴーレム（提供イラスト1枚目）黒い岩塊に溶岩の亀裂、光るコアと浮く岩片 */
+  BOSS6: { scale: 3, map: [
+    "....KKKK...........KKKK",
+    "...KSOOsK.........KSOOsK",
+    "...KssssK....KKKKKKssssK",
+    "....KKK....KKSSSSSSSSSSK",
+    "..KKKK...KSSOOOSSSOSSSSK",
+    ".KSOOsK.KSSOOSSSSSOSSSK.KK",
+    ".KssssK.KSOOOOSSSSSSOSsOK",
+    "KKSSSSKKSOWWWOSSSOSSK.KsOK",
+    "KSOssSKKSOWWYOSOSSSK..KK",
+    "KSSSSSK.KSOOOOSSSSK",
+    ".KKKKK..KSSOOSSSSK..KKKK",
+    "..KsOK...KKSSSSSK..KSOOsK",
+    "..KsOK.....KSSSK...KssssK",
+    "...KK.......KKKK.....KKKK",
+    "......KKKK......KKKK",
+    ".....KSOOsK....KSOOsK",
+    ".....KssssK....KssssK",
+    "......KKKK......KKKK"
+  ]},
+  /* ステージ7ボス：巨大な眼球（提供イラスト2枚目）白い眼球と赤い虹彩、赤い血管の触手 */
+  BOSS7: { scale: 3, map: [
+    ".....KKKKKKK",
+    "...KKWWWWWWWKK...KKKKKKKKK",
+    "..KWWWWWWWWWWWK.KDDDRRDDDDK",
+    ".KFFFKWWrrrrWWWKDRRDDDRRDDDK",
+    "KFFFFFKWrrrrrrWKDRDDDDRDDDRDK.KK",
+    "KFKWFFKWWWWrrWWKDRDDDRDDDRDK.KRDK",
+    "KFFFFFKWWWWWWWWKDRDDDDRDDDK..KRDK",
+    ".KFFFKWWrrrrWWWK.KDRRDDRDK...KK",
+    "..KWWWWWWWWWWWK..KDDRDDDK",
+    "...KKWWWWWWWKK.KRDDRKDDDK",
+    ".....KKKKKKK..KRDK.KKRRKK",
+    "............KRDK...KRDK",
+    "...........KRDK.....KK",
+    "..........KRDK",
+    ".........KRDK",
+    "..........KK"
+  ]},
+  /* ステージ8ボス：黄色い毒蜂（提供イラスト3枚目）黒と黄の縞の腹部と大きな黄色い羽 */
+  BOSS8: { scale: 3, map: [
+    "..............KKKKKKKKKKK",
+    "............KYYYYYYYYYYYYYK",
+    "..........KYAAYYYYYYYYYYYYYK",
+    "........KYYYYYYYYYYYYYYYYK",
+    "....KKK.KYYYYYYYYYYYYYYYK",
+    "..KKKKKKKKKKKKKKKKKKKKKKKKKK",
+    ".KYYYYKsssssKAAAKssKAAAKssKAAK",
+    "KYRWWYKsssssKAAAKssKAAAKssKAAAK",
+    "KYYYYKssOOssKAAAKssKAAAKssKAAAK",
+    ".KYYYKsssssKAAAKssKAAAKssKAAK",
+    "..KKKKsssssKAAAKssKAAAKssKAK",
+    ".....KKKKKKKKKKKKKKKKKKKKKK",
+    "....KK..KK....KK....KK....KK",
+    "...KsK..KsK..KsK...KsK...KsK",
+    "...KK....KK...KK....KK....KK"
+  ]},
+  /* ステージ9ボス：紫のエイリアン（提供イラスト4枚目）ピンクに光る目とうねる触手 */
+  BOSS9: { scale: 3, map: [
+    "....KKKKKKKKKK",
+    "..KKPPPPPPPPPPKK....KKKKKK",
+    ".KPPMMPPPPPPPPPPK.KPPPPPPPKK",
+    "KPPpPPPPPPPPPPPPKPPPPPPPPPPK",
+    "KMMMMMKPPPPPPPPPPPPPPPPPPPPK",
+    "KMFWWFKPpPPPPPPPPPPPPPPPPPPK",
+    "KMMMMMKPPPPPPPPPPPPPPPPPPPPK.KKK",
+    ".KPPKPPpPPPPPPPPPPPPPPPK.KPPPK",
+    "..KKPPPPPPPPPPPPPPPPPPK...KPPK",
+    "...KPPKPPPPPPPPPPPPPPK.....KK",
+    "...KPPK.KPPK.KPPK.KPPK.KPPPPK",
+    "...KPPK.KPPK.KPPK.KPPK..KPPK",
+    "....KK...KK...KK...KK....KK",
+    "....KPP..KPP..KPP..KPP",
+    "....KKK..KKK..KKK..KKK"
+  ]},
+  /* ステージ10ボス：円形ドローン（提供イラスト5枚目）リング状の機体と青く光るコア */
+  BOSS10: { scale: 3, map: [
+    "..........KKKKKKK",
+    "........KKSSSSSSSKK",
+    ".......KSSsssssssSSK",
+    "......KSsKKKKKKKKKsSK",
+    "KEKdKSsKdddddddddKsSK",
+    ".KKKSsKddddKKKKddddKsSKKK",
+    "KEEKSsKdddKEEEEKdddKsSKEEK",
+    "KEKKSsKdddKEEWEEKdddKsSKK",
+    ".KKKSsKdddKEEEEKdddKsSKKK",
+    "KEKdKSsKddddKKKKddddKsSK",
+    "......KSsKKKKKKKKKsSK",
+    ".......KSSsssssssSSK",
+    "........KKSSSESSSKK",
+    "..........KKKKKKK"
+  ]},
+  /* ステージ11ボス：骨の宇宙ドラゴン（提供イラスト6枚目）白い骨格、赤い目と赤いラインの翼 */
+  BOSS11: { scale: 3, map: [
+    "..................KKKKKKKKK",
+    ".................KWwFFFFFwwK",
+    "................KWwFFFFFFFwwK",
+    "...KKKK........KWwWwwwwwwwK.KKKK",
+    "..KWWWWKK.....KWWWWWWWWWWK.KWwFFwK",
+    ".KWWFFWWK....KWWKWWKWWKWWK.KWwFFwK",
+    "KWWWWWWWWKKKKWWKWWKWWKWWK...KKKK",
+    "KWWKWWWWWWWWWWK.KK.KK.KK",
+    ".KK.KWWWWWWWK",
+    "..KWWWWWWWWK",
+    ".KWWFFWWWWK",
+    "..KWWWWWWK",
+    "...KKKKKK",
+    ".................KWwFFFFFwwK",
+    "................KWwFFFFFFFwwK",
+    "..................KKKKKKKKK"
+  ]},
+  /* ステージ12ボス：黄金の天使型（提供イラスト7枚目）頭上の光輪と刃のような金色の翼 */
+  BOSS12: { scale: 3, map: [
+    ".......KKKKKKKK",
+    "......KAYYYYYYAK",
+    "......KYAKKKKAYK",
+    "......KAYYYYYYAK",
+    ".......KKKKKKKK",
+    ".........KWWK....KKKKKKKKKKKKK",
+    "........KWWWWK..KYYYYYYYYYYYYYK",
+    "...KKK.KWWAAWWK.KAYYYYYYYYYYYYK",
+    "..KYYYKWWAAWWKKKKKKKKKKKKKKKK",
+    "..KYAYKWWWWWWK..KYYYYYYYYYYYYYK",
+    "...KKK.KWWWWK..KAYYYYYYYYYYYYK",
+    "......KWWWWK....KKKKKKKKKKKKK",
+    ".....KWWAAWWK......KYYYYYYYK",
+    ".....KWWWWWWK.....KAYYYYYYK",
+    "......KWWWWK.......KKKKKK",
+    ".......KWWK",
+    "......KWAAWK",
+    "......KWWWWK",
+    ".......KKKK"
+  ]},
+  /* ステージ13ボス：クリスタルを宿す岩塊（提供イラスト8枚目）紫に光るクリスタルと浮く岩片 */
+  BOSS13: { scale: 3, map: [
+    ".....KKKKKKKKKKKKKKKKK",
+    "...KKSSssssssssssssssKK....KKKK",
+    "..KSSsSSssKPPKsssssssssK..KsPPsK",
+    ".KSSsSSSSssPPssSSsSSsssSK.KSSSSK",
+    "KMMMKSSsSSSSSSSsSSSSSSsK..KKKK",
+    "KMWMKSSsSSKPPKSSsSSsSSK",
+    "KMMMKSSsSSSSSSSsSSPPsSK....KKKK",
+    ".KSSsSSsSSSSSSsSSsSSsK...KsPPsK",
+    "..KSSsSSssssSSsSSSSsK...KSSSSK",
+    "...KKSSssssssssssKK.....KKKK",
+    ".....KKKKKKKKKKKKK"
+  ]},
+  /* ステージ14ボス：青いクラゲ（提供イラスト9枚目）青く光る傘と長く垂れる触手 */
+  BOSS14: { scale: 3, map: [
+    ".......KKKKKKKK",
+    ".....KKBBBBBBBBKK",
+    "....KBBEEBBBBPBBBK",
+    "...KBEEBBBBBBBBBBBK",
+    "..KBBBBBBCBBBBPBBBBK",
+    "..KBPBBBBBBBBBBBBBK",
+    "...KBBBBEEBBBBBBBK",
+    "....KKBEKBBKEBKK",
+    "......K.K.K.K.K",
+    ".....KBK.KBK.KBK",
+    ".....KBK.KBK.KBK",
+    "....KBK..KBK..KBK",
+    "....KBK..KBK..KBK",
+    "...KBK....KBK...KBK",
+    "...KBK....KBK...KBK",
+    "..KBK......KBK...KBK",
+    "..KBK......KBK....KBK",
+    "...KK.......KK.....KK"
+  ]},
+  /* ステージ15ボス：黒い戦艦（提供イラスト10枚目）巨大な主砲と赤く光る砲塔 */
+  BOSS15: { scale: 3, map: [
+    "....................KKK....KKK",
+    "...................KSSSK..KSSSK",
+    "..........KKKKKKKKKSsFSSKKKSsFSSK",
+    ".........KSSSSSSSSSSSSSSSSSSSSSSK",
+    ".........KssKssssssssssssssKssK",
+    "....KKKKKKKKKKKKKKKKKKKKKKKKKKK",
+    "FFKSSSSSSSSSSSSSSSSSSSSSSSSSSSSK",
+    "FFFsSSsSSsSSsSSsSSsSSsKFFFFFFsK",
+    ".KKKssssssssssssssssssKFFFFFFsK",
+    "...KsssssFsssssFssssssKssssssK",
+    "...KssssssssssssssssssKssssssK",
+    "....KKKKKKKKKKKKKKKKKKKKKKKKK",
+    "......KSSK...KSSK....KSSK",
+    "......KssK...KssK....KssK",
+    ".......KK.....KK......KK"
+  ]},
   crystal: { scale: 2, map: [
     "...EE...",
     "..EWWE..",
@@ -865,7 +1052,7 @@ var ENEMIES = {
        desc:"一般の敵よりはるかに硬い大型輸送機。ゆっくり左へ進み、一定時間で画面外へ去ってしまいます。倒すとクリスタル×10を落とすので、クリスタルを一定数集めるとレベルアップして強化をランダム3択から選べる仕組みの大きな近道になります。倒さなくてもステージは進むので、「余裕があれば狙う」追加報酬として配置するのが企画書の方針です。",
        stats:{ "HP":95, "速度":20, "火力":10, "耐久":95 } },
   BOSS: { name:"ガーディアン・レヴィア", role:"全ステージ ボス ― 姿はステージごとに変化／3種の攻撃＋帰還時乱射（ステージで組み合わせ変化）", hp:450, speed:0, fire:"扇状弾連射／ミサイル／突進＋帰還時乱射", contact:2, score:5000, drop:"―（ステージクリア）", spawn:"60秒後 or 手動出現",
-       desc:"ボスの姿はステージごとに変わります。ステージ1は銀色の大型ガーディアン機、ステージ2は紫のドーム型スライム（赤い斑点と短い足）、ステージ3は緑のトゲトゲモンスター（大きな黄色い目と触手）、ステージ4は橙色の戦闘機（青いコックピットと大きく広がる翼）、ステージ5は暗紫色の重装メカ（赤い目と青い爪）です。攻撃の仕組みは共通で、画面右に陣取り、①扇状の通常弾を間を置かずに連射 ②予告つき連続ミサイル ③後退して光ってから突進、の3攻撃を繰り返します。突進のあとは無防備に帰るのではなく、元の位置へ戻る間も自機を狙う3方向の弾を一定間隔で乱射し続けます（再突進のために右端へ戻る間も同じ）。攻撃と攻撃の間（攻撃スパン）はステージごとに短くなります（ステージ1：約1.55秒→ステージ2：約1.38秒→ステージ3：約1.22秒→ステージ4：約1.08秒→ステージ5：約0.95秒）。扇状弾の連射回数も増えます（ステージ1：5方向×2連射／ステージ2：7方向×3連射・ミサイル4連・2連続突進／ステージ3：9方向×3連射＋ミサイル5連の同時攻撃／ステージ4：11方向×4連射・ミサイル6連／ステージ5：13方向×4連射＋ミサイル7連の同時攻撃・3連続突進）。帰還時乱射の間隔もステージごとに短くなります（約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。HPが減ると攻撃間隔がさらに短くなりますが、ミサイルと突進には予兆があり、通常移動だけで回避できる調整です。②のミサイルはボスから十分に離れると黄色く点滅し、その後はボス自身にも当たるようになります（1発7ダメージ＋300点）。ミサイルを引きつけてボスへ近づき、直前でかわせば誘導してぶつけられます。追尾は約3秒で切れ、その後はまっすぐ飛びます。ステージ6〜15はステージ1〜5の再戦で、ボスの見た目と攻撃パターンは対応するステージと同じですが、ボスHPはステージ6〜10で1.25倍、ステージ11〜15で1.5倍になります（563／788／1050／1400／2100、675／945／1260／1680／2520）。",
+       desc:"ボスの姿はステージごとに変わります。ステージ1は銀色の大型ガーディアン機、ステージ2は紫のドーム型スライム（赤い斑点と短い足）、ステージ3は緑のトゲトゲモンスター（大きな黄色い目と触手）、ステージ4は橙色の戦闘機（青いコックピットと大きく広がる翼）、ステージ5は暗紫色の重装メカ（赤い目と青い爪）です。攻撃の仕組みは共通で、画面右に陣取り、①扇状の通常弾を間を置かずに連射 ②予告つき連続ミサイル ③後退して光ってから突進、の3攻撃を繰り返します。突進のあとは無防備に帰るのではなく、元の位置へ戻る間も自機を狙う3方向の弾を一定間隔で乱射し続けます（再突進のために右端へ戻る間も同じ）。攻撃と攻撃の間（攻撃スパン）はステージごとに短くなります（ステージ1：約1.55秒→ステージ2：約1.38秒→ステージ3：約1.22秒→ステージ4：約1.08秒→ステージ5：約0.95秒）。扇状弾の連射回数も増えます（ステージ1：5方向×2連射／ステージ2：7方向×3連射・ミサイル4連・2連続突進／ステージ3：9方向×3連射＋ミサイル5連の同時攻撃／ステージ4：11方向×4連射・ミサイル6連／ステージ5：13方向×4連射＋ミサイル7連の同時攻撃・3連続突進）。帰還時乱射の間隔もステージごとに短くなります（約0.34秒→0.29秒→0.25秒→0.21秒→0.18秒）。HPが減ると攻撃間隔がさらに短くなりますが、ミサイルと突進には予兆があり、通常移動だけで回避できる調整です。②のミサイルはボスから十分に離れると黄色く点滅し、その後はボス自身にも当たるようになります（1発7ダメージ＋300点）。ミサイルを引きつけてボスへ近づき、直前でかわせば誘導してぶつけられます。追尾は約3秒で切れ、その後はまっすぐ飛びます。ステージ6〜15はステージ1〜5の再戦で、攻撃パターンは対応するステージと同じですが、ボスの見た目は各ステージ専用の新しい姿です（ステージ6：岩ゴーレム「マグマ・ゴーレム」／ステージ7：巨大な眼球「ブラッド・アイ」／ステージ8：黄色い毒蜂「ストライク・ホーネット」／ステージ9：紫のエイリアン「ネビュラ・セファロッド」／ステージ10：円形ドローン「オービット・ドローン」／ステージ11：骨の宇宙ドラゴン「ボーン・ドラゴン」／ステージ12：黄金の天使型「セラフィム・ガーディアン」／ステージ13：クリスタルを宿す岩塊「クリスタル・アステロイド」／ステージ14：青いクラゲ「ディープ・ジェリー」／ステージ15：黒い戦艦「ドレッドノート」）。ボスHPはステージ6〜10で1.25倍、ステージ11〜15で1.5倍になります（563／788／1050／1400／2100、675／945／1260／1680／2520）。",
        stats:{ "HP":100, "速度":30, "火力":90, "耐久":100 } }
 };
 
@@ -900,6 +1087,27 @@ function isResetClear(n){ return n % 5 === 0 && n < STAGES.length; }
     c.tierMul = tm; c.baseStage = base.id;
     STAGES.push(c);
   }
+})();
+/* ステージ6〜15のボスの見た目：提供イラスト10枚を表示順に割り当てた専用の姿にする。
+   攻撃パターン・出現間隔などの数値は対応するステージ1〜5のまま（上のコピーで継承済み） */
+(function(){
+  var NB = {
+    6:  { sprite:"BOSS6",  name:"マグマ・ゴーレム",       look:"岩ゴーレム（黒い岩塊に溶岩の亀裂、胸に光るオレンジのコア、周囲に浮く岩片）" },
+    7:  { sprite:"BOSS7",  name:"ブラッド・アイ",         look:"巨大な眼球（白い眼球に赤い虹彩、赤い血管の触手がうねる）" },
+    8:  { sprite:"BOSS8",  name:"ストライク・ホーネット", look:"黄色い毒蜂（黒と黄の縞の腹部、大きな黄色い羽と鋭い脚）" },
+    9:  { sprite:"BOSS9",  name:"ネビュラ・セファロッド", look:"紫のエイリアン（ピンクに光る大きな目と、うねる多数の触手）" },
+    10: { sprite:"BOSS10", name:"オービット・ドローン",   look:"円形ドローン（リング状の機体に青く光る中央コアと砲身）" },
+    11: { sprite:"BOSS11", name:"ボーン・ドラゴン",       look:"骨の宇宙ドラゴン（白い骨格の頭部、赤い目、赤いラインの入った翼）" },
+    12: { sprite:"BOSS12", name:"セラフィム・ガーディアン", look:"黄金の天使型（頭上の光輪と、刃のように広がる金色の翼）" },
+    13: { sprite:"BOSS13", name:"クリスタル・アステロイド", look:"岩のクリーチャー（紫に光るクリスタルを宿すゴツゴツした岩塊、周囲に浮く岩片）" },
+    14: { sprite:"BOSS14", name:"ディープ・ジェリー",     look:"青いクラゲ（青く光るドーム状の傘と、長く垂れる触手）" },
+    15: { sprite:"BOSS15", name:"ドレッドノート",         look:"黒い戦艦（巨大な主砲と赤く光る砲塔を持つ重装甲戦艦）" }
+  };
+  Object.keys(NB).forEach(function(k){
+    var st = STAGES[parseInt(k, 10) - 1], b = NB[k];
+    if (!st) return;
+    st.bossSprite = b.sprite; st.bossName = b.name; st.bossLook = b.look;
+  });
 })();
 function stageCfg(){ return STAGES[(G && G.stage ? G.stage : 1) - 1]; }
 
@@ -1216,6 +1424,27 @@ function updateStageUI(){
 }
 /* レベル式：クリスタルを一定数集めるとレベルアップ。必要数は15個から+10ずつ増える */
 function levelCost(lv){ return 15 + (lv - 1) * 10; }
+/* 操作方法の判定：「移動速度アップ」はスマホ（タッチ操作）とゲームパッド操作のときだけ候補に出す。
+   PC（キーボード／マウス）操作では不要なので候補から外す。タッチは一度でも画面に触れたら有効になる */
+var touchUsed = false;
+window.addEventListener("touchstart", function(){ touchUsed = true; syncSpeedUpgradeRow(); }, { passive: true });
+window.addEventListener("gamepadconnected", function(){ syncSpeedUpgradeRow(); });
+window.addEventListener("gamepaddisconnected", function(){ syncSpeedUpgradeRow(); });
+function anyGamepadConnected(){
+  try{
+    var gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (var i = 0; i < gps.length; i++){ if (gps[i]) return true; }
+  }catch(e){}
+  return false;
+}
+function speedUpgradeAvailable(){
+  if (touchUsed || anyGamepadConnected()) return true;
+  try{ return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); }catch(e){ return false; }
+}
+function syncSpeedUpgradeRow(){
+  var row = document.getElementById("rowSpeedUpgrade");
+  if (row) row.style.display = speedUpgradeAvailable() ? "" : "none";
+}
 /* 強化候補プール（全12種）。レベルアップ時にここからランダムで3つ提示する */
 var UPGRADES = [
   { id:"shot", name:"ショット +1", max:5,
@@ -1257,7 +1486,12 @@ var UPGRADES = [
 ];
 function pickUpgrades(){
   var p = G.player;
-  var pool = UPGRADES.filter(function(u){ return (p.stacks[u.id] || 0) < u.max; });
+  var pool = UPGRADES.filter(function(u){
+    if ((p.stacks[u.id] || 0) >= u.max) return false;
+    if (u.id === "speed" && !speedUpgradeAvailable()) return false; /* 移動速度アップはタッチ／パッド操作時のみ */
+    if (u.id === "repair" && p.hp > p.maxHp / 2) return false; /* 緊急修理はHPが半分以下のときのみ */
+    return true;
+  });
   for (var i = pool.length - 1; i > 0; i--){ var j = (Math.random() * (i + 1)) | 0; var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp; }
   return pool.slice(0, 3);
 }
@@ -2557,9 +2791,9 @@ document.querySelectorAll("[data-stage]").forEach(function(btn){
       '<div class="s-no">STAGE ' + n + '</div>' +
       '<h3>' + base.theme + '</h3>' +
       '<p class="s-theme">' + (n <= 10 ? "第2周" : "第3周") + ' ― ステージ' + cfg.baseStage + 'の再戦（敵・ボスHP ×' + tm + '）</p>' +
-      '<p>ステージ' + cfg.baseStage + 'と同じ編成・背景・ボスの見た目と攻撃パターンで、通常敵・ボーナス敵のHPとボスHPがステージ' + cfg.baseStage + 'の' + tm + '倍になっています（実HP：A ' + hpA + '／B ' + hpB + '／C ' + hpC + '／ボーナス敵 ' + hpX + '）。B射撃型は1発ずつ撃ち（射撃間隔 約' + cfg.bFireInterval + '秒）、ボスの攻撃スパンは約' + cfg.bossAtkInterval + '秒です。新敵D・E・Fの出現比率と発射間隔もステージ' + cfg.baseStage + 'と同じです。' + ((n === 6 || n === 11) ? 'このステージに入る際、自機のレベル・強化・クリスタルは初期状態にリセットされています（スコアは引き継ぎ）。' : '') + '</p>' +
+      '<p>ステージ' + cfg.baseStage + 'と同じ編成・背景・攻撃パターンで、ボスの見た目はこのステージ専用の新しい姿です。通常敵・ボーナス敵のHPとボスHPがステージ' + cfg.baseStage + 'の' + tm + '倍になっています（実HP：A ' + hpA + '／B ' + hpB + '／C ' + hpC + '／ボーナス敵 ' + hpX + '）。B射撃型は1発ずつ撃ち（射撃間隔 約' + cfg.bFireInterval + '秒）、ボスの攻撃スパンは約' + cfg.bossAtkInterval + '秒です。新敵D・E・Fの出現比率と発射間隔もステージ' + cfg.baseStage + 'と同じです。' + ((n === 6 || n === 11) ? 'このステージに入る際、自機のレベル・強化・クリスタルは初期状態にリセットされています（スコアは引き継ぎ）。' : '') + '</p>' +
       '<div class="s-meta"><span class="chip">ボス出現 <b>60秒</b></span><span class="chip">ボスHP <b>' + cfg.bossHp + '</b></span><span class="chip">敵HP <b>×' + fmtMul(cfg.hpMul) + '</b></span><span class="chip">対ステージ' + cfg.baseStage + ' <b>×' + tm + '</b></span><span class="chip">B射撃 <b>1発／約' + cfg.bFireInterval + '秒</b></span><span class="chip">ボス攻撃間隔 <b>約' + cfg.bossAtkInterval + '秒</b></span><span class="chip">扇状弾 <b>' + cfg.fanCount + '方向×' + cfg.fanBurst + '連射</b></span><span class="chip">帰還乱射 <b>' + cfg.returnFireInterval + '秒間隔</b></span></div>' +
-      '<div class="stage-boss"><canvas data-stage-boss="' + cfg.bossSprite + '" width="10" height="10" aria-label="ステージ' + n + 'ボスのドット絵"></canvas><p><b>ボスの見た目</b>' + cfg.bossName + ' ― ' + cfg.bossLook + '（ステージ' + cfg.baseStage + 'と同じ姿）</p></div>' +
+      '<div class="stage-boss"><canvas data-stage-boss="' + cfg.bossSprite + '" width="10" height="10" aria-label="ステージ' + n + 'ボスのドット絵"></canvas><p><b>ボスの見た目</b>' + cfg.bossName + ' ― ' + cfg.bossLook + '</p></div>' +
       '<button class="s-play" type="button" data-goto-stage="' + n + '">▶ このステージから遊ぶ</button>';
     grid.appendChild(card);
   }
@@ -2647,7 +2881,7 @@ var codexEl = document.getElementById("codex");
     '<div><h3><span class="code ' + (id==="BOSS"?"boss":id.toLowerCase()) + '">' + (id==="BOSS"?"BOSS":"TYPE-"+id) + '</span>' + e.name + '</h3>' +
     '<p class="role">' + e.role + '</p></div></div>' +
     '<div class="card-body"><p>' + e.desc + '</p>' +
-    (id === "BOSS" ? '<div class="boss-gallery">' + STAGES.slice(0, 5).map(function(st){
+    (id === "BOSS" ? '<div class="boss-gallery">' + STAGES.map(function(st){
       return '<figure><canvas data-sprite="' + st.bossSprite + '" data-gallery="1" width="10" height="10"></canvas>' +
         '<figcaption>STAGE ' + st.id + '：' + st.bossName + '<span>' + st.bossLook + '</span></figcaption>' +
         '<button class="dl" type="button" data-dl="' + st.bossSprite + '">⤓ PNG</button></figure>';
@@ -2708,8 +2942,8 @@ document.getElementById("dlJson").addEventListener("click", function(){
     var e = ENEMIES[id];
     data[id] = { name: e.name, role: e.role, hp: e.hp, speed_px_s: e.speed, fire: e.fire, contact_damage: e.contact, score: e.score, drop: e.drop, spawn: e.spawn };
   });
-  var ups = UPGRADES.map(function(u){ return { id: u.id, name: u.name, max_stacks: u.max >= 99 ? "無制限" : u.max }; });
-  var blob = new Blob([JSON.stringify({ note: "仮調整値（企画書5章・7章準拠）。全15ステージ：ステージ6〜10はステージ1〜5の敵HP・ボスHP×1.25、ステージ11〜15は×1.5（編成・ボスの見た目と攻撃パターンは対応するステージ1〜5と同じ）。強化はクリスタル収集によるレベル式：必要数15個から+10ずつ増加し、レベルアップ時にランダム3択から1つ選ぶ", stage_reset: "ステージ5・10をクリアして次へ進むと、自機のレベル・強化・クリスタルが初期状態にリセットされる（スコア・撃破数・必殺ゲージは引き継ぎ、HPは初期値10/10で再開）", level_cost: "15 + (Lv-1) x 10", special_beam: { name: "必殺技 ハイパービーム", charge: "敵撃破+2／クリスタル+1／被弾+5（最大100、ステージ間で引き継ぎ）", trigger: "Xキー／必殺ボタン（ゲージ満タン時）", charge_time_s: 0.42, duration_s: 1.3, damage: "0.1秒ごとに12（合計約156）", notes: "範囲内の敵弾・ミサイルを消滅／発動中は無敵／上下移動でビームが追従" }, upgrades: ups, stages: STAGES, enemies: data }, null, 2)], { type: "application/json" });
+  var ups = UPGRADES.map(function(u){ var o = { id: u.id, name: u.name, max_stacks: u.max >= 99 ? "無制限" : u.max }; if (u.id === "speed") o.availability = "スマホ（タッチ操作）／ゲームパッド操作時のみ出現。PC（キーボード／マウス）操作では出現しない"; if (u.id === "repair") o.availability = "自機のHPが最大HPの半分以下のときのみ出現。HPが半分より多いときは出現しない"; return o; });
+  var blob = new Blob([JSON.stringify({ note: "仮調整値（企画書5章・7章準拠）。全15ステージ：ステージ6〜10はステージ1〜5の敵HP・ボスHP×1.25、ステージ11〜15は×1.5（編成と攻撃パターンは対応するステージ1〜5と同じ、ボスの見た目はステージ6〜15専用の新しい姿）。強化はクリスタル収集によるレベル式：必要数15個から+10ずつ増加し、レベルアップ時にランダム3択から1つ選ぶ", stage_reset: "ステージ5・10をクリアして次へ進むと、自機のレベル・強化・クリスタルが初期状態にリセットされる（スコア・撃破数・必殺ゲージは引き継ぎ、HPは初期値10/10で再開）", level_cost: "15 + (Lv-1) x 10", special_beam: { name: "必殺技 ハイパービーム", charge: "敵撃破+2／クリスタル+1／被弾+5（最大100、ステージ間で引き継ぎ）", trigger: "Xキー／必殺ボタン（ゲージ満タン時）", charge_time_s: 0.42, duration_s: 1.3, damage: "0.1秒ごとに12（合計約156）", notes: "範囲内の敵弾・ミサイルを消滅／発動中は無敵／上下移動でビームが追従" }, upgrades: ups, stages: STAGES, enemies: data }, null, 2)], { type: "application/json" });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "enemy_params_all_stages.json"; a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
@@ -2717,6 +2951,7 @@ document.getElementById("dlJson").addEventListener("click", function(){
 
 /* ---------- 起動 ---------- */
 reset();
+syncSpeedUpgradeRow();
 /* 初期配置：スタート画面の背景として3種の敵を見せる（スタートを押すまでゲームは始まらない） */
 spawnFoe("A", 150); spawnFoe("C", 300); spawnFoe("B", 420);
 showTitleScreen();
